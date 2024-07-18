@@ -1,16 +1,24 @@
 package com.yp.puppy.api.config;
 
 
+import com.yp.puppy.api.auth.filter.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.filter.CorsFilter;
 
+@RequiredArgsConstructor
 @EnableWebSecurity
+// ↓ 컨트롤러에서 사전, 사후에 권한정보를 캐치해서 막을건지. true는 open
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
+
+    private final JwtAuthFilter jwtAuthFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -31,6 +39,9 @@ public class SecurityConfig {
                 .authorizeRequests() // 요청 별로 인가 설정
                 .antMatchers("/**").permitAll() // 인가 설정 off
         ;
+
+        http.addFilterAfter(jwtAuthFilter, CorsFilter.class);
+
         return http.build();
     }
 }
