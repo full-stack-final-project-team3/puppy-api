@@ -29,4 +29,7 @@ public class EmailVerification {
     @Column(nullable = false)
     private LocalDateTime expiryDate;
 
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    private User user;
 }
