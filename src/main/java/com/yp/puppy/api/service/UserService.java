@@ -30,7 +30,7 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    @Value("${study.mail.host}")
+    @Value("${yp.mail.host}")
     private String mailHost;
 
     private final EmailVerificationRepository emailVerificationRepository;

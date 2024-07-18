@@ -1,5 +1,5 @@
 application.yml
-HELP.md
+README.md
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
