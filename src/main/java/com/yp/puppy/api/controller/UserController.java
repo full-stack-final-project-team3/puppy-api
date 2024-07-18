@@ -53,6 +53,8 @@ public class UserController {
     @PostMapping("/sign-in")
     public ResponseEntity<?> signIn(@RequestBody LoginRequestDto dto) {
 
+        log.info("login request - {}", dto);
+
         try {
             LoginResponseDto response = userService.authenticate(dto);
             return ResponseEntity.ok().body(response);
