@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 
 @Entity
-@Table(name = "tbl_email_verification")
+@Table(name = "email_verification")
 public class EmailVerification {
 
     @Id
