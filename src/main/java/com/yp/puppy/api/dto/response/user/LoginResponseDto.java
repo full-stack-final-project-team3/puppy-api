@@ -1,4 +1,4 @@
-package com.yp.puppy.api.dto.response;
+package com.yp.puppy.api.dto.response.user;
 
 import lombok.*;
 

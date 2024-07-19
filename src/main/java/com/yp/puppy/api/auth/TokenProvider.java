@@ -1,7 +1,5 @@
 package com.yp.puppy.api.auth;
 
-import com.yp.puppy.api.entity.Role;
-import com.yp.puppy.api.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

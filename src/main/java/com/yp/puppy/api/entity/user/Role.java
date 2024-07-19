@@ -1,4 +1,4 @@
-package com.yp.puppy.api.entity;
+package com.yp.puppy.api.entity.user;
 
 public enum Role {
     USER, ADMIN

@@ -1,6 +1,5 @@
-package com.yp.puppy.api.repository;
+package com.yp.puppy.api.repository.user;
 
-import com.yp.puppy.api.entity.Dog;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface DogRepository extends JpaRepository<Dog, String> {
