@@ -1,6 +1,8 @@
 package com.yp.puppy.api.entity.user;
 
 
+
+import com.yp.puppy.api.entity.hotel.Reservation;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
@@ -41,19 +43,22 @@ public class User {
     private Role role = Role.USER;
 
     @Column(nullable = false)
+    @Setter
     private boolean emailVerified;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 20)
     private String nickname;
 
     private LocalDate birthday;
 
     private boolean isAutoLogin;
 
+    @Column(length = 50)
     private String phoneNumber;
 
     private Integer point;
 
+    @Column(length = 500000)
     private String profileUrl;
 
     private boolean hasDogInfo; // 회원가입때 강아지 정보 등록했는지?
@@ -61,27 +66,25 @@ public class User {
     @CreationTimestamp
     private LocalDateTime createdAt; // 가입 시간
 
-    private int WarningCount; // 경고 누적 횟수
+    private int warningCount; // 경고 누적 횟수
 
     private boolean isDeleted; // 탈퇴한 적이 있나?
     // false - 탈퇴 x,  true - 탈퇴한적 있음
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<Dog> dogList = new ArrayList<>(); // 몇마리의 강아지를 키우고 있나? ???
 
-
-
-
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<Reservation> reservation = new ArrayList<>(); // 호텔 - 유저 간의 중간테이블
 
 //    private List<Favorite> wishHotelList; // 유저가 찜한 호텔 리스트
 //
 //    private List<Board> scrappedBoard; // 유저가 북마크 남긴 게시글 리스트
 //
 //    private List<Package> wishPackageList; // 유저의 쇼핑몰 장바구니
-//
-//    private List<Reservation> reservation; // 호텔 - 유저 간의 중간테이블
-//
+
 //    private List<Order> order; // 쇼핑몰 - 유저 간의 중간테이블
 //
 //    private List<Board> board; // 유저가 쓴 글 리스트

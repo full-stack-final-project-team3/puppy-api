@@ -1,5 +1,6 @@
 package com.yp.puppy.api.repository.user;
 
+import com.yp.puppy.api.entity.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
