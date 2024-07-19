@@ -4,15 +4,16 @@ import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@Setter
 @ToString
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
 @Entity
 @Table(name = "treats")
 public class Treats {
@@ -26,34 +27,33 @@ public class Treats {
     @Column(nullable = false)
     private String treatsTitle; // 패키지 이름
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TreatsType treatsType;
 
+    @Enumerated(EnumType.STRING)
     private TreatsAge treatsAge;
 
     private int treatsStock;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "treats_id")
+    @JoinColumn(name = "bundle_id")
     private Bundle bundle;
 
     @OneToMany(mappedBy = "treats", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "treats_id")
-    private List<TreatsPic> treatsPic;
+    private List<TreatsPic> treatsPic = new ArrayList<>();
 
     @OneToMany(mappedBy = "treats", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "treats_id")
-    private List<TreatsDetailPic> treatsDetailPics;
+    private List<TreatsDetailPic> treatsDetailPics = new ArrayList<>();
 
     @OneToMany(mappedBy = "treats", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "treats_id")
-    private Review reviews;
+    private List<Review> reviews = new ArrayList<>();
 
-    private enum TreatsType {
+    public enum TreatsType {
         DRY, WET
     }
 
-    private enum TreatsAge {
+    public enum TreatsAge {
         BABY, ADULT
     }
 }

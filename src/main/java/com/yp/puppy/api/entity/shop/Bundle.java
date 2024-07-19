@@ -7,12 +7,12 @@ import javax.persistence.*;
 import java.util.List;
 
 @Getter
+@Setter
 @ToString
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
 @Entity
 @Table(name = "bundle")
 public class Bundle {
@@ -29,11 +29,10 @@ public class Bundle {
     @Column(nullable = false)
     private Long bundlePrice; // 패키지 가격
 
-    @OneToMany(mappedBy = "bundle", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "treats_id")
+    @OneToMany(mappedBy = "bundle", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Treats> treats;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "bundle_id")
+    @JoinColumn(name = "cart_id")
     private Cart cart;
 }

@@ -3,6 +3,8 @@ package com.yp.puppy.api.entity.user;
 
 
 import com.yp.puppy.api.entity.hotel.Reservation;
+import com.yp.puppy.api.entity.shop.Bundle;
+import com.yp.puppy.api.entity.shop.Order;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
@@ -83,9 +85,11 @@ public class User {
 //
 //    private List<Board> scrappedBoard; // 유저가 북마크 남긴 게시글 리스트
 //
-//    private List<Package> wishPackageList; // 유저의 쇼핑몰 장바구니
+//    @ManyToOne
+//    private List<Order> wishPackageList; // 유저의 주문 내역
 
-//    private List<Order> order; // 쇼핑몰 - 유저 간의 중간테이블
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Order> orders;
 //
 //    private List<Board> board; // 유저가 쓴 글 리스트
 //
