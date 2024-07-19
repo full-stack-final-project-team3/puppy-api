@@ -2,6 +2,7 @@ package com.yp.puppy.api.entity.user;
 
 
 
+import com.yp.puppy.api.entity.hotel.Favorite;
 import com.yp.puppy.api.entity.hotel.Reservation;
 import com.yp.puppy.api.entity.shop.Bundle;
 import com.yp.puppy.api.entity.shop.Order;
@@ -23,7 +24,7 @@ import java.util.List;
 @Builder
 
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public class User {
 
     @Id
@@ -81,12 +82,10 @@ public class User {
     @Builder.Default
     private List<Reservation> reservation = new ArrayList<>(); // 호텔 - 유저 간의 중간테이블
 
-//    private List<Favorite> wishHotelList; // 유저가 찜한 호텔 리스트
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Favorite> wishHotelList; // 유저가 찜한 호텔 리스트
 //
 //    private List<Board> scrappedBoard; // 유저가 북마크 남긴 게시글 리스트
-//
-//    @ManyToOne
-//    private List<Order> wishPackageList; // 유저의 주문 내역
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> orders;
