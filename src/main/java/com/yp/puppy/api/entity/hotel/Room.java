@@ -1,5 +1,6 @@
 package com.yp.puppy.api.entity.hotel;
 
+import com.yp.puppy.api.entity.user.Dog;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
