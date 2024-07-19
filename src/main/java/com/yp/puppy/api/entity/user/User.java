@@ -41,6 +41,7 @@ public class User {
     private Role role = Role.USER;
 
     @Column(nullable = false)
+    @Setter
     private boolean emailVerified;
 
     @Column(nullable = false, unique = true)
@@ -61,7 +62,7 @@ public class User {
     @CreationTimestamp
     private LocalDateTime createdAt; // 가입 시간
 
-    private int WarningCount; // 경고 누적 횟수
+    private int warningCount; // 경고 누적 횟수
 
     private boolean isDeleted; // 탈퇴한 적이 있나?
     // false - 탈퇴 x,  true - 탈퇴한적 있음

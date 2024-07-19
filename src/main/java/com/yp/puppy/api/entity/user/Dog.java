@@ -49,19 +49,19 @@ public class Dog {
     private LocalDateTime createdAt; // 강아지 등록 일자
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dog_id")
+    @JoinColumn(name = "user_id")
     private User user;
 
 
-    private enum DogSize {
+    enum DogSize {
         SMALL, MEDIUM, LARGE
     }
 
-    private enum Sex {
+    enum Sex {
         MALE, FEMALE
     }
 
-    private enum Reason {
+    enum Reason {
         ADOPTION, // 입양
     }
 
