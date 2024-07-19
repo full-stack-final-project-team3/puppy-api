@@ -30,6 +30,7 @@ public class Dog {
     @Column(nullable = false)
     private String dogName; // 강아지 이름
 
+    @Column(nullable = false)
     private LocalDate birthday; // 강아지 생일
 
     private Breed dogBreed; // 견종
@@ -48,9 +49,23 @@ public class Dog {
 
     private LocalDateTime createdAt; // 강아지 등록 일자
 
+    @Transient
+    // DB에 넣지않는 데이터
+    private int age;
+
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+
+
+    @PrePersist
+    private void prePersist() {
+        if (this.age == 0) {
+            this.age =  Math.abs((int) (this.getBirthday().getYear() - 2024));
+        }
+    }
 
 
     enum DogSize {
