@@ -1,14 +1,10 @@
-package com.yp.puppy.api.service;
+package com.yp.puppy.api.service.user;
 
 
 import com.yp.puppy.api.auth.TokenProvider;
-import com.yp.puppy.api.dto.request.LoginRequestDto;
-import com.yp.puppy.api.dto.request.UserSaveDto;
-import com.yp.puppy.api.dto.response.LoginResponseDto;
-import com.yp.puppy.api.entity.EmailVerification;
-import com.yp.puppy.api.entity.User;
-import com.yp.puppy.api.repository.EmailVerificationRepository;
-import com.yp.puppy.api.repository.UserRepository;
+import com.yp.puppy.api.dto.request.user.LoginRequestDto;
+import com.yp.puppy.api.dto.request.user.UserSaveDto;
+import com.yp.puppy.api.dto.response.user.LoginResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,4 +1,4 @@
-package com.yp.puppy.api.dto.request;
+package com.yp.puppy.api.dto.request.user;
 
 import lombok.*;
 
@@ -8,10 +8,11 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class LoginRequestDto {
+public class UserSaveDto {
 
     private String email;
     private String password;
-    private boolean isAutoLogin;
-    // 등등.. 추가
+
+    // 더 받아야할 정보 추가 해야함!
+
 }
