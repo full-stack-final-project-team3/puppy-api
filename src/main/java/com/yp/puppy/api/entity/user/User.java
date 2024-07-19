@@ -1,6 +1,7 @@
 package com.yp.puppy.api.entity.user;
 
 
+
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
