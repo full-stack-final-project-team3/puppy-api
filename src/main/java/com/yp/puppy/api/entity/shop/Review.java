@@ -8,13 +8,13 @@ import javax.persistence.*;
 import java.util.List;
 
 @Getter
+@Setter
 @ToString
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
-@Entity
+@Entity(name = "ShopReview") // 엔티티 이름 명시
 @Table(name = "review")
 public class Review {
 
@@ -30,17 +30,14 @@ public class Review {
     @Column(nullable = false)
     private int rate;
 
-    private List<ReviewPic> reviewPicList;
-
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "user_id")
+    private List<ReviewPic> reviewPics;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "treats_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "treats_id", nullable = false)
     private Treats treats;
-
-    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "review_id")
-    private List<ReviewPic> reviewPics;
 }

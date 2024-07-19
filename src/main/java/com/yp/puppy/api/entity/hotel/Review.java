@@ -1,47 +1,44 @@
 package com.yp.puppy.api.entity.hotel;
 
+import com.yp.puppy.api.entity.shop.ReviewPic;
 import com.yp.puppy.api.entity.user.User;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
-@ToString(exclude = {"user", "room", "hotel"})
-@EqualsAndHashCode(of ="reviewId")
+@Setter
+@ToString
+@EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
-@Entity
-@Table(name = "reviews")
+@Entity(name = "HotelReview") // 엔티티 이름 명시
+@Table(name = "hotel_review")
 public class Review {
 
     @Id
     @GenericGenerator(strategy = "uuid2", name = "uuid-generator")
     @GeneratedValue(generator = "uuid-generator")
     @Column(name = "review_id")
-    private String reviewId; // 리뷰 아이디
+    private String id;
 
     @Column(nullable = false)
-    private String content; // 리뷰 내용
+    private String reviewContent;
 
     @Column(nullable = false)
-    private int rating; // 평점
+    private int rate;
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt; // 작성 시간
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReviewPic> reviewPics;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user; // 작성한 사용자
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hotel_id", nullable = false)
-    private Hotel hotel; // 해당 호텔
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_id", nullable = false)
-    private Room room; // 해당 객실
+    private Hotel hotel;
 }
