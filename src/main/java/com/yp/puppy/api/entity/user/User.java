@@ -1,10 +1,7 @@
 package com.yp.puppy.api.entity.user;
 
-
-
 import com.yp.puppy.api.entity.hotel.Favorite;
 import com.yp.puppy.api.entity.hotel.Reservation;
-import com.yp.puppy.api.entity.shop.Bundle;
 import com.yp.puppy.api.entity.shop.Order;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -36,7 +33,6 @@ public class User {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-
     @Column(length = 500)
     private String password;
 
@@ -54,7 +50,7 @@ public class User {
 
     private LocalDate birthday;
 
-    private boolean isAutoLogin;
+    private boolean autoLogin;
 
     @Column(length = 50)
     private String phoneNumber;
@@ -84,15 +80,9 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Favorite> wishHotelList; // 유저가 찜한 호텔 리스트
-//
-//    private List<Board> scrappedBoard; // 유저가 북마크 남긴 게시글 리스트
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> orders;
-//
-//    private List<Board> board; // 유저가 쓴 글 리스트
-//
-//    private List<Board> reportList; // ADMIN에게 들어온 신고 리스트
 
     @PrePersist // 컬럼의 default value 설정
     public void prePersist() {
@@ -101,6 +91,9 @@ public class User {
         }
         if (this.profileUrl == null) {
             this.profileUrl = ""; // 기본 이미지 여기서 설정
+        }
+        if (this.nickname == null) {
+            this.nickname = "user"; // 기본 닉네임 설정
         }
     }
 

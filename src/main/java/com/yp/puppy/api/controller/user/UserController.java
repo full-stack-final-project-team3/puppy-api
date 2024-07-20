@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.View;
 
 @RestController
 @RequestMapping("/auth")
@@ -17,7 +16,6 @@ import org.springframework.web.servlet.View;
 public class UserController {
 
     private final UserService userService;
-    private final View error;
 
 
     // 이메일 중복확인

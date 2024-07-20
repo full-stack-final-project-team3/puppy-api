@@ -12,6 +12,7 @@ public class UserSaveDto {
 
     private String email;
     private String password;
+    private String nickname;
 
     // 더 받아야할 정보 추가 해야함!
 

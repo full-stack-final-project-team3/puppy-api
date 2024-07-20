@@ -12,4 +12,5 @@ public class LoginResponseDto {
     private String email;
     private String role; // 권한
     private String token; // 인증 토큰
+    private String nickname;
 }
