@@ -50,6 +50,10 @@ public class UserService {
      * @return - true. 중복이 아닐 경우
      */
     public boolean checkEmailDuplicate(String email) {
+        if (email == null || email.isEmpty()) {
+            throw new IllegalArgumentException("이메일이 비어있습니다");
+        }
+
         boolean exists = userRepository.existsByEmail(email);
         log.info("Checking email {} is duplicated : {}", email, exists);
 
@@ -72,16 +76,21 @@ public class UserService {
      */
     private boolean notFinish(String email) {
         // 이메일로 이사람이 회원가입을 끝냈냐? 안끝냈냐 조회
-        User foundUser = userRepository.findByEmail(email).orElseThrow();
+        User foundUser = userRepository.findByEmail(email).orElse(null);
+        if (foundUser == null) {
+            // 유저가 존재하지 않으면 false 리턴
+            return false;
+        }
+
         if (!foundUser.isEmailVerified() || foundUser.getPassword() == null) {
-            // 이메일 인증 누락이거나              비번이 누락된 경우
+            // 이메일 인증 누락이거나 비번이 누락된 경우
             EmailVerification ev = emailVerificationRepository.findByUser(foundUser).orElse(null);
 
             if (ev != null) {
                 emailVerificationRepository.delete(ev);
             }
 
-            generateAndSendCode(email,foundUser);
+            generateAndSendCode(email, foundUser);
             return true;
         }
         return false;
@@ -211,10 +220,12 @@ public class UserService {
         // 로그인 성공, 토큰 생성 섹션.
         // 인증정보(이메일, 닉네임, 프사, 토큰정보)를 클라이언트(프론트)에게 전송
         String token = tokenProvider.createToken(user);
+        log.debug("users nickname : {}, ", user.getNickname());
         return LoginResponseDto.builder()
                 .email(dto.getEmail())
                 .role(user.getRole().toString())
                 .token(token)
+                .nickname(user.getNickname())
                 .build();
 
     }
@@ -235,7 +246,10 @@ public class UserService {
         // DB 저장
         String password = dto.getPassword();
         String encodedPassword = encoder.encode(password);
-        user.confirm(encodedPassword);
+
+
+        user.confirm(encodedPassword, dto.getNickname());
+//        user.setNickname(dto.getNickname());
         userRepository.save(user);
     }
 

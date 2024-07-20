@@ -8,7 +8,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.View;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/auth")
@@ -17,7 +19,6 @@ import org.springframework.web.servlet.View;
 public class UserController {
 
     private final UserService userService;
-    private final View error;
 
 
     // 이메일 중복확인
@@ -50,13 +51,22 @@ public class UserController {
 
     // 로그인 로직
     @PostMapping("/sign-in")
-    public ResponseEntity<?> signIn(@RequestBody LoginRequestDto dto) {
-
+    public ResponseEntity<?> signIn(@RequestBody LoginRequestDto dto, HttpServletResponse response) {
         log.info("login request - {}", dto);
 
         try {
-            LoginResponseDto response = userService.authenticate(dto);
-            return ResponseEntity.ok().body(response);
+            LoginResponseDto loginResponse = userService.authenticate(dto);
+
+            if (dto.isAutoLogin()) {
+                // 자동로그인 요청이면 토큰을 쿠키에 저장
+                Cookie cookie = new Cookie("authToken", loginResponse.getToken());
+                cookie.setHttpOnly(true);
+                cookie.setPath("/");
+                cookie.setMaxAge(60 * 60 * 24 * 30); // 쿠키 유효기간 30일
+                response.addCookie(cookie);
+            }
+
+            return ResponseEntity.ok().body(loginResponse);
 
         } catch (RuntimeException e) {
             // 로그인을 실패한 상황
