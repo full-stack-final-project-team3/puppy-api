@@ -45,7 +45,8 @@ public class User {
     @Setter
     private boolean emailVerified;
 
-    @Column(nullable = false, unique = true, length = 20)
+//    @Column(nullable = false, unique = true, length = 20)
+    @Setter
     private String nickname;
 
     private LocalDate birthday;
@@ -97,8 +98,9 @@ public class User {
         }
     }
 
-    public void confirm(String password) {
+    public void confirm(String password, String nickname) {
         this.password = password;
         this.createdAt = LocalDateTime.now();
+        this.nickname = nickname;
     }
 }

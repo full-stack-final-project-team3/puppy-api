@@ -220,11 +220,12 @@ public class UserService {
         // 로그인 성공, 토큰 생성 섹션.
         // 인증정보(이메일, 닉네임, 프사, 토큰정보)를 클라이언트(프론트)에게 전송
         String token = tokenProvider.createToken(user);
+        log.debug("users nickname : {}, ", user.getNickname());
         return LoginResponseDto.builder()
                 .email(dto.getEmail())
-                .nickname(user.getNickname())
                 .role(user.getRole().toString())
                 .token(token)
+                .nickname(user.getNickname())
                 .build();
 
     }
@@ -245,7 +246,10 @@ public class UserService {
         // DB 저장
         String password = dto.getPassword();
         String encodedPassword = encoder.encode(password);
-        user.confirm(encodedPassword);
+
+
+        user.confirm(encodedPassword, dto.getNickname());
+//        user.setNickname(dto.getNickname());
         userRepository.save(user);
     }
 
