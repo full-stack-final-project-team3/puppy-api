@@ -1,6 +1,7 @@
 package com.yp.puppy.api.service.hotel;
 
 import com.yp.puppy.api.dto.request.hotel.HotelSaveDto;
+import com.yp.puppy.api.dto.response.hotel.HotelDetailDto;
 import com.yp.puppy.api.dto.response.hotel.HotelOneDto;
 import com.yp.puppy.api.entity.hotel.Hotel;
 import com.yp.puppy.api.entity.user.Role;
@@ -35,12 +36,12 @@ public class HotelService {
     public Map<String, Object> getHotels(int pageNo, String sort) {
         Pageable pageable = PageRequest.of(pageNo - 1, 4);
 
-        Page<Hotel> hotelPage = hotelRepository.findEvents(pageable, sort);
+        Page<Hotel> hotelPage = hotelRepository.findHotels(pageable, sort);
 
         List<Hotel> hotelList = hotelPage.getContent();
 
-        List<HotelOneDto> hotelDtoList = hotelList.stream()
-                .map(HotelOneDto::new)
+        List<HotelDetailDto> hotelDtoList = hotelList.stream()
+                .map(HotelDetailDto::new)
                 .collect(Collectors.toList());
 
         // 렌더링 될 개수
@@ -55,7 +56,7 @@ public class HotelService {
 
 
     // 2. 호텔 상세조회 중간처리
-    public HotelOneDto getHotelDetail(Long hotelId) {
+    public HotelOneDto getHotelDetail(String hotelId) {
 
         Hotel hotel = hotelRepository.findById(hotelId).orElseThrow();
 
@@ -65,9 +66,9 @@ public class HotelService {
 
 
     // 3. 호텔 생성 중간처리
-    public void saveHotel(HotelSaveDto dto, String hotelId) {
+    public void saveHotel(HotelSaveDto dto, String userId) {
         // 회원정보조회 (관리자냐?)
-        User hotelUser = userRepository.findById(hotelId).orElseThrow();
+        User hotelUser = userRepository.findById(userId).orElseThrow();
 
         // 권한에 따른 글쓰기 제한
         if (hotelUser.getRole() != Role.ADMIN) throw new IllegalStateException("관리자만 등록을 할 수 있습니다.");
@@ -81,13 +82,13 @@ public class HotelService {
 
 
     // 4. 호텔 삭제 중간처리
-    public void deleteHotel(Long hotelId) {
+    public void deleteHotel(String hotelId) {
         hotelRepository.deleteById(hotelId);
     }
 
 
     // 5. 호텔 수정 중간처리
-    public void updateHotel(@RequestBody HotelSaveDto dto, @PathVariable Long hotelId) {
+    public void updateHotel(@RequestBody HotelSaveDto dto, @PathVariable String hotelId) {
         Hotel foundHotel = hotelRepository.findById(hotelId).orElseThrow();
         foundHotel.changeHotel(dto);
 
