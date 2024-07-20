@@ -9,10 +9,18 @@ import com.yp.puppy.api.repository.hotel.HotelRepository;
 import com.yp.puppy.api.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -24,8 +32,25 @@ public class HotelService {
     private final UserRepository userRepository;
 
     // 1. 호텔 전체조회 중간처리
-    public void findAll() {
-        hotelRepository.findAll();
+    public Map<String, Object> getHotels(int pageNo, String sort) {
+        Pageable pageable = PageRequest.of(pageNo - 1, 4);
+
+        Page<Hotel> hotelPage = hotelRepository.findEvents(pageable, sort);
+
+        List<Hotel> hotelList = hotelPage.getContent();
+
+        List<HotelOneDto> hotelDtoList = hotelList.stream()
+                .map(HotelOneDto::new)
+                .collect(Collectors.toList());
+
+        // 렌더링 될 개수
+        long totalElements = hotelPage.getTotalElements();
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("hotels", hotelDtoList);
+        map.put("totalCount", totalElements);
+
+        return map;
     }
 
 
@@ -69,4 +94,5 @@ public class HotelService {
         hotelRepository.save(foundHotel);
 
     }
+
 }

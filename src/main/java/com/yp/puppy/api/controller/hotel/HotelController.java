@@ -12,6 +12,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/hotel")
@@ -24,10 +26,17 @@ public class HotelController {
 
     // 1. 호텔 전체 조회
     @GetMapping
-    public ResponseEntity<?> list() {
+    public ResponseEntity<?> list(@RequestParam(required = false) String sort, @RequestParam(defaultValue = "1") int pageNo) throws InterruptedException {
 
-        hotelService.findAll();
-        return ResponseEntity.ok().body("성공");
+        if (sort == null) {
+            return ResponseEntity.badRequest().body("sort 파라미터가 없습니다.");
+        }
+
+        Map<String, Object> hotels = hotelService.getHotels(pageNo, sort);
+        if (hotels.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok().body(hotels);
 
     }
 
