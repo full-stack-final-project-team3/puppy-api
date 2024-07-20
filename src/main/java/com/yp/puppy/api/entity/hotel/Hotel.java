@@ -1,5 +1,7 @@
 package com.yp.puppy.api.entity.hotel;
 
+import com.yp.puppy.api.dto.request.hotel.HotelSaveDto;
+import com.yp.puppy.api.entity.user.User;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -48,6 +50,11 @@ public class Hotel {
     @Column(nullable = false)
     private String phoneNumber; // 호텔 전화번호
 
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User hotelUser;
+
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<Room> rooms = new ArrayList<>(); // 객실 목록
@@ -63,4 +70,20 @@ public class Hotel {
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<HotelImage> images = new ArrayList<>(); // 이미지 목록
+
+
+    public void changeHotel(HotelSaveDto dto) {
+
+        this.name = dto.getName();
+        this.description = dto.getDescription();
+        this.businessOwner = dto.getBusinessOwner();
+        this.location = dto.getLocation();
+        this.rulesPolicy = dto.getRulesPolicy();
+        this.cancelPolicy = dto.getCancelPolicy();
+        this.price = dto.getPrice();
+        this.phoneNumber = dto.getPhoneNumber();
+        this.images = dto.getHotelImages();
+
+    }
+
 }
