@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.sql.Array;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -58,10 +59,10 @@ public class Dog {
     @Setter
     private boolean isDeleted; // true - 삭제함, false - 삭제안함
 
-//    @Setter
-//    private List<> allergic;
+    @Setter
+    @OneToMany(mappedBy = "dog", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Allergy> allergies = new ArrayList<>();
 
-    // 알러지 리스트 연구
 
     @CreationTimestamp
     @Column(updatable = false) // 수정 불가
@@ -120,7 +121,4 @@ public class Dog {
         // ...
     }
 
-    public enum Allergic {
-        BEEF, CHICKEN, CORN, DAIRY, FISH, FLAX, LAMB, PORK, TURKEY, WHEAT
-    }
 }

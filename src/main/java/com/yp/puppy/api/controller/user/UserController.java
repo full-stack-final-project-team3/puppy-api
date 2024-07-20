@@ -3,6 +3,7 @@ package com.yp.puppy.api.controller.user;
 import com.yp.puppy.api.dto.request.user.LoginRequestDto;
 import com.yp.puppy.api.dto.request.user.UserSaveDto;
 import com.yp.puppy.api.dto.response.user.LoginResponseDto;
+import com.yp.puppy.api.exception.LoginFailException;
 import com.yp.puppy.api.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -68,7 +69,7 @@ public class UserController {
 
             return ResponseEntity.ok().body(loginResponse);
 
-        } catch (RuntimeException e) {
+        } catch (LoginFailException e) {
             // 로그인을 실패한 상황
             String errorMessage = e.getMessage();
             return ResponseEntity.status(422).body(errorMessage);
