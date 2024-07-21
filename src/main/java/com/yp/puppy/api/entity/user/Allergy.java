@@ -30,7 +30,7 @@ public class Allergy {
     @JoinColumn(name = "dog_id")
     private Dog dog;
 
-    public enum AllergicType {
+    public enum AllergicType  {
         BEEF, CHICKEN, CORN, DAIRY, FISH, FLAX, LAMB, PORK, TURKEY, WHEAT
     }
 }

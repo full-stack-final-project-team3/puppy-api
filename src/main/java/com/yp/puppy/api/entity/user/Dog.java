@@ -28,6 +28,7 @@ public class Dog {
     private String id;
 
     @Column(nullable = false, length = 20)
+    @Setter
     private String dogName; // 강아지 이름
 
     @Column(nullable = false)

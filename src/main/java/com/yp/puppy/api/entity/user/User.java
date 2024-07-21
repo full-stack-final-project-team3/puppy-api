@@ -109,4 +109,14 @@ public class User {
         this.dogList.add(dog);
         dog.setUser(this);
     }
+
+
+    public Dog findDogByName(String dogName) {
+        for (Dog dog : dogList) {
+            if (dog.getDogName().equals(dogName)) {
+                return dog;
+            }
+        }
+        return null;
+    }
 }
