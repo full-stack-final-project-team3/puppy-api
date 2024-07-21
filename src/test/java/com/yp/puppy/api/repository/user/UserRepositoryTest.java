@@ -61,6 +61,10 @@ class UserRepositoryTest {
                 .build();
 
         List<Allergy> allergyList = new ArrayList<>();
+        Allergy chicken = builder()
+                .type(AllergicType.CHICKEN)
+                .build();
+        allergyList.add(chicken);
 
 
         Dog dog1 = Dog.builder()
@@ -68,7 +72,6 @@ class UserRepositoryTest {
                 .birthday(LocalDate.now().minusYears(3))
                 .dogBreed(Dog.Breed.POODLE)
                 .weight(8.3)
-                .allergies(allergyList)
                 .isNeutered(false)
                 .dogSex(Dog.Sex.FEMALE)
                 .build();
@@ -80,6 +83,7 @@ class UserRepositoryTest {
                 .dogName("춘식이")
                 .birthday(LocalDate.now().minusYears(7))
                 .dogBreed(Dog.Breed.POMERANIAN)
+                .allergies(allergyList)
                 .weight(5.3)
                 .isNeutered(false)
                 .dogSex(Dog.Sex.MALE)
@@ -179,13 +183,25 @@ class UserRepositoryTest {
 
 
     @Test
-    @DisplayName("내 강아지의 알러지 변경")
+    @DisplayName("내 강아지의 알러지 변경 chicken -> flax ")
     void 알러지변경() {
         //given
+        User foundUser = userRepository.findByEmail("hgb9266@naver.com").orElseThrow();
         String dogName = "춘식이";
-        AllergicType newAllergy = AllergicType.WHEAT;
+        Allergy newAllergy = builder()
+                .dog(foundUser.findDogByName(dogName))
+                .type(AllergicType.FLAX)
+                .build();
         //when
+        Dog dogByName = foundUser.findDogByName(dogName);
 
+        List<Allergy> allergies = dogByName.getAllergies();
+        allergies.remove(AllergicType.CHICKEN);
+        allergies.add(newAllergy);
+        dogByName.setAllergies(allergies);
+        dogRepository.save(dogByName);
+        userRepository.save(foundUser);
+        System.out.println("\n\n\n\nfoundUser = " + foundUser);
         //then
     }
 
