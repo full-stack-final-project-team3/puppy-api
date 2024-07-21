@@ -43,8 +43,10 @@ public class HotelSaveDto {
     @JsonProperty("hotel-images")
     private List<HotelImage> hotelImages; // 호텔 이미지 목록
 
+
+
     public Hotel toEntity() {
-        return Hotel.builder()
+        Hotel hotel = Hotel.builder()
                 .name(this.name)
                 .description(this.description)
                 .businessOwner(this.businessOwner)
@@ -53,7 +55,15 @@ public class HotelSaveDto {
                 .cancelPolicy(this.cancelPolicy)
                 .price(this.price)
                 .phoneNumber(this.phoneNumber)
-                .images(this.hotelImages)
                 .build();
+
+        // 각 이미지에 현재 호텔 객체를 설정
+        // 이미지를 저장할때 어떤 호텔의 이미지인지 알려줘야 하기때문 즉 데이터베이스에 넣어주려고
+        for (HotelImage image : this.hotelImages) {
+            image.setHotel(hotel);
+        }
+        hotel.setImages(this.hotelImages);
+
+        return hotel;
     }
 }
