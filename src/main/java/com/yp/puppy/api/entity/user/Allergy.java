@@ -6,13 +6,13 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 
 @Getter
-@ToString
-@EqualsAndHashCode
+@ToString(exclude = "dog")
+@EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name="allergies")
+@Table(name = "allergies")
 public class Allergy {
 
     @Id
@@ -25,6 +25,7 @@ public class Allergy {
     @Enumerated(EnumType.STRING)
     private AllergicType type;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dog_id")
     private Dog dog;

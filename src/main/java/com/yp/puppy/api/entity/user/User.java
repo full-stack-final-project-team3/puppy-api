@@ -73,6 +73,7 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
+    @Setter
     private List<Dog> dogList = new ArrayList<>(); // 몇마리의 강아지를 키우고 있나? ???
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
@@ -102,5 +103,10 @@ public class User {
         this.password = password;
         this.createdAt = LocalDateTime.now();
         this.nickname = nickname;
+    }
+
+    public void addDog(Dog dog) {
+        this.dogList.add(dog);
+        dog.setUser(this);
     }
 }

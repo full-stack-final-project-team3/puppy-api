@@ -1,18 +1,15 @@
 package com.yp.puppy.api.entity.user;
 
-
 import com.yp.puppy.api.entity.hotel.Room;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.sql.Array;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Getter
 @ToString(exclude = "user")
@@ -20,7 +17,6 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
 @Entity
 @Table(name = "dog")
 public class Dog {
@@ -30,7 +26,6 @@ public class Dog {
     @GeneratedValue(generator = "uuid-generator")
     @Column(name = "dog_id")
     private String id;
-
 
     @Column(nullable = false, length = 20)
     private String dogName; // 강아지 이름
@@ -61,17 +56,15 @@ public class Dog {
 
     @Setter
     @OneToMany(mappedBy = "dog", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Allergy> allergies = new ArrayList<>();
-
+    @Builder.Default
+    private List<Allergy> allergies = new ArrayList<>(); // 리스트 초기화
 
     @CreationTimestamp
     @Column(updatable = false) // 수정 불가
     private LocalDateTime createdAt; // 강아지 등록 일자
 
     @Transient
-    // DB에 넣지않는 데이터
     private int age;
-
 
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
@@ -82,25 +75,22 @@ public class Dog {
     @JoinColumn(name = "room_id")
     private Room room;
 
-
-
     @PrePersist
     private void prePersist() {
         if (this.age == 0) {
-            this.age =  Math.abs((int) (this.getBirthday().getYear() - 2024));
+            this.age = Math.abs((int) (this.getBirthday().getYear() - 2024));
         }
     }
 
-
-    enum DogSize {
+    public enum DogSize {
         SMALL, MEDIUM, LARGE
     }
 
-    enum Sex {
+    public enum Sex {
         MALE, FEMALE
     }
 
-    enum Reason {
+    public enum Reason {
         ADOPTION, // 입양
     }
 
@@ -112,13 +102,17 @@ public class Dog {
         BEAGLE,
         YORKSHIRE_TERRIER,
         DACHSHUND,
-        PEMBROKE_WELSH_CORGI,
+        WELSH_CORGI,
         SIBERIAN_HUSKY,
         DOBERMAN,
         SHIH_TZU,
         BOSTON_TERRIER,
         POMERANIAN,
         // ...
-    }
+        }
 
+    public void addAllergy(Allergy allergy) {
+        this.allergies.add(allergy);
+        allergy.setDog(this);
+    }
 }
