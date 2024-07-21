@@ -2,10 +2,10 @@ package com.yp.puppy.api.dto.response.hotel;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yp.puppy.api.entity.hotel.Hotel;
-import com.yp.puppy.api.entity.hotel.HotelImage;
 import lombok.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @ToString
@@ -43,7 +43,7 @@ public class HotelOneDto {
     private String phoneNumber; // 호텔 전화번호
 
     @JsonProperty("hotel-images")
-    private List<HotelImage> hotelImages; // 호텔 이미지 목록
+    private List<ImageDto> hotelImages; // 호텔 이미지 목록
 
     public HotelOneDto(Hotel hotel) {
         this.hotelId = hotel.getHotelId();
@@ -55,6 +55,8 @@ public class HotelOneDto {
         this.cancelPolicy = hotel.getCancelPolicy();
         this.price = hotel.getPrice();
         this.phoneNumber = hotel.getPhoneNumber();
-        this.hotelImages = hotel.getImages();
+        this.hotelImages = hotel.getImages().stream()
+                .map(ImageDto::new)
+                .collect(Collectors.toList());
     }
 }

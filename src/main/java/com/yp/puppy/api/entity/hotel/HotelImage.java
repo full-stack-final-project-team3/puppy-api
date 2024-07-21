@@ -28,10 +28,12 @@ public class HotelImage {
     @Column(nullable = false)
     private String hotelImgUri; // 이미지 URI
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hotel_id")
     private Hotel hotel; // 호텔
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
     private Room room; // 객실
