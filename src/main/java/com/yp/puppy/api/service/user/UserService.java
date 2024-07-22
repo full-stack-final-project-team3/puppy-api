@@ -7,6 +7,7 @@ import com.yp.puppy.api.dto.request.user.UserSaveDto;
 import com.yp.puppy.api.dto.response.user.LoginResponseDto;
 import com.yp.puppy.api.entity.user.EmailVerification;
 import com.yp.puppy.api.entity.user.User;
+import com.yp.puppy.api.exception.LoginFailException;
 import com.yp.puppy.api.repository.user.EmailVerificationRepository;
 import com.yp.puppy.api.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -201,12 +202,12 @@ public class UserService {
     public LoginResponseDto authenticate(final LoginRequestDto dto) {
         User user = userRepository.findByEmail(dto.getEmail())
                 .orElseThrow(
-                        () -> new RuntimeException("가입된 회원이 아닙니다.")
+                        () -> new LoginFailException("가입된 회원이 아닙니다.")
                 );
 
         // 이메일 인증이 안되어있거나 패스워드를 설정하지 않은 회원
         if (!user.isEmailVerified() || user.getPassword() == null) {
-            throw new RuntimeException("회원가입이 중단된 회원입니다");
+            throw new LoginFailException("회원가입이 중단된 회원입니다");
         }
 
         // 패스워드 검증
@@ -214,7 +215,7 @@ public class UserService {
         String encodedPassword = user.getPassword(); // db에 저장된 값
 
         if (!encoder.matches(inputPassword, encodedPassword)) { // 일치하지 않으면~
-            throw new RuntimeException("비밀번호가 틀렸습니다.");
+            throw new LoginFailException("비밀번호가 틀렸습니다.");
         }
 
         // 로그인 성공, 토큰 생성 섹션.
