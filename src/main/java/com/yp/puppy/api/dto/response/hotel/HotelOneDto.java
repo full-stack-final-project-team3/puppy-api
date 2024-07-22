@@ -1,18 +1,23 @@
 package com.yp.puppy.api.dto.response.hotel;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yp.puppy.api.entity.hotel.Hotel;
+import com.yp.puppy.api.entity.hotel.Room;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
-@ToString
+@ToString(exclude = "rooms")
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+
 public class HotelOneDto {
 
     @JsonProperty("hotel-id")
@@ -45,6 +50,9 @@ public class HotelOneDto {
     @JsonProperty("hotel-images")
     private List<ImageDto> hotelImages; // 호텔 이미지 목록
 
+    @JsonProperty("room")
+    private List<RoomDto> rooms;
+
     public HotelOneDto(Hotel hotel) {
         this.hotelId = hotel.getHotelId();
         this.name = hotel.getName();
@@ -57,6 +65,9 @@ public class HotelOneDto {
         this.phoneNumber = hotel.getPhoneNumber();
         this.hotelImages = hotel.getImages().stream()
                 .map(ImageDto::new)
+                .collect(Collectors.toList());
+        this.rooms = hotel.getRooms().stream()
+                .map(RoomDto::new)
                 .collect(Collectors.toList());
     }
 }
