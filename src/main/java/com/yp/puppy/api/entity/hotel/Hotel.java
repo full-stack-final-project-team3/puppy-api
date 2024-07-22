@@ -1,5 +1,7 @@
 package com.yp.puppy.api.entity.hotel;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.yp.puppy.api.dto.request.hotel.HotelSaveDto;
 import com.yp.puppy.api.entity.user.User;
 import lombok.*;
@@ -67,6 +69,7 @@ public class Hotel {
 
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
+    @JsonManagedReference
     private List<Reservation> reservations = new ArrayList<>(); // 예약 목록
 
     @Setter
