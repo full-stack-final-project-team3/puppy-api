@@ -1,5 +1,7 @@
 package com.yp.puppy.api.entity.hotel;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.yp.puppy.api.dto.request.hotel.RoomSaveDto;
 import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.entity.user.User;
@@ -57,6 +59,7 @@ public class Room {
     private List<Dog> dogs = new ArrayList<>(); // 애완견 목록
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Reservation> reservations =  new ArrayList<>(); // 객실의 예약 목록
 
     @Setter

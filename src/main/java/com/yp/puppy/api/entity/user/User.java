@@ -1,5 +1,7 @@
 package com.yp.puppy.api.entity.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.yp.puppy.api.entity.hotel.Favorite;
 import com.yp.puppy.api.entity.hotel.Reservation;
 import com.yp.puppy.api.entity.shop.Order;
@@ -77,6 +79,7 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
+    @JsonManagedReference
     private List<Reservation> reservation = new ArrayList<>(); // 호텔 - 유저 간의 중간테이블
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

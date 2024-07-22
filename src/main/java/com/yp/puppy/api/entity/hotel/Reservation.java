@@ -1,5 +1,6 @@
 package com.yp.puppy.api.entity.hotel;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.yp.puppy.api.entity.user.User;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -38,13 +39,16 @@ public class Reservation {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
     private User user; // 예약한 사용자
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id", nullable = false)
+    @JsonBackReference
     private Room room; // 예약된 객실
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hotel_id", nullable = false)
+    @JsonBackReference
     private Hotel hotel; // 예약된 호텔
 }
