@@ -1,5 +1,9 @@
 package com.yp.puppy.api.entity.user;
 
+import com.yp.puppy.api.entity.community.Board;
+import com.yp.puppy.api.entity.community.BoardReply;
+import com.yp.puppy.api.entity.community.BoardSubReply;
+import com.yp.puppy.api.entity.community.Like;
 import com.yp.puppy.api.entity.hotel.Favorite;
 import com.yp.puppy.api.entity.hotel.Reservation;
 import com.yp.puppy.api.entity.shop.Order;
@@ -45,7 +49,7 @@ public class User {
     @Setter
     private boolean emailVerified;
 
-//    @Column(nullable = false, unique = true, length = 20)
+    //    @Column(nullable = false, unique = true, length = 20)
     @Setter
     private String nickname;
 
@@ -73,8 +77,7 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
-    @Setter
-    private List<Dog> dogList = new ArrayList<>(); // 몇마리의 강아지를 키우고 있나? ???
+    private List<Dog> dogList = new ArrayList<>(); // 몇마리의 강아지를 키우고 있나?
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
@@ -85,6 +88,18 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> orders;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Board> board;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<BoardReply> boardReplies;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<BoardSubReply> boardSubReplies;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Like> likes;
 
     @PrePersist // 컬럼의 default value 설정
     public void prePersist() {
@@ -103,20 +118,5 @@ public class User {
         this.password = password;
         this.createdAt = LocalDateTime.now();
         this.nickname = nickname;
-    }
-
-    public void addDog(Dog dog) {
-        this.dogList.add(dog);
-        dog.setUser(this);
-    }
-
-
-    public Dog findDogByName(String dogName) {
-        for (Dog dog : dogList) {
-            if (dog.getDogName().equals(dogName)) {
-                return dog;
-            }
-        }
-        return null;
     }
 }
