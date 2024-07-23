@@ -11,6 +11,5 @@ public class ReservationSaveDto {
     private String hotelId;
     private LocalDateTime reservationAt;
     private LocalDateTime reservationEndAt;
-    private long price;
     private CancellationStatus cancelled;
 }

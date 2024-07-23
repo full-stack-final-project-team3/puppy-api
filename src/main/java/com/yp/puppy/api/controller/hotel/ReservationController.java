@@ -20,16 +20,17 @@ public class ReservationController {
     // 예약 생성
     // 호텔 id 룸 id 시작날짜 종료날짜 선택
     @PostMapping
-    public ResponseEntity<Reservation> createReservation(@RequestBody ReservationSaveDto dto) {
-
+    public ResponseEntity<?> createReservation(@RequestBody ReservationSaveDto dto) {
         try {
             Reservation reservation = reservationService.createReservation(dto);
             return ResponseEntity.ok().body(reservation);
+        } catch (IllegalArgumentException e) {
+            log.warn("예약 생성 실패: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
             return ResponseEntity.status(500).body(null);
         }
-
     }
 
 
@@ -50,7 +51,7 @@ public class ReservationController {
 
     // 예약 취소
     @DeleteMapping("/{reservationId}")
-    public ResponseEntity deleteReservation(@PathVariable String reservationId) {
+    public ResponseEntity<?> deleteReservation(@PathVariable String reservationId) {
         try {
             reservationService.deleteReservation(reservationId);
             return ResponseEntity.ok().body("삭제 성공");
@@ -68,8 +69,8 @@ public class ReservationController {
             reservationService.modify(reservationId, dto);
             return ResponseEntity.ok().body("수정 성공");
         } catch (Exception e) {
-            log.warn("수정에 실패했습니다.: {}", e.getMessage());
-            return ResponseEntity.status(404).body("수정할 예약을 찾지 못했습니다..");
+            log.warn(e.getMessage());
+            return ResponseEntity.status(404).body(e.getMessage());
         }
     }
 
