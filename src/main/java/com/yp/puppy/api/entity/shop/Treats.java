@@ -1,5 +1,6 @@
 package com.yp.puppy.api.entity.shop;
 
+import com.yp.puppy.api.entity.user.Allergy;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -26,36 +27,43 @@ public class Treats {
     @Column(name = "treats_id")
     private String id;
 
+    @Setter
     @Column(nullable = false)
-    private String treatsTitle; // 패키지 이름
+    private String treatsTitle; // 간식 이름
 
+    @Setter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TreatsType treatsType;
 
-    @Enumerated(EnumType.STRING)
-    private TreatsAge treatsAge;
+    @Setter
+    @Column(nullable = false)
+    private int treatsWeight;
 
+    @Setter
     private int treatsStock;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bundle_id")
     private Bundle bundle;
 
+    @Setter
     @OneToMany(mappedBy = "treats", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TreatsPic> treatsPic = new ArrayList<>();
 
+    @Setter
     @OneToMany(mappedBy = "treats", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TreatsDetailPic> treatsDetailPics = new ArrayList<>();
 
     @OneToMany(mappedBy = "treats", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews = new ArrayList<>();
 
+    @Setter
+    @OneToMany(mappedBy = "treats", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Allergy> allergies = new ArrayList<>();
+
     public enum TreatsType {
         DRY, WET
     }
 
-    public enum TreatsAge {
-        BABY, ADULT
-    }
 }
