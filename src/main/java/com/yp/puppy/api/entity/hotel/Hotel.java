@@ -69,7 +69,7 @@ public class Hotel {
 
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
-    @JsonManagedReference
+    @JsonManagedReference("hotel-reservation")
     private List<Reservation> reservations = new ArrayList<>(); // 예약 목록
 
     @Setter

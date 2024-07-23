@@ -59,7 +59,7 @@ public class Room {
     private List<Dog> dogs = new ArrayList<>(); // 애완견 목록
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference
+    @JsonManagedReference("room-reservation")
     private List<Reservation> reservations =  new ArrayList<>(); // 객실의 예약 목록
 
     @Setter

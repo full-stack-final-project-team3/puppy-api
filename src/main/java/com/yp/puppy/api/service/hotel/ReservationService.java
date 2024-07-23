@@ -1,6 +1,7 @@
 package com.yp.puppy.api.service.hotel;
 
 import com.yp.puppy.api.dto.request.hotel.ReservationSaveDto;
+import com.yp.puppy.api.dto.response.hotel.ReservationOneDto;
 import com.yp.puppy.api.entity.hotel.Hotel;
 import com.yp.puppy.api.entity.hotel.Reservation;
 import com.yp.puppy.api.entity.hotel.Room;
@@ -45,10 +46,24 @@ public class ReservationService {
 
     }
 
-
     // 예약 조회 중간처리
+    public ReservationOneDto getDetailReservation(String reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow();
+        return new ReservationOneDto(reservation);
+    }
 
 
     // 예약 취소 중간처리
+    public void deleteReservation(String reservationId) {
+        reservationRepository.deleteById(reservationId);
+    }
 
+
+    // 예약 수정 중간처리
+    public void modify(String reservationId, ReservationSaveDto dto) {
+        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow();
+        reservation.changeReservation(dto);
+
+        reservationRepository.save(reservation);
+    }
 }
