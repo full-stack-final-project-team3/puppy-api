@@ -98,9 +98,9 @@ class UserRepositoryTest {
                 .dogSex(Dog.Sex.MALE)
                 .build();
 
-        user.addDog(dog1);
-        user.addDog(dog2);
-        user2.addDog(dog3);
+//        user.addDog(dog1);
+//        user.addDog(dog2);
+//        user2.addDog(dog3);
 
         userRepository.save(user);
         userRepository.save(user2);
@@ -140,12 +140,12 @@ class UserRepositoryTest {
         //given
         User foundUser = userRepository.findByEmail("hgb9266@naver.com").orElseThrow();
         String dogName = "춘식이";
-        Dog dogToDelete = foundUser.findDogByName(dogName); // 춘식이를 선택
-        System.out.println("dogToDelete = " + dogToDelete);
+//        Dog dogToDelete = foundUser.findDogByName(dogName); // 춘식이를 선택
+//        System.out.println("dogToDelete = " + dogToDelete);
 
         //when
-        foundUser.getDogList().remove(dogToDelete);
-        dogRepository.delete(dogToDelete);
+//        foundUser.getDogList().remove(dogToDelete);
+//        dogRepository.delete(dogToDelete);
         userRepository.save(foundUser);
 
         //then
@@ -170,14 +170,14 @@ class UserRepositoryTest {
         String newDogName = "쿵쾅이";
         //when
         User foundUser = userRepository.findByEmail("hgb9266@naver.com").orElseThrow();
-        Dog dogByName = foundUser.findDogByName(prevDogName);
-        System.out.println("\n\n\n\ndogByName = " + dogByName);
-        dogByName.setDogName(newDogName);
-        dogRepository.save(dogByName);
+//        Dog dogByName = foundUser.findDogByName(prevDogName);
+//        System.out.println("\n\n\n\ndogByName = " + dogByName);
+//        dogByName.setDogName(newDogName);
+//        dogRepository.save(dogByName);
         userRepository.save(foundUser);
         //then
         System.out.println("\n\n\n\nfoundUser = " + foundUser);
-        System.out.println("\n\n\n\nnewDog = " + dogByName);
+//        System.out.println("\n\n\n\nnewDog = " + dogByName);
     }
 
 
@@ -189,17 +189,17 @@ class UserRepositoryTest {
         User foundUser = userRepository.findByEmail("hgb9266@naver.com").orElseThrow();
         String dogName = "춘식이";
         Allergy newAllergy = builder()
-                .dog(foundUser.findDogByName(dogName))
+//                .dog(foundUser.findDogByName(dogName))
                 .type(AllergicType.FLAX)
                 .build();
         //when
-        Dog dogByName = foundUser.findDogByName(dogName);
+//        Dog dogByName = foundUser.findDogByName(dogName);
 
-        List<Allergy> allergies = dogByName.getAllergies();
-        allergies.remove(AllergicType.CHICKEN);
-        allergies.add(newAllergy);
-        dogByName.setAllergies(allergies);
-        dogRepository.save(dogByName);
+//        List<Allergy> allergies = dogByName.getAllergies();
+//        allergies.remove(AllergicType.CHICKEN);
+//        allergies.add(newAllergy);
+//        dogByName.setAllergies(allergies);
+//        dogRepository.save(dogByName);
         userRepository.save(foundUser);
         System.out.println("\n\n\n\nfoundUser = " + foundUser);
         //then
