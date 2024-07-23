@@ -18,7 +18,7 @@ import static com.yp.puppy.api.auth.TokenProvider.*;
 @RequestMapping("/shop")
 @Slf4j
 @RequiredArgsConstructor
-public class ShopController {
+public class TreatsController {
 
     private final TreatsService treatsService;
 
@@ -30,9 +30,9 @@ public class ShopController {
      * @return 간식 목록
      */
     @GetMapping("/treats")
-    public ResponseEntity<?> list(@RequestParam(required = false, defaultValue = "name") String sort,
-                                   TokenUserInfo userInfo,
-                                  @RequestParam(defaultValue = "1") int pageNo) {
+    public ResponseEntity<?> getTreatsList(@RequestParam(required = false, defaultValue = "name") String sort,
+                                           TokenUserInfo userInfo,
+                                           @RequestParam(defaultValue = "1") int pageNo) {
 
         Map<String, Object> treatsList = treatsService.getTreatsList(userInfo, pageNo, sort);
         if (treatsList.isEmpty()) {
@@ -42,10 +42,11 @@ public class ShopController {
 
     }
 
-
     // 2. 제품 상세 조회
+
     /**
      * 제품 상세 정보를 조회합니다.
+     *
      * @param treatsId URL 경로에서 제공된 제품의 식별자
      * @return 제품의 상세 정보를 반환합니다. 제품 ID가 유효하지 않으면, 400 Bad Request 를 반환.
      */
@@ -62,23 +63,63 @@ public class ShopController {
     }
 
     // 3 제품 생성
+
     /**
      * @param userInfo 사용자 정보
-     * @param dto 제품 저장 데이터 전송 객체
+     * @param dto      제품 저장 데이터 전송 객체
      * @return 생성 성공 메시지 또는 오류 메시지
      * @PreAuthorize 관리자만 작성가능
      */
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
-    public ResponseEntity<?> register(@AuthenticationPrincipal TokenUserInfo userInfo,
-                                      @RequestBody TreatsSaveDto dto) {
+    public ResponseEntity<?> registerTreats(@AuthenticationPrincipal TokenUserInfo userInfo,
+                                            @RequestBody TreatsSaveDto dto) {
         try {
             treatsService.saveTreats(dto, userInfo.getUserId());
             return ResponseEntity.ok().body("제품 생성 성공");
         } catch (IllegalStateException e) {
             log.warn(e.getMessage());
-            // 401 권한이 안된다 임마
             return ResponseEntity.status(401).body(e.getMessage());
+        }
+    }
+
+    // 4. 제품 삭제
+
+    /**
+     * @param treatsId 삭제할 제품의 아이디
+     * @return 삭제 성공 메시지 또는 오류 메시지
+     * @PreAuthorize 관리자만 삭제가능
+     */
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @DeleteMapping("/{treatsId}")
+    public ResponseEntity<?> deleteTreats(@PathVariable String treatsId) {
+        try {
+            treatsService.deleteTreat(treatsId);
+            return ResponseEntity.ok().body("삭제성공");
+        } catch (Exception e) {
+            log.warn("제품 삭제에 실패했습니다.: {}", e.getMessage());
+            return ResponseEntity.status(404).body("제품을 찾지 못햇습니다..");
+        }
+    }
+
+    // 5. 제품 수정
+
+    /**
+     * @param dto      제품 수정 정보를 담은 데이터 전송 객체
+     * @param treatsId 수정할 제품의 아이디
+     * @return 수정 성공 메시지 또는 오류 메시지
+     * @PreAuthorize 관리자만 수정 가능
+     */
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PatchMapping("/{treatsId}")
+    public ResponseEntity<?> modifyTreats(@RequestBody TreatsSaveDto dto,
+                                          @PathVariable String treatsId) {
+        try {
+            treatsService.updateTreat(dto, treatsId);
+            return ResponseEntity.ok().body("수정 성공");
+        } catch (Exception e) {
+            log.warn("수정에 실패했습니다.: {}", e.getMessage());
+            return ResponseEntity.status(404).body("수정할 호텔을 찾지 못했습니다..");
         }
     }
 }

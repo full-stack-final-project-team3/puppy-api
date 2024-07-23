@@ -24,6 +24,7 @@ public class TreatsPic {
     @Column(name = "treats_pic_id")
     private String id;
 
+    @Column(nullable = false)
     private String treatsPic;
 
     @Setter

@@ -1,12 +1,8 @@
 package com.yp.puppy.api.service.shop;
 
-import com.yp.puppy.api.auth.TokenProvider;
-import com.yp.puppy.api.dto.request.hotel.HotelSaveDto;
 import com.yp.puppy.api.dto.request.shop.TreatsSaveDto;
-import com.yp.puppy.api.dto.response.hotel.HotelOneDto;
 import com.yp.puppy.api.dto.response.shop.TreatsDetailDto;
 import com.yp.puppy.api.dto.response.shop.TreatsListDto;
-import com.yp.puppy.api.entity.hotel.Hotel;
 import com.yp.puppy.api.entity.shop.Treats;
 import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.entity.user.Role;
@@ -24,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.yp.puppy.api.auth.TokenProvider.*;
@@ -71,7 +66,7 @@ public class TreatsService {
         return new TreatsDetailDto(treats);
     }
 
-    // 3. 제품 생성 중간처리
+    // 3. 상품 생성 중간처리
     public void saveTreats(TreatsSaveDto dto, String userId) {
         // 회원정보조회 (관리자냐?)
         User admin = userRepository.findById(userId).orElseThrow();
@@ -84,6 +79,20 @@ public class TreatsService {
         Treats saveTreats = treatsRepository.save(newTreats);
 
         log.info("hotel: {}", saveTreats);
+    }
+
+    // 4. 상품 삭제 중간처리
+    public void deleteTreat(String treatsId) {
+        treatsRepository.deleteById(treatsId);
+    }
+
+    // 5. 상품 정보 수정 중간처리
+    public void updateTreat(TreatsSaveDto dto, String treatsId) {
+        Treats foundTreats = treatsRepository.findById(treatsId).orElseThrow();
+
+        foundTreats.changeTreats(dto);
+
+        treatsRepository.save(foundTreats);
     }
 
     // 유저의 강아지 정보 찾기
@@ -100,6 +109,5 @@ public class TreatsService {
         return userDogInfo;
 
     }
-
 
 }

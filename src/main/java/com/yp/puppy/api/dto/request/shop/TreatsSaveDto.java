@@ -44,12 +44,10 @@ public class TreatsSaveDto {
                 .allergies(this.allergies)
                 .build();
 
-        // 각 이미지에 현재 호텔 객체를 설정
-        // 이미지를 저장할때 어떤 호텔의 이미지인지 알려줘야 하기때문 즉 데이터베이스에 넣어주려고
         for (TreatsPic pic : this.treatsPics) {
             pic.setTreats(treats);
         }
-        treats.setTreatsPic(this.treatsPics);
+        treats.setTreatsPics(this.treatsPics);
 
         for (TreatsDetailPic detailPic : this.treatsDetailPics) {
             detailPic.setTreats(treats);
