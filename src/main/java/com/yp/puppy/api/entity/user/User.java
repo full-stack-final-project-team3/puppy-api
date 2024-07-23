@@ -10,6 +10,7 @@ import com.yp.puppy.api.entity.hotel.Favorite;
 import com.yp.puppy.api.entity.hotel.Reservation;
 import com.yp.puppy.api.entity.shop.Order;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -25,6 +26,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Slf4j
 
 @Entity
 @Table(name = "users")
@@ -122,4 +124,22 @@ public class User {
         this.createdAt = LocalDateTime.now();
         this.nickname = nickname;
     }
+
+
+    // 객실 예약할때 포인트 입 출금 메서드
+    public void withdrawalPoints (int amount) {
+        log.info("현재 포인트: {}, 차감할 포인트: {}", this.point, amount);
+        if (this.point < amount) {
+            throw new IllegalArgumentException("돈이 모자라~~");
+        }
+        this.point -= amount;
+        log.info("포인트 차감 후 현재 포인트: {}", this.point);
+    }
+
+    public void addPoints(int amount) {
+        log.info("포인트 추가 전: {}, 추가할 포인트: {}", this.point, amount);
+        this.point += amount;
+        log.info("포인트 추가 후: {}", this.point);
+    }
+
 }

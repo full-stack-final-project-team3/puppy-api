@@ -38,6 +38,7 @@ public class Reservation {
     @Column(nullable = false)
     private LocalDateTime reservationModifyAt;  // 예약 수정 시간
 
+    @Setter
     @Column(nullable = false)
     private long price; // 예약 금액
 
@@ -74,7 +75,6 @@ public class Reservation {
     public void changeReservation(ReservationSaveDto dto) {
         this.reservationAt = dto.getReservationAt();
         this.reservationEndAt = dto.getReservationEndAt();
-        this.price = dto.getPrice();
         this.cancelled = dto.getCancelled();
     }
 }
