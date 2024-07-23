@@ -64,7 +64,7 @@ public class ShopController {
     // 3 제품 생성
     /**
      * @param userInfo 사용자 정보
-     * @param dto 호텔 저장 데이터 전송 객체
+     * @param dto 제품 저장 데이터 전송 객체
      * @return 생성 성공 메시지 또는 오류 메시지
      * @PreAuthorize 관리자만 작성가능
      */
@@ -73,8 +73,8 @@ public class ShopController {
     public ResponseEntity<?> register(@AuthenticationPrincipal TokenUserInfo userInfo,
                                       @RequestBody TreatsSaveDto dto) {
         try {
-            hotelService.saveHotel(dto, userInfo.getUserId());
-            return ResponseEntity.ok().body("호텔 생성 성공");
+            treatsService.saveTreats(dto, userInfo.getUserId());
+            return ResponseEntity.ok().body("제품 생성 성공");
         } catch (IllegalStateException e) {
             log.warn(e.getMessage());
             // 401 권한이 안된다 임마
