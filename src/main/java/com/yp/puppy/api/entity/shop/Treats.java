@@ -9,7 +9,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@ToString
+@ToString(exclude = {"treatsPic", "treatsDetailPics", "reviews"})
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor

@@ -8,7 +8,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Getter
-@ToString
+@ToString(exclude = {"user", "bundles"})
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
