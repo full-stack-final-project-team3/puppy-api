@@ -21,8 +21,10 @@ import java.util.List;
 @Table(name = "Board")
 public class Board {
     @Id
-    @GenericGenerator(name = "uuid2", strategy = "uuid2") // uuid2 전략 적용
-    @GeneratedValue(generator = "uuid2")
+//    @GeneratedValue(generator = "uuid2")
+//    @GenericGenerator(name = "uuid2", strategy = "uuid2") // uuid2 전략 적용
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "board_id")
     private String id;
 
@@ -37,7 +39,7 @@ public class Board {
 //    @Column(name = "view_count")
     private int viewCount;  // 조회수
 //    @Column(name = "is_clean")
-    private boolean isClean;  // 클린 여부 : (1) / 신고글 : (0)/검토중: (2)
+    private int isClean;  // 클린 여부 : (1) / 신고글 : (0)/검토중: (2)
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="user_id")

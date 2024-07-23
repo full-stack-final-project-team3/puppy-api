@@ -20,8 +20,10 @@ import java.util.UUID;
 @Table(name = "Likes")
 public class Like {
     @Id
-    @GenericGenerator(name = "uuid_generator", strategy = "uuid2") // uuid2 전략 적용!
-    @GeneratedValue(generator = "uuid_generator") // uuid_generator 사용
+//    @GenericGenerator(name = "uuid_generator", strategy = "uuid2") // uuid2 전략 적용!
+//    @GeneratedValue(generator = "uuid_generator") // uuid_generator 사용
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "like_id")
     private String id;  // Like ID (PK)
 

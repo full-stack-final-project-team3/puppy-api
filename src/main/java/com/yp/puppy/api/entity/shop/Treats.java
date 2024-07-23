@@ -19,8 +19,10 @@ import java.util.List;
 public class Treats {
 
     @Id
-    @GenericGenerator(strategy = "uuid2", name = "uuid-generator")
-    @GeneratedValue(generator = "uuid-generator")
+//    @GenericGenerator(strategy = "uuid2", name = "uuid-generator")
+//    @GeneratedValue(generator = "uuid-generator")
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "treats_id")
     private String id;
 

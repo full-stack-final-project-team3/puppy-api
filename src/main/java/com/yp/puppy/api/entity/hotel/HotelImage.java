@@ -16,8 +16,10 @@ import javax.persistence.*;
 public class HotelImage {
 
     @Id
-    @GenericGenerator(strategy = "uuid2", name = "uuid-generator")
-    @GeneratedValue(generator = "uuid-generator")
+//    @GenericGenerator(strategy = "uuid2", name = "uuid-generator")
+//    @GeneratedValue(generator = "uuid-generator")
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "image_id")
     private String imageId; // 이미지 아이디
 

@@ -22,8 +22,10 @@ import java.util.List;
 public class BoardReply {
 
     @Id
-    @GenericGenerator(strategy = "uuid2", name = "uuid_generator") //uuid2 전략 적용!
-    @GeneratedValue(generator = "uuid-generator")
+//    @GenericGenerator(strategy = "uuid2", name = "uuid_generator") //uuid2 전략 적용!
+//    @GeneratedValue(generator = "uuid-generator")
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "reply_id")
     private String id;  // 댓글 번호. PK
 
@@ -34,7 +36,7 @@ public class BoardReply {
     //    @Column(name = "reply_updated_at")
     private LocalDateTime replyUpdatedAt;  // 댓글 수정일
     //    @Column(name = "is_clean")
-    private boolean isClean;  // 클린 여부 : (1) / 신고글 : (0)/검토중: (2)
+    private int isClean;  // 클린 여부 : (1) / 신고글 : (0)/검토중: (2)
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
