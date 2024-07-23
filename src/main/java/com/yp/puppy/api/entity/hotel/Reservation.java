@@ -21,8 +21,10 @@ import java.time.LocalDateTime;
 public class Reservation {
 
     @Id
-    @GenericGenerator(strategy = "uuid2", name = "uuid-generator")
-    @GeneratedValue(generator = "uuid-generator")
+//    @GenericGenerator(strategy = "uuid2", name = "uuid-generator")
+//    @GeneratedValue(generator = "uuid-generator")
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "reservation_id")
     private String reservationId; // 예약 아이디 (UUID)
 

@@ -19,8 +19,10 @@ import java.time.LocalDateTime;
 public class Subscriptions {
 
     @Id
-    @GenericGenerator(strategy = "uuid2", name = "uuid-generator")
-    @GeneratedValue(generator = "uuid-generator")
+//    @GenericGenerator(strategy = "uuid2", name = "uuid-generator")
+//    @GeneratedValue(generator = "uuid-generator")
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "subscriptions_id")
     private String id;
 

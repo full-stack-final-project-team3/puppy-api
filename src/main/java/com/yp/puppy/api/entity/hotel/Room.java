@@ -27,8 +27,10 @@ import java.util.stream.Collectors;
 public class Room {
 
     @Id
-    @GenericGenerator(strategy = "uuid2", name = "uuid-generator")
-    @GeneratedValue(generator = "uuid-generator")
+//    @GenericGenerator(strategy = "uuid2", name = "uuid-generator")
+//    @GeneratedValue(generator = "uuid-generator")
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "room_id")
     private String roomId; // 객실 아이디 (UUID)
 
