@@ -1,7 +1,7 @@
 package com.yp.puppy.api.controller.shop;
 
-import com.yp.puppy.api.auth.TokenProvider;
-import com.yp.puppy.api.dto.response.hotel.HotelOneDto;
+import com.yp.puppy.api.dto.request.shop.TreatsSaveDto;
+import com.yp.puppy.api.dto.response.shop.TreatsDetailDto;
 import com.yp.puppy.api.service.shop.TreatsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,19 +45,40 @@ public class ShopController {
 
     // 2. 제품 상세 조회
     /**
-     * 호텔 상세 정보를 조회합니다.
+     * 제품 상세 정보를 조회합니다.
      * @param treatsId URL 경로에서 제공된 제품의 식별자
      * @return 제품의 상세 정보를 반환합니다. 제품 ID가 유효하지 않으면, 400 Bad Request 를 반환.
      */
     @GetMapping("/{treatsId}")
-    public ResponseEntity<?> getHotel(@PathVariable String treatsId) {
+    public ResponseEntity<?> getTreats(@PathVariable String treatsId) {
         try {
-            TreatsDetialDto hotelDetail = hotelService.getHotelDetail(hotelId);
-            return ResponseEntity.ok().body(hotelDetail);
+            TreatsDetailDto detailDto = treatsService.getTreatsDetail(treatsId);
+            return ResponseEntity.ok().body(detailDto);
         } catch (Exception e) {
-            log.warn("호텔 ID로 조회하는 중 오류 발생 : {}", hotelId);
-            return ResponseEntity.badRequest().body("잘못된 hotelId 입니다.");
+            log.warn("제품 ID로 조회하는 중 오류 발생 : {}", treatsId);
+            return ResponseEntity.badRequest().body("잘못된 treatsId 입니다.");
         }
 
+    }
+
+    // 3 제품 생성
+    /**
+     * @param userInfo 사용자 정보
+     * @param dto 호텔 저장 데이터 전송 객체
+     * @return 생성 성공 메시지 또는 오류 메시지
+     * @PreAuthorize 관리자만 작성가능
+     */
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PostMapping
+    public ResponseEntity<?> register(@AuthenticationPrincipal TokenUserInfo userInfo,
+                                      @RequestBody TreatsSaveDto dto) {
+        try {
+            hotelService.saveHotel(dto, userInfo.getUserId());
+            return ResponseEntity.ok().body("호텔 생성 성공");
+        } catch (IllegalStateException e) {
+            log.warn(e.getMessage());
+            // 401 권한이 안된다 임마
+            return ResponseEntity.status(401).body(e.getMessage());
+        }
     }
 }

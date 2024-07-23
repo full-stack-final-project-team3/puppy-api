@@ -1,5 +1,6 @@
 package com.yp.puppy.api.entity.user;
 
+import com.yp.puppy.api.entity.shop.Treats;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -29,6 +30,11 @@ public class Allergy {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dog_id")
     private Dog dog;
+
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "treats_id")
+    private Treats treats;
 
     public enum AllergicType  {
         BEEF, CHICKEN, CORN, DAIRY, FISH, FLAX, LAMB, PORK, TURKEY, WHEAT

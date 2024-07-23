@@ -24,6 +24,7 @@ public class TreatsPic {
 
     private String treatsPic;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "treats_id")
     private Treats treats;

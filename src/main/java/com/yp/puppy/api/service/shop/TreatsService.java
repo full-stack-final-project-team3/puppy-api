@@ -1,7 +1,10 @@
 package com.yp.puppy.api.service.shop;
 
 import com.yp.puppy.api.auth.TokenProvider;
+import com.yp.puppy.api.dto.response.hotel.HotelOneDto;
+import com.yp.puppy.api.dto.response.shop.TreatsDetailDto;
 import com.yp.puppy.api.dto.response.shop.TreatsListDto;
+import com.yp.puppy.api.entity.hotel.Hotel;
 import com.yp.puppy.api.entity.shop.Treats;
 import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.entity.user.User;
@@ -32,7 +35,7 @@ public class TreatsService {
     private final TreatsRepository treatsRepository;
     private final UserRepository userRepository;
 
-    // 1. 상품 전체조회 중간처리
+    // 1. 상품 전체 조회 중간처리
     public Map<String, Object> getTreatsList(TokenUserInfo userInfo, int pageNo, String sort) {
 
         Dog userDogInfo = findUserDogInfo(userInfo);
@@ -57,6 +60,14 @@ public class TreatsService {
         return map;
     }
 
+    // 2. 상품 상세 조회 중간처리
+    public TreatsDetailDto getTreatsDetail(String treatsId) {
+
+        Treats treats = treatsRepository.findById(treatsId).orElseThrow();
+
+        return new TreatsDetailDto(treats);
+    }
+
     // 유저의 강아지 정보 찾기
     private Dog findUserDogInfo(TokenUserInfo userInfo) {
 
@@ -71,5 +82,6 @@ public class TreatsService {
         return userDogInfo;
 
     }
+
 
 }
