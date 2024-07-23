@@ -1,5 +1,6 @@
 package com.yp.puppy.api.entity.shop;
 
+import com.yp.puppy.api.entity.user.Allergy;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -25,7 +26,7 @@ public class Treats {
     private String id;
 
     @Column(nullable = false)
-    private String treatsTitle; // 패키지 이름
+    private String treatsTitle; // 간식 이름
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -48,6 +49,9 @@ public class Treats {
 
     @OneToMany(mappedBy = "treats", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews = new ArrayList<>();
+
+    @OneToMany(mappedBy = "treats", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Allergy> allergies = new ArrayList<>();
 
     public enum TreatsType {
         DRY, WET
