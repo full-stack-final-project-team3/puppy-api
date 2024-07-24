@@ -66,18 +66,16 @@ public class HotelService {
 
 
     // 3. 호텔 생성 중간처리
-    public void saveHotel(HotelSaveDto dto, String userId) {
-        // 회원정보조회 (관리자냐?)
+    public Hotel saveHotel(HotelSaveDto dto, String userId) {
         User hotelUser = userRepository.findById(userId).orElseThrow();
-
-        // 권한에 따른 글쓰기 제한
         if (hotelUser.getRole() != Role.ADMIN) throw new IllegalStateException("관리자만 등록을 할 수 있습니다.");
 
         Hotel newHotel = dto.toEntity();
         newHotel.setHotelUser(hotelUser);
 
-        Hotel saveHotel = hotelRepository.save(newHotel);
-        log.info("hotel: {}", saveHotel);
+        Hotel savedHotel = hotelRepository.save(newHotel);
+        log.info("hotel: {}", savedHotel);
+        return savedHotel; // 반환값 변경
     }
 
 

@@ -4,6 +4,7 @@ import com.yp.puppy.api.auth.TokenProvider;
 import com.yp.puppy.api.auth.TokenProvider.TokenUserInfo;
 import com.yp.puppy.api.dto.request.hotel.HotelSaveDto;
 import com.yp.puppy.api.dto.response.hotel.HotelOneDto;
+import com.yp.puppy.api.entity.hotel.Hotel;
 import com.yp.puppy.api.service.hotel.HotelService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,9 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @RestController
 @RequestMapping("/hotel")
@@ -75,12 +74,14 @@ public class HotelController {
     public ResponseEntity<?> register(@AuthenticationPrincipal TokenUserInfo userInfo,
                                       @RequestBody HotelSaveDto dto) {
         try {
-            hotelService.saveHotel(dto, userInfo.getUserId());
-            return ResponseEntity.ok().body("호텔 생성 성공");
+            Hotel newHotel = hotelService.saveHotel(dto, userInfo.getUserId());
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "호텔 생성 성공");
+            response.put("id", newHotel.getHotelId());
+            return ResponseEntity.ok().body(response);
         } catch (IllegalStateException e) {
             log.warn(e.getMessage());
-            // 401 권한이 안된다 임마
-            return ResponseEntity.status(401).body(e.getMessage());
+            return ResponseEntity.status(401).body(Collections.singletonMap("error", e.getMessage()));
         }
     }
 
