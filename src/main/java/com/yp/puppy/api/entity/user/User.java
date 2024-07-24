@@ -44,6 +44,8 @@ public class User {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
+    private String realName;
+
     @Column(length = 500)
     private String password;
 
@@ -115,6 +117,14 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Like> likes;
 
+
+    public void addDog(Dog dog) {
+        dogList.add(dog);
+        dog.setUser(this);
+    }
+
+
+
     @PrePersist // 컬럼의 default value 설정
     public void prePersist() {
         if (this.point == null) {
@@ -133,6 +143,8 @@ public class User {
         this.createdAt = LocalDateTime.now();
         this.nickname = nickname;
     }
+
+
 
 
     // 객실 예약할때 포인트 입 출금 메서드
