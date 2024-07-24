@@ -37,9 +37,11 @@ public class Dog {
     private LocalDate birthday; // 강아지 생일
 
     @Setter
+    @Enumerated(EnumType.STRING)
     private Breed dogBreed; // 견종
 
     @Setter
+    @Enumerated(EnumType.STRING)
     private DogSize dogSize; // 소형견? 중형? 대형견?
 
     @Setter
