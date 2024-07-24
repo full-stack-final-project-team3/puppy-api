@@ -8,6 +8,8 @@ import com.yp.puppy.api.entity.community.BoardSubReply;
 import com.yp.puppy.api.entity.community.Like;
 import com.yp.puppy.api.entity.hotel.Favorite;
 import com.yp.puppy.api.entity.hotel.Reservation;
+import com.yp.puppy.api.entity.shop.Bundle;
+import com.yp.puppy.api.entity.shop.Cart;
 import com.yp.puppy.api.entity.shop.Order;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -92,8 +94,14 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Favorite> wishHotelList; // 유저가 찜한 호텔 리스트
 
+    @OneToOne
+    private Cart cart;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> orders;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Bundle> createdBundles; // 유저가 생성한 번들 리스트
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Board> board;

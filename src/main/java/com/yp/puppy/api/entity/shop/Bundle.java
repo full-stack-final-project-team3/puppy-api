@@ -1,5 +1,7 @@
 package com.yp.puppy.api.entity.shop;
 
+import com.yp.puppy.api.entity.user.Dog;
+import com.yp.puppy.api.entity.user.User;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -18,8 +20,6 @@ import java.util.List;
 public class Bundle {
 
     @Id
-//    @GenericGenerator(strategy = "uuid2", name = "uuid-generator")
-//    @GeneratedValue(generator = "uuid-generator")
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "bundle_id")
@@ -35,6 +35,22 @@ public class Bundle {
     private List<Treats> treats;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @OneToOne
+    @JoinColumn(name = "dog_id")
+    private Dog dog;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id")
     private Cart cart;
+
+    public void setBundleTitle(String bundleTitle) {
+        this.bundleTitle = "강아지 맞춤 간식 패키지"; // 고정된 값 할당
+    }
+
+    public void setBundlePrice(Long bundlePrice) {
+        this.bundlePrice = 29900L;
+    }
 }

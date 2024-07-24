@@ -1,12 +1,18 @@
 package com.yp.puppy.api.entity.shop;
 
+import com.yp.puppy.api.dto.request.shop.TreatsSaveDto;
 import com.yp.puppy.api.entity.user.Allergy;
+import com.yp.puppy.api.entity.user.Dog;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static com.yp.puppy.api.entity.user.Dog.*;
 
 @Getter
 @Setter
@@ -20,8 +26,6 @@ import java.util.List;
 public class Treats {
 
     @Id
-//    @GenericGenerator(strategy = "uuid2", name = "uuid-generator")
-//    @GeneratedValue(generator = "uuid-generator")
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "treats_id")
@@ -41,6 +45,10 @@ public class Treats {
     private int treatsWeight;
 
     @Setter
+    @Column(nullable = false)
+    private DogSize dogSize;
+
+    @Setter
     private int treatsStock;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -49,7 +57,7 @@ public class Treats {
 
     @Setter
     @OneToMany(mappedBy = "treats", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TreatsPic> treatsPic = new ArrayList<>();
+    private List<TreatsPic> treatsPics = new ArrayList<>();
 
     @Setter
     @OneToMany(mappedBy = "treats", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -66,4 +74,63 @@ public class Treats {
         DRY, WET
     }
 
+    public void changeTreats(TreatsSaveDto dto) {
+
+        this.treatsTitle = dto.getTitle();
+        this.treatsWeight = dto.getTreatsWeight();
+        this.treatsType = dto.getTreatsType();
+        updateImages(dto.getTreatsPics());
+        updateDetailImages(dto.getTreatsDetailPics());
+
+    }
+
+    public void updateImages(List<TreatsPic> newImages) {
+        // 이미지 식별자 즉 uri 를 사용해 매핑
+        Map<String, TreatsPic> existingImages = this.treatsPics
+                .stream()
+                .collect(Collectors.toMap(TreatsPic::getTreatsPic, image -> image));
+
+        List<TreatsPic> updatedImages = new ArrayList<>();
+
+        for (TreatsPic newImage : newImages) {
+            // 새 이미지를 기존 이미지와 비교하여 유지하거나 추가
+            if (existingImages.containsKey(newImage.getTreatsPic())) {
+                // 이미 존재하는 이미지를 유지
+                updatedImages.add(existingImages.get(newImage.getTreatsPic()));
+            } else {
+                // 새 이미지 추가
+                updatedImages.add(newImage);
+                newImage.setTreats(this); // 관계 설정
+            }
+        }
+
+        // 기존 리스트를 업데이트된 리스트로 교체
+        this.treatsPics.clear();
+        this.treatsPics.addAll(updatedImages);
+    }
+
+    public void updateDetailImages(List<TreatsDetailPic> newImages) {
+        // 이미지 식별자 즉 uri 를 사용해 매핑
+        Map<String, TreatsDetailPic> existingImages = this.treatsDetailPics
+                .stream()
+                .collect(Collectors.toMap(TreatsDetailPic::getTreatsDetailPic, image -> image));
+
+        List<TreatsDetailPic> updatedImages = new ArrayList<>();
+
+        for (TreatsDetailPic newImage : newImages) {
+            // 새 이미지를 기존 이미지와 비교하여 유지하거나 추가
+            if (existingImages.containsKey(newImage.getTreatsDetailPic())) {
+                // 이미 존재하는 이미지를 유지
+                updatedImages.add(existingImages.get(newImage.getTreatsDetailPic()));
+            } else {
+                // 새 이미지 추가
+                updatedImages.add(newImage);
+                newImage.setTreats(this); // 관계 설정
+            }
+        }
+
+        // 기존 리스트를 업데이트된 리스트로 교체
+        this.treatsDetailPics.clear();
+        this.treatsDetailPics.addAll(updatedImages);
+    }
 }

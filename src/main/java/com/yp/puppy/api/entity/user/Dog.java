@@ -1,6 +1,8 @@
 package com.yp.puppy.api.entity.user;
 
 import com.yp.puppy.api.entity.hotel.Room;
+import com.yp.puppy.api.entity.shop.Bundle;
+import com.yp.puppy.api.entity.shop.Cart;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
@@ -77,6 +79,9 @@ public class Dog {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
     private Room room;
+
+    @OneToOne
+    private Bundle bundle;
 
     @PrePersist
     private void prePersist() {

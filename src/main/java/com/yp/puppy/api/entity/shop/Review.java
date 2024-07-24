@@ -30,7 +30,7 @@ public class Review {
     private String reviewContent;
 
     @Column(nullable = false)
-    private int rate;
+    private int rate; // 별점
 
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReviewPic> reviewPics;
