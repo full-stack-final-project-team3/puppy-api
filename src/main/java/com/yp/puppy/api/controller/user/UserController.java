@@ -14,7 +14,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 @RestController
-@RequestMapping("/auth")
+//@RequestMapping("/auth") // 0723 auth 제거
 @Slf4j
 @RequiredArgsConstructor
 public class UserController {
