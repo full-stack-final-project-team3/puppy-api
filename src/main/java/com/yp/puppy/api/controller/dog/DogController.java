@@ -17,13 +17,27 @@ public class DogController {
 
     private final DogService dogService;
 
+
+    /**
+     *                      강아지 등록
+     * @param dogSaveDto - 클라이언트로부터 받은 입력값
+     * @return -
+     */
     @PostMapping("/register")
     public ResponseEntity<?> registerDog(@RequestBody DogSaveDto dogSaveDto) {
         try {
             Dog savedDog = dogService.saveDog(dogSaveDto);
             return ResponseEntity.ok(savedDog);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred: " + e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping("/{dogId}")
+    public ResponseEntity<?> getDog(@PathVariable String dogId) {
+        Dog dog = dogService.findDog(dogId);
+
+        return ResponseEntity.ok().body(dog);
+    }
+
 }

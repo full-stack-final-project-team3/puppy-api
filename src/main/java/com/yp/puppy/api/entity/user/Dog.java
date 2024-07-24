@@ -120,4 +120,10 @@ public class Dog {
         this.allergies.add(allergy);
         allergy.setDog(this);
     }
+
+    public void addUser(User user) {
+        this.user = user;
+        user.addDog(this);
+    }
+
 }

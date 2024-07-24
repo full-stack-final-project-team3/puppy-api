@@ -2,6 +2,7 @@ package com.yp.puppy.api.dto.request.dog;
 
 import com.yp.puppy.api.entity.user.Allergy;
 import com.yp.puppy.api.entity.user.Dog;
+import com.yp.puppy.api.entity.user.User;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -23,6 +24,7 @@ public class DogSaveDto {
     private Sex dogSex;
     private boolean isNeutered;
     private double weight;
+    private User user; // 누구의 강아지인가
 //    private List<String> allergies;
 
     public Dog toEntity() {
@@ -33,6 +35,7 @@ public class DogSaveDto {
                 .dogSex(this.dogSex)
                 .isNeutered(this.isNeutered)
                 .weight(this.weight)
+                .user(this.user)
 //                .allergies(new ArrayList<>()) // 빈 리스트로 초기화
                 .build();
 

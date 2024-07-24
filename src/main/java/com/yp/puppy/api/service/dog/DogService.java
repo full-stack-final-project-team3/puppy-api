@@ -24,4 +24,9 @@ public class DogService {
         dogRepository.save(dog);
         return dog;
     }
+
+    public Dog findDog(String dogId) {
+        Dog dog = dogRepository.findById(dogId).orElseThrow();
+        return dog;
+    }
 }
