@@ -6,8 +6,10 @@ import com.yp.puppy.api.dto.request.hotel.HotelSaveDto;
 import com.yp.puppy.api.dto.response.hotel.HotelOneDto;
 import com.yp.puppy.api.entity.hotel.Hotel;
 import com.yp.puppy.api.service.hotel.HotelService;
+import com.yp.puppy.api.util.FileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -36,6 +38,8 @@ public class HotelController {
 
     private final HotelService hotelService;
 
+    @Value("${file.upload-dir}")
+    private String uploadDir;
 
     // 1. 호텔 전체 조회
     /**
@@ -142,26 +146,12 @@ public class HotelController {
     @PostMapping("/upload")
     public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
         try {
-            // 파일 이름을 클린한 경로로 설정
-            String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-
-            // 저장 경로 설정 - 서버 루트 디렉토리의 uploads 폴더
-            Path uploadPath = Paths.get(System.getProperty("user.dir") + "/uploads");
-
-            // uploads 폴더가 존재하지 않으면 생성
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
+            if (file.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File is empty");
             }
-
-            // 파일을 해당 경로에 저장
-            try (InputStream inputStream = file.getInputStream()) {
-                Path filePath = uploadPath.resolve(fileName);
-                Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
-            }
-
-            // 성공적으로 저장되었음을 응답
-            return ResponseEntity.ok(fileName);
-        } catch (IOException e) {
+            String uploadedFilePath = FileUtil.uploadFile(uploadDir, file);
+            return ResponseEntity.ok(uploadedFilePath);
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload file");
         }
