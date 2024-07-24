@@ -36,7 +36,7 @@ public class RoomController {
     }
 
     // 2. 객실 생성
-//    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
     public ResponseEntity<?> addRoom(@AuthenticationPrincipal TokenUserInfo userInfo,
                                      @RequestBody RoomSaveDto dto) {
