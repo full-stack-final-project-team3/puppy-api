@@ -2,6 +2,7 @@ package com.yp.puppy.api.entity.shop;
 
 import com.yp.puppy.api.dto.request.shop.TreatsSaveDto;
 import com.yp.puppy.api.entity.user.Allergy;
+import com.yp.puppy.api.entity.user.Dog;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -10,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.yp.puppy.api.entity.user.Dog.*;
 
 @Getter
 @Setter
@@ -23,8 +26,6 @@ import java.util.stream.Collectors;
 public class Treats {
 
     @Id
-//    @GenericGenerator(strategy = "uuid2", name = "uuid-generator")
-//    @GeneratedValue(generator = "uuid-generator")
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "treats_id")
@@ -42,6 +43,10 @@ public class Treats {
     @Setter
     @Column(nullable = false)
     private int treatsWeight;
+
+    @Setter
+    @Column(nullable = false)
+    private DogSize dogSize;
 
     @Setter
     private int treatsStock;

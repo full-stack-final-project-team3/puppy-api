@@ -22,6 +22,8 @@ public class TreatsController {
 
     private final TreatsService treatsService;
 
+    // 0. 유저의 개 선택하기
+
     // 1. 상품 전체 조회
 
     /**
@@ -29,12 +31,16 @@ public class TreatsController {
      * @param pageNo 페이지 번호 (기본값 1)
      * @return 간식 목록
      */
-    @GetMapping("/treats")
+    @GetMapping("/treats/{dogId}")
     public ResponseEntity<?> getTreatsList(@RequestParam(required = false, defaultValue = "name") String sort,
                                            TokenUserInfo userInfo,
+                                           @PathVariable String dogId,
                                            @RequestParam(defaultValue = "1") int pageNo) {
+        // 개를 선택 할 수 있는 페이지 만들기
 
-        Map<String, Object> treatsList = treatsService.getTreatsList(userInfo, pageNo, sort);
+        // userInfo가 null이면 에러 개가 없다면 그냥 아무거나 / 개 정보 등록
+
+        Map<String, Object> treatsList = treatsService.getTreatsList(userInfo, dogId, pageNo, sort);
         if (treatsList.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
@@ -50,7 +56,7 @@ public class TreatsController {
      * @param treatsId URL 경로에서 제공된 제품의 식별자
      * @return 제품의 상세 정보를 반환합니다. 제품 ID가 유효하지 않으면, 400 Bad Request 를 반환.
      */
-    @GetMapping("/{treatsId}")
+    @GetMapping("/treats/{treatsId}")
     public ResponseEntity<?> getTreats(@PathVariable String treatsId) {
         try {
             TreatsDetailDto detailDto = treatsService.getTreatsDetail(treatsId);

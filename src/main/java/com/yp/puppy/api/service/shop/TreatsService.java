@@ -8,6 +8,7 @@ import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.entity.user.Role;
 import com.yp.puppy.api.entity.user.User;
 import com.yp.puppy.api.repository.shop.TreatsRepository;
+import com.yp.puppy.api.repository.user.DogRepository;
 import com.yp.puppy.api.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,11 +33,12 @@ public class TreatsService {
 
     private final TreatsRepository treatsRepository;
     private final UserRepository userRepository;
+    private final DogRepository dogRepository;
 
     // 1. 상품 전체 조회 중간처리
-    public Map<String, Object> getTreatsList(TokenUserInfo userInfo, int pageNo, String sort) {
+    public Map<String, Object> getTreatsList(TokenUserInfo userInfo, String dogId, int pageNo, String sort) {
 
-        Dog userDogInfo = findUserDogInfo(userInfo);
+        Dog userDogInfo = dogRepository.findById(dogId).orElseThrow();
 
         Pageable pageable = PageRequest.of(pageNo - 1, 5);
 
@@ -95,19 +97,19 @@ public class TreatsService {
         treatsRepository.save(foundTreats);
     }
 
-    // 유저의 강아지 정보 찾기
-    private Dog findUserDogInfo(TokenUserInfo userInfo) {
-
-        String userEmail = userInfo.getEmail();
-
-        User user = userRepository.findByEmail(userEmail).orElseThrow();
-
-        List<Dog> dogList = user.getDogList();
-
-        Dog userDogInfo = dogList.get(0);
-
-        return userDogInfo;
-
-    }
+//    // 유저의 강아지 정보 찾기
+//    private Dog findUserDogInfo(TokenUserInfo userInfo) {
+//
+//        String userEmail = userInfo.getEmail();
+//
+//        User user = userRepository.findByEmail(userEmail).orElseThrow();
+//
+//        List<Dog> dogList = user.getDogList();
+//
+//        Dog userDogInfo = dogList.get(0);
+//
+//        return userDogInfo;
+//
+//    }
 
 }

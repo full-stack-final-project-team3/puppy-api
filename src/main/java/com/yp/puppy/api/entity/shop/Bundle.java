@@ -1,5 +1,6 @@
 package com.yp.puppy.api.entity.shop;
 
+import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.entity.user.User;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -36,6 +37,10 @@ public class Bundle {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToOne
+    @JoinColumn(name = "dog_id")
+    private Dog dog;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id")
