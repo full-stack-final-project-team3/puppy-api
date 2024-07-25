@@ -1,9 +1,9 @@
 package com.yp.puppy.api.repository.shop;
 
+import com.querydsl.core.types.CollectionExpression;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.yp.puppy.api.entity.shop.Treats;
-import com.yp.puppy.api.entity.user.Allergy;
 import com.yp.puppy.api.entity.user.Dog;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.yp.puppy.api.entity.shop.QTreats.*;
 
@@ -27,15 +26,13 @@ public class TreatsRepositoryCustomImpl implements TreatsRepositoryCustom{
     @Override
     public Page<Treats> findTreats(Dog userDogInfo, Pageable pageable, String sort) {
 
-        List<Allergy> dogInfoAllergies = userDogInfo != null ? userDogInfo.getAllergies() : null;
+        List<Dog.Allergy> dogInfoAllergies = userDogInfo != null ? userDogInfo.getAllergies() : null;
 
         // 페이징을 통한 조회
         List<Treats> treatsLists = factory
                 .selectFrom(treats)
                 .where(dogInfoAllergies != null
-                        ? treats.id.notIn(dogInfoAllergies.stream()
-                        .map(Allergy::getId)
-                        .collect(Collectors.toList()))
+                        ? treats.allergies.any().notIn((CollectionExpression<?, ? extends Treats.Allergic>) dogInfoAllergies)
                         : null)
                 .orderBy(specifier(sort))
                 .offset(pageable.getOffset())
@@ -47,9 +44,7 @@ public class TreatsRepositoryCustomImpl implements TreatsRepositoryCustom{
                 .select(treats.count())
                 .from(treats)
                 .where(dogInfoAllergies != null
-                        ? treats.id.notIn(dogInfoAllergies.stream()
-                        .map(Allergy::getId)
-                        .collect(Collectors.toList()))
+                        ? treats.allergies.any().notIn((CollectionExpression<?, ? extends Treats.Allergic>) dogInfoAllergies)
                         : null)
                 .fetchOne();
 

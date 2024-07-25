@@ -1,8 +1,6 @@
 package com.yp.puppy.api.entity.shop;
 
 import com.yp.puppy.api.dto.request.shop.TreatsSaveDto;
-import com.yp.puppy.api.entity.user.Allergy;
-import com.yp.puppy.api.entity.user.Dog;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -67,11 +65,16 @@ public class Treats {
     private List<Review> reviews = new ArrayList<>();
 
     @Setter
-    @OneToMany(mappedBy = "treats", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Allergy> allergies = new ArrayList<>();
+    @ElementCollection
+    @Column(nullable = false)
+    private List<Allergic> allergies = new ArrayList<>();
 
     public enum TreatsType {
         DRY, WET
+    }
+
+    public enum Allergic {
+        BEEF, CHICKEN, CORN, DAIRY, FISH, FLAX, LAMB, PORK, TURKEY, WHEAT
     }
 
     public void changeTreats(TreatsSaveDto dto) {
