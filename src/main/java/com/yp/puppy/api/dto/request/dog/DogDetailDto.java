@@ -2,7 +2,7 @@ package com.yp.puppy.api.dto.request.dog;
 
 import com.yp.puppy.api.entity.hotel.Room;
 import com.yp.puppy.api.entity.shop.Bundle;
-import com.yp.puppy.api.entity.user.Allergy;
+//import com.yp.puppy.api.entity.user.Allergy;
 import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.entity.user.User;
 import lombok.Builder;

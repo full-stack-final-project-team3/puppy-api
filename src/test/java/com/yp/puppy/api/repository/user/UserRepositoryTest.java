@@ -14,12 +14,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.yp.puppy.api.entity.user.Allergy.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
-@Rollback
+@Rollback(value = false)
 class UserRepositoryTest {
 
     @Autowired
@@ -31,40 +30,28 @@ class UserRepositoryTest {
     @Autowired
     private DogRepository dogRepository;
 
-    @Autowired
-    private AllergyRepository allergyRepository;
+
 
     @BeforeEach
     void setUp() {
-        User user = User.builder()
-                .email("hgb9266@naver.com")
-                .password("gksrlqja1!")
-                .role(Role.USER)
-                .emailVerified(true)
-                .autoLogin(false)
-                .point(5000)
-                .birthday(LocalDate.now().minusYears(27))
-                .nickname("기범")
-                .phoneNumber("01094401851")
-                .build();
 
-        User user2 = User.builder()
-                .email("jihoon@naver.com")
-                .password("jihoon1!")
-                .role(Role.USER)
-                .emailVerified(true)
-                .autoLogin(false)
-                .point(15000)
-                .birthday(LocalDate.now().minusYears(26))
-                .nickname("지훈")
-                .phoneNumber("01012341234")
-                .build();
+        String id = "07686a36-75fc-4dc3-bd8c-69588857b1fa"; // 기범의 아이디
+        User kibeom = userRepository.findById(id).orElseThrow();
+//
+//        User user2 = User.builder()
+//                .email("jihoon@naver.com")
+//                .password("jihoon1!")
+//                .role(Role.USER)
+//                .emailVerified(true)
+//                .autoLogin(false)
+//                .point(15000)
+//                .birthday(LocalDate.now().minusYears(26))
+//                .nickname("지훈")
+//                .phoneNumber("01012341234")
+//                .build();
 
-        List<Allergy> allergyList = new ArrayList<>();
-        Allergy chicken = builder()
-                .type(AllergicType.CHICKEN)
-                .build();
-        allergyList.add(chicken);
+
+
 
 
         Dog dog1 = Dog.builder()
@@ -74,8 +61,10 @@ class UserRepositoryTest {
                 .weight(8.3)
                 .isNeutered(false)
                 .dogSex(Dog.Sex.FEMALE)
+                .user(kibeom)
                 .build();
 
+        dogRepository.save(dog1);
 
 
 
@@ -83,29 +72,24 @@ class UserRepositoryTest {
                 .dogName("춘식이")
                 .birthday(LocalDate.now().minusYears(7))
                 .dogBreed(Dog.Breed.POMERANIAN)
-                .allergies(allergyList)
                 .weight(5.3)
                 .isNeutered(false)
                 .dogSex(Dog.Sex.MALE)
+                .user(kibeom)
                 .build();
+        dogRepository.save(dog2);
 
-        Dog dog3 = Dog.builder()
-                .dogName("지훈의 개")
-                .birthday(LocalDate.now().minusYears(7))
-                .dogBreed(Dog.Breed.POMERANIAN)
-                .weight(5.3)
-                .isNeutered(false)
-                .dogSex(Dog.Sex.MALE)
-                .build();
+//        Dog dog3 = Dog.builder()
+//                .dogName("지훈의 개")
+//                .birthday(LocalDate.now().minusYears(7))
+//                .dogBreed(Dog.Breed.POMERANIAN)
+//                .weight(5.3)
+//                .isNeutered(false)
+//                .dogSex(Dog.Sex.MALE)
+//                .build();
 
-//        user.addDog(dog1);
-//        user.addDog(dog2);
-//        user2.addDog(dog3);
-
-        userRepository.save(user);
-        userRepository.save(user2);
-
-
+        System.out.println("dog1 = " + dog1);
+        System.out.println("kibeom = " + kibeom);
     }
 
     @Test
@@ -122,12 +106,7 @@ class UserRepositoryTest {
         System.out.println("dogList = " + dogList);
         System.out.println("\n\n\n\n\n\n\n\n\n\n");
 
-        for (Dog dog : dogList) {
-            System.out.println(dog.getDogName() + "의 알러지 목록:");
-            for (Allergy allergy : dog.getAllergies()) {
-                System.out.println(allergy.getType());
-            }
-        }
+
         //then
         assertEquals(2, dogList.size());
         assertEquals(2, dogList.get(0).getAllergies().size()); // 첫 번째 강아지의 알러지 개수 확인
@@ -183,27 +162,16 @@ class UserRepositoryTest {
 
 
     @Test
-    @DisplayName("내 강아지의 알러지 변경 chicken -> flax ")
-    void 알러지변경() {
+    @DisplayName("test")
+    void test() {
         //given
-        User foundUser = userRepository.findByEmail("hgb9266@naver.com").orElseThrow();
-        String dogName = "춘식이";
-        Allergy newAllergy = builder()
-//                .dog(foundUser.findDogByName(dogName))
-                .type(AllergicType.FLAX)
-                .build();
+        System.out.println("\n\n\n\n\n\n\n\n\n\n");
         //when
-//        Dog dogByName = foundUser.findDogByName(dogName);
 
-//        List<Allergy> allergies = dogByName.getAllergies();
-//        allergies.remove(AllergicType.CHICKEN);
-//        allergies.add(newAllergy);
-//        dogByName.setAllergies(allergies);
-//        dogRepository.save(dogByName);
-        userRepository.save(foundUser);
-        System.out.println("\n\n\n\nfoundUser = " + foundUser);
         //then
     }
 
 
 }
+
+

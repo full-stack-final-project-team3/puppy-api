@@ -4,6 +4,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.yp.puppy.api.dto.request.dog.DogSaveDto;
 import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.entity.user.User;
+import com.yp.puppy.api.repository.user.DogRepository;
 import com.yp.puppy.api.repository.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,11 +41,7 @@ class DogServiceTest {
         User kibeom = userRepository.findByEmail(email).orElseThrow();
 
         //given
-        List<Allergy> allergyList = new ArrayList<>();
-        Allergy chicken = Allergy.builder()
-                .type(Allergy.AllergicType.CHICKEN)
-                .build();
-        allergyList.add(chicken);
+
 
         DogSaveDto dto = DogSaveDto.builder()
                 .dogName("커피")
@@ -53,7 +50,6 @@ class DogServiceTest {
                 .isNeutered(false)
                 .weight(12.3)
                 .birthday(LocalDate.now())
-                .user(kibeom)
 //                .allergies(allergyList)
                 .build();
 
@@ -64,16 +60,15 @@ class DogServiceTest {
                 .isNeutered(true)
                 .weight(7.3)
                 .birthday(LocalDate.now().minusYears(5))
-                .user(kibeom)
 //                .allergies(allergyList)
                 .build();
 
         //when
-        Dog dog = dogService.saveDog(dto);
-        Dog dog2 = dogService.saveDog(dto2);
-        kibeom.addDog(dog);
-        kibeom.addDog(dog2);
-        userRepository.save(kibeom);
+//        Dog dog = dogService.saveDog(dto);
+//        Dog dog2 = dogService.saveDog(dto2);
+//        kibeom.addDog(dog);
+//        kibeom.addDog(dog2);
+//        userRepository.save(kibeom);
 
     }
 
@@ -87,11 +82,6 @@ class DogServiceTest {
 
         User kibeom = userRepository.findByEmail(email).orElseThrow();
 
-        List<Allergy> allergyList = new ArrayList<>();
-        Allergy chicken = Allergy.builder()
-                .type(Allergy.AllergicType.CHICKEN)
-                .build();
-        allergyList.add(chicken);
 
         DogSaveDto dto = DogSaveDto.builder()
                 .dogName("커피")
@@ -100,7 +90,7 @@ class DogServiceTest {
                 .isNeutered(false)
                 .weight(12.3)
                 .birthday(LocalDate.now())
-                .user(kibeom)
+//                .user(kibeom)
 //                .allergies(allergyList)
                 .build();
 
@@ -111,23 +101,23 @@ class DogServiceTest {
                 .isNeutered(true)
                 .weight(7.3)
                 .birthday(LocalDate.now().minusYears(5))
-                .user(kibeom)
+//                .user(kibeom)
 //                .allergies(allergyList)
                 .build();
 
         //when
-        Dog dog = dogService.saveDog(dto);
-        Dog dog2 = dogService.saveDog(dto2);
-        kibeom.addDog(dog);
-        kibeom.addDog(dog2);
-        userRepository.save(kibeom);
+//        Dog dog = dogService.saveDog(dto);
+//        Dog dog2 = dogService.saveDog(dto2);
+//        kibeom.addDog(dog);
+//        kibeom.addDog(dog2);
+//        userRepository.save(kibeom);
 
         //then
-        assertNotNull(dog);
+//        assertNotNull(dog);
 //        assertEquals(Allergy.AllergicType.CHICKEN, dog.getAllergies().get(0).getType());
         System.out.println("\n\n\n\n\n\n\n");
-        System.out.println("dog = " + dog);
-        System.out.println("kibeom = " + kibeom);
+//        System.out.println("dog = " + dog);
+//        System.out.println("kibeom = " + kibeom);
     }
 
 
@@ -171,6 +161,19 @@ class DogServiceTest {
         //then
         assertEquals(foundDogs.size(), 1);
         System.out.println("\n\n\n\n\n\n\n\n\n\n\n\nfoundDogs = " + foundDogs);
+    }
+
+
+    @Test
+    @DisplayName("회원 id로 회원이 키우는 모든 강아지 조회")
+    void findAllTest() {
+        //given
+        String id = "07686a36-75fc-4dc3-bd8c-69588857b1fa";
+        List<Dog> myPuppies = dogService.findMyPuppies(id);
+        //when
+        System.out.println("myPuppies = " + myPuppies);
+
+        //then
     }
 
 

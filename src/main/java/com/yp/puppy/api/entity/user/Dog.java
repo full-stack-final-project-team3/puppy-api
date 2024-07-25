@@ -1,5 +1,6 @@
 package com.yp.puppy.api.entity.user;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.yp.puppy.api.entity.hotel.Room;
 import com.yp.puppy.api.entity.shop.Bundle;
 import com.yp.puppy.api.entity.shop.Cart;
@@ -48,6 +49,7 @@ public class Dog {
     private double weight; // 강아지 몸무게
 
     @Setter
+    @Enumerated(EnumType.STRING)
     private Sex dogSex; // 강아지 성별
 
     @Setter
@@ -74,6 +76,7 @@ public class Dog {
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @JsonBackReference
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
