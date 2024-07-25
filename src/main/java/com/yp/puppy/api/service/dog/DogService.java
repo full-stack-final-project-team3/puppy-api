@@ -29,4 +29,8 @@ public class DogService {
         Dog dog = dogRepository.findById(dogId).orElseThrow();
         return dog;
     }
+
+    public void deleteDog(String dogId) {
+        dogRepository.deleteById(dogId);
+    }
 }

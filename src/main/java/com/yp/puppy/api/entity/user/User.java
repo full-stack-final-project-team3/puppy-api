@@ -13,6 +13,7 @@ import com.yp.puppy.api.entity.shop.Cart;
 import com.yp.puppy.api.entity.shop.Order;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
@@ -60,6 +61,7 @@ public class User {
 
     //    @Column(nullable = false, unique = true, length = 20)
     @Setter
+    @ColumnDefault("user")
     private String nickname;
 
     private LocalDate birthday;

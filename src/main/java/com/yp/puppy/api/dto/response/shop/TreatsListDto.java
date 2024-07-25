@@ -28,6 +28,6 @@ public class TreatsListDto {
         this.id = treats.getId();
         this.title = treats.getTreatsTitle();
         this.type = treats.getTreatsType();
-        this.treatsPics = treats.getTreatsPic();
+        this.treatsPics = treats.getTreatsPics();
     }
 }

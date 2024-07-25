@@ -35,9 +35,30 @@ public class DogController {
 
     @GetMapping("/{dogId}")
     public ResponseEntity<?> getDog(@PathVariable String dogId) {
-        Dog dog = dogService.findDog(dogId);
 
-        return ResponseEntity.ok().body(dog);
+        Dog dog = null;
+        try {
+            dog = dogService.findDog(dogId);
+            return ResponseEntity.ok().body(dog);
+        } catch (Exception e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.badRequest().body("존재하지 않는 dogId 입니다.");
+        }
     }
 
+    @DeleteMapping("/{dogId}")
+    public ResponseEntity<?> deleteDog(@PathVariable String dogId) {
+
+        try {
+            dogService.deleteDog(dogId);
+            return ResponseEntity.ok().body("ok");
+        } catch (Exception e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.badRequest().body("삭제 실패.");
+        }
+    }
+
+//    @PatchMapping("/{dogId}")
+//    public ResponseEntity<?> updateDog(@PathVariable DogModifyDto dto,)
+//
 }
