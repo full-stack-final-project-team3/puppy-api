@@ -41,23 +41,28 @@ public class HotelController {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
-    // 1. 호텔 전체 조회
+
+// 1. 호텔 전체 조회
     /**
      * @param sort 정렬 기준 (기본값 'name')
-     * @param pageNo 페이지 번호 (기본값 1)
+     * @param location 검색할 위치 (기본값은 빈 문자열)
      * @return 호텔 목록과 상태 코드
      */
     @GetMapping
     public ResponseEntity<?> list(@RequestParam(required = false, defaultValue = "name") String sort,
-                                  @RequestParam(defaultValue = "1") int pageNo) {
+                                  @RequestParam(required = false, defaultValue = "") String location) {
 
-        Map<String, Object> hotels = hotelService.getHotels(pageNo, sort);
-        if (hotels.isEmpty()){
-            return ResponseEntity.noContent().build();
+        try {
+            Map<String, Object> hotels = hotelService.getHotels(sort, location);
+            if (hotels.isEmpty()){
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.ok().body(hotels);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while fetching hotels.");
         }
-        return ResponseEntity.ok().body(hotels);
-
     }
+
 
 
     // 2. 호텔 상세 조회

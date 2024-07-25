@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,19 +34,17 @@ public class HotelService {
     private final UserRepository userRepository;
 
     // 1. 호텔 전체조회 중간처리
-    public Map<String, Object> getHotels(int pageNo, String sort) {
-        Pageable pageable = PageRequest.of(pageNo - 1, 4);
+    @Transactional(readOnly = true)
+    public Map<String, Object> getHotels(String sort, String location) {
+        Sort sortOrder = Sort.by(sort).ascending();
+        List<Hotel> hotels = hotelRepository.findHotels(location, sortOrder);
 
-        Page<Hotel> hotelPage = hotelRepository.findHotels(pageable, sort);
-
-        List<Hotel> hotelList = hotelPage.getContent();
-
-        List<HotelDetailDto> hotelDtoList = hotelList.stream()
+        List<HotelDetailDto> hotelDtoList = hotels.stream()
                 .map(HotelDetailDto::new)
                 .collect(Collectors.toList());
 
         // 렌더링 될 개수
-        long totalElements = hotelPage.getTotalElements();
+        long totalElements = hotels.size();
 
         Map<String, Object> map = new HashMap<>();
         map.put("hotels", hotelDtoList);
