@@ -88,6 +88,7 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true,
             cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
     @Builder.Default
+    @JsonManagedReference // 0725 추가
     private List<Dog> dogList = new ArrayList<>(); // 몇마리의 강아지를 키우고 있나?
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
@@ -171,5 +172,7 @@ public class User {
         this.point += amount;
         log.info("포인트 추가 후: {}", this.point);
     }
+
+
 
 }

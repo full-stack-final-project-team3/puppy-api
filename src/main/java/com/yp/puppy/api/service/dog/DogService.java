@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.NoSuchElementException;
+
 @Service
 @Transactional
 @Slf4j
@@ -40,5 +43,10 @@ public class DogService {
 
     public void deleteDog(String dogId) {
         dogRepository.deleteById(dogId);
+    }
+
+    public List<Dog> findMyPuppies(String userId) {
+        User foundUser = userRepository.findById(userId).orElseThrow(NoSuchElementException::new);
+        return dogRepository.findByUser(foundUser);
     }
 }
