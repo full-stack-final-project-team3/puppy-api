@@ -4,6 +4,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.yp.puppy.api.dto.request.dog.DogSaveDto;
 import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.entity.user.User;
+import com.yp.puppy.api.repository.user.DogRepository;
 import com.yp.puppy.api.repository.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,11 +41,7 @@ class DogServiceTest {
         User kibeom = userRepository.findByEmail(email).orElseThrow();
 
         //given
-        List<Allergy> allergyList = new ArrayList<>();
-        Allergy chicken = Allergy.builder()
-                .type(Allergy.AllergicType.CHICKEN)
-                .build();
-        allergyList.add(chicken);
+
 
         DogSaveDto dto = DogSaveDto.builder()
                 .dogName("커피")
@@ -87,11 +84,6 @@ class DogServiceTest {
 
         User kibeom = userRepository.findByEmail(email).orElseThrow();
 
-        List<Allergy> allergyList = new ArrayList<>();
-        Allergy chicken = Allergy.builder()
-                .type(Allergy.AllergicType.CHICKEN)
-                .build();
-        allergyList.add(chicken);
 
         DogSaveDto dto = DogSaveDto.builder()
                 .dogName("커피")

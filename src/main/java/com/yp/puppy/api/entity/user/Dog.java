@@ -48,6 +48,7 @@ public class Dog {
     private double weight; // 강아지 몸무게
 
     @Setter
+    @Enumerated(EnumType.STRING)
     private Sex dogSex; // 강아지 성별
 
     @Setter

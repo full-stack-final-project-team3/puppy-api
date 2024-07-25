@@ -85,7 +85,8 @@ public class User {
     private boolean isDeleted; // 탈퇴한 적이 있나?
     // false - 탈퇴 x,  true - 탈퇴한적 있음
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true,
+            cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
     @Builder.Default
     private List<Dog> dogList = new ArrayList<>(); // 몇마리의 강아지를 키우고 있나?
 
@@ -120,8 +121,13 @@ public class User {
 
 
     public void addDog(Dog dog) {
-        dogList.add(dog);
+        this.dogList.add(dog);
         dog.setUser(this);
+    }
+
+    public void removeDog(Dog dog) {
+        this.dogList.remove(dog);
+        dog.setUser(null);
     }
 
 
