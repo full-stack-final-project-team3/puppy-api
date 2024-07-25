@@ -22,10 +22,9 @@ public class DogSaveDto {
     private boolean isNeutered;
     private DogSize dogSize;
     private double weight;
-    private User user; // 누구의 강아지인가
 //    private List<String> allergies;
 
-    public Dog toEntity() {
+    public Dog toEntity(User user) {
         Dog dog = Dog.builder()
                 .dogName(this.dogName)
                 .dogBreed(this.dogBreed)
@@ -34,7 +33,7 @@ public class DogSaveDto {
                 .dogSize(findDogSize(this.weight))
                 .isNeutered(this.isNeutered)
                 .weight(this.weight)
-                .user(this.user)
+                .user(user)
 //                .allergies(new ArrayList<>()) // 빈 리스트로 초기화
                 .build();
 

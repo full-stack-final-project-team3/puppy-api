@@ -3,7 +3,9 @@ package com.yp.puppy.api.service.dog;
 
 import com.yp.puppy.api.dto.request.dog.DogSaveDto;
 import com.yp.puppy.api.entity.user.Dog;
+import com.yp.puppy.api.entity.user.User;
 import com.yp.puppy.api.repository.user.DogRepository;
+import com.yp.puppy.api.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +19,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class DogService {
 
     private final DogRepository dogRepository;
+    private final UserRepository userRepository;
 
 
-    public Dog saveDog(DogSaveDto dto) {
-        // 유저 아이디를 받을까? (동시에 저장하기 위해서)
+    public Dog saveDog(DogSaveDto dto, String userId) {
 
-        Dog dog = dto.toEntity();
+        User foundUser = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("유저 낫 파운드!"));
+        Dog dog = dto.toEntity(foundUser);
+//        foundUser.addDog(dog);
+
+//        userRepository.save(foundUser);
         dogRepository.save(dog);
         return dog;
     }

@@ -24,10 +24,11 @@ public class DogController {
      * @param dogSaveDto - 클라이언트로부터 받은 입력값
      * @return -
      */
-    @PostMapping("/register")
-    public ResponseEntity<?> registerDog(@RequestBody DogSaveDto dogSaveDto) {
+    @PostMapping("/register/{userId}")
+    public ResponseEntity<?> registerDog(@RequestBody DogSaveDto dogSaveDto,
+                                         @PathVariable String userId) {
         try {
-            Dog savedDog = dogService.saveDog(dogSaveDto);
+            Dog savedDog = dogService.saveDog(dogSaveDto, userId);
             return ResponseEntity.ok(savedDog);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
