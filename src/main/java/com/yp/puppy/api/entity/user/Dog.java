@@ -24,8 +24,6 @@ import java.util.List;
 public class Dog {
 
     @Id
-//    @GenericGenerator(strategy = "uuid2", name = "uuid-generator")
-//    @GeneratedValue(generator = "uuid-generator")
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "dog_id")
@@ -62,7 +60,7 @@ public class Dog {
     private boolean isDeleted; // true - 삭제함, false - 삭제안함
 
     @Setter
-    @OneToMany(mappedBy = "dog", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @ElementCollection
     @Builder.Default
     private List<Allergy> allergies = new ArrayList<>(); // 리스트 초기화
 
@@ -119,16 +117,20 @@ public class Dog {
         BOSTON_TERRIER,
         POMERANIAN,
         // ...
-        }
-
-    public void addAllergy(Allergy allergy) {
-        this.allergies.add(allergy);
-        allergy.setDog(this);
     }
+
+//    public void addAllergy(Allergy allergy) {
+//        this.allergies.add(allergy);
+//        allergy.setDog(this);
+//    }
 
     public void addUser(User user) {
         this.user = user;
         user.addDog(this);
+    }
+
+    public enum Allergy {
+        BEEF, CHICKEN, CORN, DAIRY, FISH, FLAX, LAMB, PORK, TURKEY, WHEAT
     }
 
 }

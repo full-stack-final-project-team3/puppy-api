@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yp.puppy.api.entity.shop.Treats;
 import com.yp.puppy.api.entity.shop.TreatsDetailPic;
 import com.yp.puppy.api.entity.shop.TreatsPic;
-import com.yp.puppy.api.entity.user.Allergy;
+import com.yp.puppy.api.entity.user.Dog;
 import lombok.*;
 
 import java.util.List;
@@ -27,8 +27,11 @@ public class TreatsSaveDto {
     @JsonProperty("treats-weight")
     private int treatsWeight; // 제품 무게
 
+    @JsonProperty("dog-size")
+    private Dog.DogSize dogSize; // 강아지 크기
+
     @JsonProperty("treats-allergy")
-    private List<Allergy> allergies; // 알러지 유발 항목
+    private List<Treats.Allergic> allergies; // 알러지 유발 항목
 
     @JsonProperty("treats-pics")
     private List<TreatsPic> treatsPics; // 제품 이미지 목록
@@ -41,6 +44,7 @@ public class TreatsSaveDto {
                 .treatsTitle(this.title)
                 .treatsType(this.treatsType)
                 .treatsWeight(this.treatsWeight)
+                .dogSize(this.dogSize)
                 .allergies(this.allergies)
                 .build();
 

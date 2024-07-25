@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import static com.yp.puppy.api.auth.TokenProvider.*;
 
 @RestController
-@RequestMapping("/shop")
+@RequestMapping("/bundle")
 @Slf4j
 @RequiredArgsConstructor
 public class BundleController {
@@ -18,7 +18,7 @@ public class BundleController {
     private final BundleService bundleService;
 
     // 1. 번들 생성
-    @PostMapping("/bundle/{dogId}")
+    @PostMapping("/{dogId}")
     public ResponseEntity<?> createBundle(TokenUserInfo userInfo,
                                           @PathVariable String dogId,
                                           @RequestBody BundleCreateDto dto

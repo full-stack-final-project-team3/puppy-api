@@ -1,13 +1,10 @@
 package com.yp.puppy.api.dto.request.dog;
 
-import com.yp.puppy.api.entity.user.Allergy;
 import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.entity.user.User;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.yp.puppy.api.entity.user.Dog.*;
 @Getter

@@ -2,10 +2,8 @@ package com.yp.puppy.api.service.dog;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.yp.puppy.api.dto.request.dog.DogSaveDto;
-import com.yp.puppy.api.entity.user.Allergy;
 import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.entity.user.User;
-import com.yp.puppy.api.repository.user.DogRepository;
 import com.yp.puppy.api.repository.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

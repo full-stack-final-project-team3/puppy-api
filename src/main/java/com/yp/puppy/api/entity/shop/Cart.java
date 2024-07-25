@@ -25,9 +25,6 @@ public class Cart {
     @Column(name = "cart_id")
     private String id;
 
-//    @Column(nullable = false)
-//    private int amount;
-
     @Column(nullable = false)
     private Long totalPrice;
 
@@ -45,7 +42,7 @@ public class Cart {
     private List<Bundle> bundles;
 
     public enum CartStatus {
-        PENDING, SHIPPED, CANCELLED
+        PENDING, ORDERED, CANCELLED
     }
 
     public enum SubsType {
