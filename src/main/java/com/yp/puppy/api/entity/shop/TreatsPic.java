@@ -1,5 +1,6 @@
 package com.yp.puppy.api.entity.shop;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -17,8 +18,6 @@ import javax.persistence.*;
 public class TreatsPic {
 
     @Id
-//    @GenericGenerator(strategy = "uuid2", name = "uuid-generator")
-//    @GeneratedValue(generator = "uuid-generator")
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "treats_pic_id")
@@ -30,6 +29,14 @@ public class TreatsPic {
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "treats_id")
+    @JsonManagedReference
     private Treats treats;
 
+    // 추가적인 유효성 검사 메서드
+    public void setTreatsPic(String treatsPic) {
+        if (treatsPic == null || treatsPic.isEmpty()) {
+            throw new IllegalArgumentException("Image URI cannot be null or empty");
+        }
+        this.treatsPic = treatsPic;
+    }
 }

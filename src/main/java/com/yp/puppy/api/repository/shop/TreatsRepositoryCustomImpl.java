@@ -28,19 +28,19 @@ public class TreatsRepositoryCustomImpl implements TreatsRepositoryCustom {
         List<Treats> treatsLists = factory
                 .selectFrom(treats)
                 .where(userDogAllergiesInfo != null && !userDogAllergiesInfo.isEmpty()
-                        ? treats.allergieList.any().notIn(userDogAllergiesInfo) // 알레르지가 유저의 알레르지 리스트에 포함되지 않는 경우
+                        ? treats.allergieList.any().in(userDogAllergiesInfo) // 유저의 알레르지 리스트에 포함된 경우
                         : null)
                 .orderBy(specifier(sort))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
-
+        
         // 총 데이터 수 조회
         long count = factory
                 .select(treats.count())
                 .from(treats)
                 .where(userDogAllergiesInfo != null && !userDogAllergiesInfo.isEmpty()
-                        ? treats.allergieList.any().notIn(userDogAllergiesInfo)
+                        ? treats.allergieList.any().in(userDogAllergiesInfo)
                         : null)
                 .fetchOne();
 

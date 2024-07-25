@@ -1,6 +1,7 @@
 package com.yp.puppy.api.entity.shop;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.yp.puppy.api.dto.request.shop.TreatsSaveDto;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -56,11 +57,13 @@ public class Treats {
 
     @Setter
     @OneToMany(mappedBy = "treats", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     @JsonIgnore
     private List<TreatsPic> treatsPics = new ArrayList<>();
 
     @Setter
     @OneToMany(mappedBy = "treats", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     @JsonIgnore
     private List<TreatsDetailPic> treatsDetailPics = new ArrayList<>();
 

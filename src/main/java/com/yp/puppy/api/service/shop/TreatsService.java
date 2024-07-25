@@ -51,6 +51,8 @@ public class TreatsService {
 
         Dog userDogInfo = dogRepository.findById(dogId).orElseThrow();
 
+        log.info("@@@@@@@@@@@@@@@@@@@@@@@",userInfo.toString());
+
         // 유저의 알레르지 리스트
         List<Dog.Allergy> dogInfoAllergies = userDogInfo != null ? userDogInfo.getAllergies() : null;
 
