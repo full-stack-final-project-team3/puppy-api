@@ -31,7 +31,7 @@ public class TreatsSaveDto {
     private Dog.DogSize dogSize; // 강아지 크기
 
     @JsonProperty("treats-allergy")
-    private List<Treats.Allergic> allergies; // 알러지 유발 항목
+    private List<Treats.Allergic> allergieList; // 알러지 유발 항목
 
     @JsonProperty("treats-pics")
     private List<TreatsPic> treatsPics; // 제품 이미지 목록
@@ -45,7 +45,7 @@ public class TreatsSaveDto {
                 .treatsType(this.treatsType)
                 .treatsWeight(this.treatsWeight)
                 .dogSize(this.dogSize)
-                .allergies(this.allergies)
+                .allergieList(this.allergieList)
                 .build();
 
         for (TreatsPic pic : this.treatsPics) {

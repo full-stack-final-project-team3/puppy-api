@@ -43,7 +43,7 @@ public class TreatsController {
      * @param pageNo 페이지 번호 (기본값 1)
      * @return 간식 목록
      */
-    @GetMapping("/{dogId}")
+    @GetMapping("/list/{dogId}")
     public ResponseEntity<?> getTreatsList(@RequestParam(required = false, defaultValue = "name") String sort,
                                            TokenUserInfo userInfo,
                                            @PathVariable String dogId,
