@@ -1,5 +1,6 @@
 package com.yp.puppy.api.entity.hotel;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -33,6 +34,7 @@ public class HotelImage {
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hotel_id")
+    @JsonBackReference
     private Hotel hotel; // 호텔
 
     @Setter
