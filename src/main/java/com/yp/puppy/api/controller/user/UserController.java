@@ -3,6 +3,7 @@ package com.yp.puppy.api.controller.user;
 import com.yp.puppy.api.dto.request.user.LoginRequestDto;
 import com.yp.puppy.api.dto.request.user.UserSaveDto;
 import com.yp.puppy.api.dto.response.user.LoginResponseDto;
+import com.yp.puppy.api.dto.response.user.UserResponseDto;
 import com.yp.puppy.api.exception.LoginFailException;
 import com.yp.puppy.api.service.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -74,6 +75,14 @@ public class UserController {
             String errorMessage = e.getMessage();
             return ResponseEntity.status(422).body(errorMessage);
         }
+    }
+
+    @GetMapping("/{email}")
+    public ResponseEntity<?> findUser(@PathVariable String email) {
+        log.info("find user by email : {}", email);
+        UserResponseDto foundUser = userService.findByEmail(email);
+        log.info("found user by email : {}", foundUser);
+        return ResponseEntity.ok().body(foundUser);
     }
 
 }

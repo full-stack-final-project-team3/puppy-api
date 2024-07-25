@@ -8,6 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// 인증에 관련된 dto
 public class LoginResponseDto {
     private String email;
     private String role; // 권한

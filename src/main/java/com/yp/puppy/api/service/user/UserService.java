@@ -5,6 +5,7 @@ import com.yp.puppy.api.auth.TokenProvider;
 import com.yp.puppy.api.dto.request.user.LoginRequestDto;
 import com.yp.puppy.api.dto.request.user.UserSaveDto;
 import com.yp.puppy.api.dto.response.user.LoginResponseDto;
+import com.yp.puppy.api.dto.response.user.UserResponseDto;
 import com.yp.puppy.api.entity.user.EmailVerification;
 import com.yp.puppy.api.entity.user.User;
 import com.yp.puppy.api.exception.LoginFailException;
@@ -254,4 +255,21 @@ public class UserService {
     }
 
 
+    public UserResponseDto findByEmail(String email) {
+        User foundUser = userRepository.findByEmail(email).orElseThrow();
+        UserResponseDto dto = UserResponseDto.builder()
+                .id(foundUser.getId())
+                .email(foundUser.getEmail())
+                .nickname(foundUser.getNickname())
+                .role(foundUser.getRole())
+                .birthday(foundUser.getBirthday())
+                .point(foundUser.getPoint())
+                .phoneNumber(foundUser.getPhoneNumber())
+                .profileUrl(foundUser.getProfileUrl())
+                .hasDogInfo(foundUser.isHasDogInfo())
+                .warningCount(foundUser.getWarningCount())
+                .dogList(foundUser.getDogList())
+                .build();
+        return dto;
+    }
 }
