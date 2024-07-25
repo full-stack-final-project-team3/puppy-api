@@ -51,12 +51,18 @@ public class TreatsService {
 
         Dog userDogInfo = dogRepository.findById(dogId).orElseThrow();
 
-        log.info("@@@@@@@@@@@@@@@@@@@@@@@",userInfo.toString());
-
         // 유저의 알레르지 리스트
         List<Dog.Allergy> dogInfoAllergies = userDogInfo != null ? userDogInfo.getAllergies() : null;
 
+        System.out.println("\n@@@@@@@@@@@@@@@@@@\n" + dogInfoAllergies + "\nn@@@@@@@@@@@@@@@@@@\n");
+
         List<Treats.Allergic> allergics = convertDogAllergiesToTreatsAllergies(dogInfoAllergies);
+
+        System.out.println("\n@@@@@@@@@@@@@@@@@@\n" + allergics + "\nn@@@@@@@@@@@@@@@@@@\n");
+
+        List<Treats> all = treatsRepository.findAll();
+
+        System.out.println("\n@@@@@@@@@@@@@@@@@@간식간식간식간식간식\n" + all + "\nn@@@@@@@@@@@@@@@@@@\n");
 
         Pageable pageable = PageRequest.of(pageNo - 1, 5);
 
@@ -64,9 +70,13 @@ public class TreatsService {
 
         List<Treats> treatsList = treatsPage.getContent();
 
-        List<TreatsListDto> treatsDtoList = treatsList.stream()
-                .map(TreatsListDto::new)
-                .collect(Collectors.toList());
+        System.out.println("\n@@@@@@@@@@@@@@@@@@\n" + treatsList + "\nn@@@@@@@@@@@@@@@@@@\n");
+
+        List<TreatsListDto> treatsDtoList = new ArrayList<>();
+        for (Treats treats : treatsList) {
+            TreatsListDto treatsListDto = new TreatsListDto(treats);
+            treatsDtoList.add(treatsListDto);
+        }
 
         // 렌더링 될 개수
         long totalElements = treatsPage.getTotalElements();

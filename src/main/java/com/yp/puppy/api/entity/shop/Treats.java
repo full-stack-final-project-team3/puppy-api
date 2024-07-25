@@ -58,20 +58,18 @@ public class Treats {
     @Setter
     @OneToMany(mappedBy = "treats", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    @JsonIgnore
     private List<TreatsPic> treatsPics = new ArrayList<>();
 
     @Setter
     @OneToMany(mappedBy = "treats", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    @JsonIgnore
     private List<TreatsDetailPic> treatsDetailPics = new ArrayList<>();
 
     @OneToMany(mappedBy = "treats", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews = new ArrayList<>();
 
     @Setter
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @Column(nullable = false)
     private List<Allergic> allergieList = new ArrayList<>();
 

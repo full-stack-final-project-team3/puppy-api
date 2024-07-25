@@ -23,29 +23,29 @@ public class TreatsRepositoryCustomImpl implements TreatsRepositoryCustom {
 
     @Override
     public Page<Treats> findTreats(List<Treats.Allergic> userDogAllergiesInfo, Pageable pageable, String sort) {
-
         // 페이징을 통한 조회
         List<Treats> treatsLists = factory
                 .selectFrom(treats)
                 .where(userDogAllergiesInfo != null && !userDogAllergiesInfo.isEmpty()
-                        ? treats.allergieList.any().in(userDogAllergiesInfo) // 유저의 알레르지 리스트에 포함된 경우
+                        ? treats.allergieList.any().in(userDogAllergiesInfo).not() // 유저의 알레르지 리스트와 겹치지 않는 경우
                         : null)
                 .orderBy(specifier(sort))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
-        
+
         // 총 데이터 수 조회
         long count = factory
                 .select(treats.count())
                 .from(treats)
                 .where(userDogAllergiesInfo != null && !userDogAllergiesInfo.isEmpty()
-                        ? treats.allergieList.any().in(userDogAllergiesInfo)
+                        ? treats.allergieList.any().in(userDogAllergiesInfo).not() // 유저의 알레르지 리스트와 겹치지 않는 경우
                         : null)
                 .fetchOne();
 
         return new PageImpl<>(treatsLists, pageable, count);
     }
+
 
     // 정렬 조건을 처리하는 메서드
     private OrderSpecifier<?> specifier(String sort) {

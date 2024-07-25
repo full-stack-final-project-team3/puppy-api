@@ -1,5 +1,6 @@
 package com.yp.puppy.api.entity.shop;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -28,7 +29,7 @@ public class TreatsDetailPic {
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "treats_id")
-    @JsonManagedReference
+    @JsonBackReference // Child side
     private Treats treats;
 
 }
