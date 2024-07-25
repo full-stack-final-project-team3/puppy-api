@@ -23,6 +23,7 @@ public class DogSaveDto {
     private LocalDate birthday;
     private Sex dogSex;
     private boolean isNeutered;
+    private DogSize dogSize;
     private double weight;
     private User user; // 누구의 강아지인가
 //    private List<String> allergies;
@@ -33,6 +34,7 @@ public class DogSaveDto {
                 .dogBreed(this.dogBreed)
                 .birthday(this.birthday)
                 .dogSex(this.dogSex)
+                .dogSize(findDogSize(this.weight))
                 .isNeutered(this.isNeutered)
                 .weight(this.weight)
                 .user(this.user)
@@ -48,4 +50,16 @@ public class DogSaveDto {
 
         return dog;
     }
+
+    private DogSize findDogSize(double weight) {
+        if (weight > 25) {
+            this.dogSize = DogSize.LARGE;
+        } else if (weight > 10) {
+            this.dogSize = DogSize.MEDIUM;
+        } else if (weight > 1) {
+            this.dogSize = DogSize.SMALL;
+        }
+        return dogSize;
+    }
+
 }

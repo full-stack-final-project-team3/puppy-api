@@ -29,4 +29,6 @@ public class DogRepositoryCustomImpl implements DogRepositoryCustom {
                 .fetchOne();
         return;
     }
+
+
 }
