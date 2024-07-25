@@ -1,5 +1,6 @@
 package com.yp.puppy.api.controller.dog;
 
+import com.yp.puppy.api.dto.request.dog.DogDetailDto;
 import com.yp.puppy.api.dto.request.dog.DogSaveDto;
 import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.service.dog.DogService;
@@ -58,7 +59,10 @@ public class DogController {
         }
     }
 
-//    @PatchMapping("/{dogId}")
-//    public ResponseEntity<?> updateDog(@PathVariable DogModifyDto dto,)
-//
+    @PatchMapping("/{dogId}")
+    public ResponseEntity<?> updateDog(@PathVariable DogDetailDto dto) {
+
+        return null;
+    }
+
 }

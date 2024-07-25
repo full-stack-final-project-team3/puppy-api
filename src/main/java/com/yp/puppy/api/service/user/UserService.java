@@ -43,9 +43,9 @@ public class UserService {
     private final TokenProvider tokenProvider;
 
 
-
-
-    /**                          이메일 중복확인 처리
+    /**
+     * 이메일 중복확인 처리
+     *
      * @param - email로 유저가 존재하나 탐색
      * @return - false. 중복이지만 마무리 되지 않은 경우, 메일 재발송 후 false 리턴
      * @return - true. 중복이 아닐 경우
@@ -70,7 +70,9 @@ public class UserService {
     }
 
 
-    /**                이메일을 통해 회원가입을 끝냈냐? 안끝냈냐 조회
+    /**
+     * 이메일을 통해 회원가입을 끝냈냐? 안끝냈냐 조회
+     *
      * @param email - 회원가입 유무 조회
      * @return - true는 인증코드 누락 || 비번 누락인 경우 코드 다시 생성, 보내주고 true리턴
      * @return - false는 회원가입을 끝낸 경우 false리턴
@@ -96,7 +98,6 @@ public class UserService {
         }
         return false;
     }
-
 
 
     private void generateAndSendCode(String email, User foundUser) {
@@ -143,7 +144,7 @@ public class UserService {
             log.info("{} 님에게 이메일 전송..", email);
             return code;
 
-        }  catch (MessagingException e) {
+        } catch (MessagingException e) {
             throw new RuntimeException(e);
         }
     }
@@ -151,7 +152,6 @@ public class UserService {
     private String generateVerificationCode() {
         return String.valueOf((int) (Math.random() * 9000 + 1000));
     }
-
 
 
     public void processSignUp(String email) {
@@ -180,9 +180,9 @@ public class UserService {
 
             // 인증코드가 있고 만료시간이 지나지 않았고 코드번호가 일치할 경우 인증 성공
             if (
-                   ev != null
-                && ev.getExpiryDate().isAfter(LocalDateTime.now())
-                && code.equals(ev.getVerificationCode())
+                    ev != null
+                            && ev.getExpiryDate().isAfter(LocalDateTime.now())
+                            && code.equals(ev.getVerificationCode())
             ) {
                 user.setEmailVerified(true); // 변경
                 userRepository.save(user); // update
@@ -232,8 +232,6 @@ public class UserService {
     }
 
 
-
-
     // 회원가입 마무리 단계
     public void confirmSignUp(UserSaveDto dto) {
 
@@ -251,6 +249,7 @@ public class UserService {
 
         user.confirm(encodedPassword, dto.getNickname());
 //        user.setNickname(dto.getNickname());
+        log.debug("saved user : {}", user);
         userRepository.save(user);
     }
 

@@ -20,6 +20,8 @@ public class DogService {
 
 
     public Dog saveDog(DogSaveDto dto) {
+        // 유저 아이디를 받을까? (동시에 저장하기 위해서)
+
         Dog dog = dto.toEntity();
         dogRepository.save(dog);
         return dog;
