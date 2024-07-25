@@ -5,6 +5,7 @@ import com.yp.puppy.api.entity.shop.Treats;
 import com.yp.puppy.api.entity.shop.TreatsDetailPic;
 import com.yp.puppy.api.entity.shop.TreatsPic;
 import com.yp.puppy.api.entity.user.Allergy;
+import com.yp.puppy.api.entity.user.Dog;
 import lombok.*;
 
 import java.util.List;
@@ -26,6 +27,9 @@ public class TreatsSaveDto {
 
     @JsonProperty("treats-weight")
     private int treatsWeight; // 제품 무게
+
+    @JsonProperty("dog-size")
+    private Dog.DogSize dogSize; // 알러지 유발 항목
 
     @JsonProperty("treats-allergy")
     private List<Allergy> allergies; // 알러지 유발 항목

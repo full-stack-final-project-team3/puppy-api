@@ -79,6 +79,7 @@ public class Treats {
         this.treatsTitle = dto.getTitle();
         this.treatsWeight = dto.getTreatsWeight();
         this.treatsType = dto.getTreatsType();
+        this.dogSize = dto.getDogSize();
         updateImages(dto.getTreatsPics());
         updateDetailImages(dto.getTreatsDetailPics());
 

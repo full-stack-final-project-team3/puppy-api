@@ -52,4 +52,12 @@ public class BundleService {
 
     }
 
+    // 2. 번들 삭제 중간 처리
+    public void deleteBundle(String bundleId) {
+
+        bundleRepository.deleteById(bundleId);
+
+    }
+
+    // 3. 번들 수정 중간 처리
 }

@@ -24,8 +24,8 @@ public class UpdateCartDto {
     @NotNull
     private Cart.SubsType subsType;
 
-    @NotNull
-    private Cart.CartStatus cartStatus;
+//    @NotNull
+//    private Cart.CartStatus cartStatus;
 
 
 }

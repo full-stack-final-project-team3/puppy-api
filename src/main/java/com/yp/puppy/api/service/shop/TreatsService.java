@@ -1,5 +1,6 @@
 package com.yp.puppy.api.service.shop;
 
+import com.yp.puppy.api.auth.TokenProvider;
 import com.yp.puppy.api.dto.request.shop.TreatsSaveDto;
 import com.yp.puppy.api.dto.response.shop.TreatsDetailDto;
 import com.yp.puppy.api.dto.response.shop.TreatsListDto;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.yp.puppy.api.auth.TokenProvider.*;
@@ -34,6 +36,18 @@ public class TreatsService {
     private final TreatsRepository treatsRepository;
     private final UserRepository userRepository;
     private final DogRepository dogRepository;
+
+    // 0. 유저의 강아지 정보 출력하기
+    public List<Dog> showUsersDogList(TokenUserInfo userInfo) {
+
+        String userId = userInfo.getUserId();
+
+        User user = userRepository.findById(userId).orElseThrow();
+
+        List<Dog> dogList = user.getDogList();
+
+        return dogList;
+    }
 
     // 1. 상품 전체 조회 중간처리
     public Map<String, Object> getTreatsList(TokenUserInfo userInfo, String dogId, int pageNo, String sort) {
@@ -96,20 +110,5 @@ public class TreatsService {
 
         treatsRepository.save(foundTreats);
     }
-
-//    // 유저의 강아지 정보 찾기
-//    private Dog findUserDogInfo(TokenUserInfo userInfo) {
-//
-//        String userEmail = userInfo.getEmail();
-//
-//        User user = userRepository.findByEmail(userEmail).orElseThrow();
-//
-//        List<Dog> dogList = user.getDogList();
-//
-//        Dog userDogInfo = dogList.get(0);
-//
-//        return userDogInfo;
-//
-//    }
 
 }

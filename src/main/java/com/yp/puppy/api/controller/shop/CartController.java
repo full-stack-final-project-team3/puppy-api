@@ -2,6 +2,7 @@ package com.yp.puppy.api.controller.shop;
 
 import com.yp.puppy.api.dto.request.shop.UpdateCartDto;
 import com.yp.puppy.api.entity.shop.Cart;
+import com.yp.puppy.api.service.shop.BundleService;
 import com.yp.puppy.api.service.shop.CartService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import static com.yp.puppy.api.auth.TokenProvider.*;
 public class CartController {
 
     private final CartService cartService;
+    private final BundleService bundleService;
 
     // 1. 유저가 생성한 번들을 포함한 장바구니 생성
     @PostMapping
@@ -58,5 +60,19 @@ public class CartController {
             return ResponseEntity.status(401).body(e.getMessage());
         }
     }
+
+    // 4. 장바구니에서 번들 삭제
+    @DeleteMapping("/{bundleId}")
+    public ResponseEntity<?> deleteTreats(@PathVariable String bundleId) {
+        try {
+            bundleService.deleteBundle(bundleId);
+            return ResponseEntity.ok().body("삭제성공");
+        } catch (Exception e) {
+            log.warn("번들 삭제에 실패했습니다.: {}", e.getMessage());
+            return ResponseEntity.status(404).body("번들을 찾지 못햇습니다..");
+        }
+    }
+
+    // 5. 장바구니에서 번들의 구성 수정
 
 }

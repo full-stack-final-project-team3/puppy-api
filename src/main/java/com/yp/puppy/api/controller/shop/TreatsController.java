@@ -2,6 +2,7 @@ package com.yp.puppy.api.controller.shop;
 
 import com.yp.puppy.api.dto.request.shop.TreatsSaveDto;
 import com.yp.puppy.api.dto.response.shop.TreatsDetailDto;
+import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.service.shop.TreatsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,19 +11,30 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 import static com.yp.puppy.api.auth.TokenProvider.*;
 
 @RestController
-@RequestMapping("/shop")
+@RequestMapping("/treats")
 @Slf4j
 @RequiredArgsConstructor
 public class TreatsController {
 
     private final TreatsService treatsService;
 
-    // 0. 유저의 개 선택하기
+    // 0. 유저의 강아지 목록 보여주기
+    @GetMapping
+    public ResponseEntity<?> showDogList(TokenUserInfo userInfo) {
+
+            List<Dog> UsersDoglist = treatsService.showUsersDogList(userInfo);
+
+            return ResponseEntity.ok().body(UsersDoglist);
+
+            // UserDogList가 null이면 그냥 아무거나 추천? 개 등록 시키기?
+
+    }
 
     // 1. 상품 전체 조회
 
@@ -31,12 +43,11 @@ public class TreatsController {
      * @param pageNo 페이지 번호 (기본값 1)
      * @return 간식 목록
      */
-    @GetMapping("/treats/{dogId}")
+    @GetMapping("/{dogId}")
     public ResponseEntity<?> getTreatsList(@RequestParam(required = false, defaultValue = "name") String sort,
                                            TokenUserInfo userInfo,
                                            @PathVariable String dogId,
                                            @RequestParam(defaultValue = "1") int pageNo) {
-        // 개를 선택 할 수 있는 페이지 만들기
 
         // userInfo가 null이면 에러 개가 없다면 그냥 아무거나 / 개 정보 등록
 
@@ -56,7 +67,7 @@ public class TreatsController {
      * @param treatsId URL 경로에서 제공된 제품의 식별자
      * @return 제품의 상세 정보를 반환합니다. 제품 ID가 유효하지 않으면, 400 Bad Request 를 반환.
      */
-    @GetMapping("/treats/{treatsId}")
+    @GetMapping("/{treatsId}")
     public ResponseEntity<?> getTreats(@PathVariable String treatsId) {
         try {
             TreatsDetailDto detailDto = treatsService.getTreatsDetail(treatsId);

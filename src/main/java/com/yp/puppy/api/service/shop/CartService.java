@@ -31,12 +31,14 @@ public class CartService {
 
     // 2. 유저의 장바구니 정보 조회 중간 처리
     public Cart getCart(String userId) {
+
+        // PENDING 상태인 장바구니만 조회
         User user = userRepository.findById(userId).orElseThrow();
 
         return user.getCart();
     }
 
-    // 3. 장바구니 상태 변경 중간 처리
+    // 3. 장바구니 상태 변경 중간 처리 (유저가 구매를 클릭하면)
     public void updateCart(String userId, UpdateCartDto dto) {
 
         User user = userRepository.findById(userId).orElseThrow();
@@ -45,11 +47,14 @@ public class CartService {
 
         cart.setSubsType(dto.getSubsType());
 
+        cartRepository.save(cart);
     }
 
-
     private Cart createCart(User user) {
+
+        // 번들의 상태가 PENDING 인 번들만 가져와야함
         List<Bundle> createdBundles = user.getCreatedBundles();
+
         Long totalPrice = calculateTotalPrice(createdBundles);
 
         Cart cart = new Cart();
