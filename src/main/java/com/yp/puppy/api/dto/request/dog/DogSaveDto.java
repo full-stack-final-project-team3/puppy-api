@@ -35,7 +35,7 @@ public class DogSaveDto {
                 .dogSize(findDogSize(this.weight))
                 .isNeutered(this.isNeutered)
                 .weight(this.weight)
-                .user(this.user)
+                .user(user)
                 .allergies(this.allergies) // 빈 리스트로 초기화
                 .build();
 

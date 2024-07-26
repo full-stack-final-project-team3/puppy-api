@@ -59,7 +59,7 @@ public class User {
 
     //    @Column(nullable = false, unique = true, length = 20)
     @Setter
-    @ColumnDefault("user")
+    @ColumnDefault("'user'")
     private String nickname;
 
     private LocalDate birthday;

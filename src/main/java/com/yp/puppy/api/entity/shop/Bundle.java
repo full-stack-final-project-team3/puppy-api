@@ -42,15 +42,22 @@ public class Bundle {
     @JoinColumn(name = "dog_id")
     private Dog dog;
 
+    public void setDog(Dog dog) {
+        this.dog = dog;
+        if (dog != null) {
+            dog.setBundle(this); // Dog의 bundle 필드도 설정
+        }
+    }
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id")
     private Cart cart;
 
-    public void setBundleTitle(String bundleTitle) {
-        this.bundleTitle = "강아지 맞춤 간식 패키지"; // 고정된 값 할당
-    }
-
-    public void setBundlePrice(Long bundlePrice) {
-        this.bundlePrice = 29900L;
-    }
+//    public void setBundleTitle(String bundleTitle) {
+//        this.bundleTitle = "강아지 맞춤 간식 패키지"; // 고정된 값 할당
+//    }
+//
+//    public void setBundlePrice(Long bundlePrice) {
+//        this.bundlePrice = 29900L;
+//    }
 }

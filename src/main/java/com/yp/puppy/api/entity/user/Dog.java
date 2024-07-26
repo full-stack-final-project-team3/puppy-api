@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@ToString(exclude = {"user", "dogProfileUrl"})
+@ToString(exclude = {"user", "dogProfileUrl", "bundle"})
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -88,7 +88,8 @@ public class Dog {
     @JoinColumn(name = "room_id")
     private Room room;
 
-    @OneToOne
+    @OneToOne(mappedBy = "dog", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Setter
     private Bundle bundle;
 
     @PrePersist
@@ -126,7 +127,6 @@ public class Dog {
         POMERANIAN,
         // ...
     }
-
 
     public void addUser(User user) {
         this.user = user;
