@@ -10,7 +10,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@ToString
+@ToString(exclude = "profileUrl")
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor

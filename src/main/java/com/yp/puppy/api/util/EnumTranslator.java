@@ -16,7 +16,7 @@ public class EnumTranslator {
             case LARGE:
                 return "대형견";
             default:
-                return size.name();
+                return size.name(); // 기본적으로 영어 이름 반환
         }
     }
 
@@ -61,7 +61,7 @@ public class EnumTranslator {
             case POMERANIAN:
                 return "포메라니언";
             default:
-                return breed.name(); // 기본적으로 영어 이름 반환
+                return breed.name();
         }
     }
 

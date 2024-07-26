@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@ToString(exclude = "user")
+@ToString(exclude = {"user", "dogProfileUrl"})
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
