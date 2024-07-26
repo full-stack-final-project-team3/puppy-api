@@ -7,6 +7,7 @@ import com.yp.puppy.api.entity.shop.Treats;
 import com.yp.puppy.api.entity.shop.TreatsPic;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -20,6 +21,7 @@ public class TreatsListDto {
     private String id;
     private Treats.TreatsType type; // 제품 타입
     private String title; // 제품 이름
+    private List<Treats.Allergic> allergieList = new ArrayList<>();
 
     @JsonProperty("treats-pics")
     private List<TreatsPic> treatsPics; // 제품 이미지 목록
@@ -28,6 +30,7 @@ public class TreatsListDto {
         this.id = treats.getId();
         this.title = treats.getTreatsTitle();
         this.type = treats.getTreatsType();
+        this.allergieList = treats.getAllergieList();
         this.treatsPics = treats.getTreatsPics();
     }
 }

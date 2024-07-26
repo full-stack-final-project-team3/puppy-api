@@ -5,6 +5,7 @@ import com.yp.puppy.api.entity.user.User;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static com.yp.puppy.api.entity.user.Dog.*;
 @Getter
@@ -22,7 +23,8 @@ public class DogSaveDto {
     private boolean isNeutered;
     private DogSize dogSize;
     private double weight;
-//    private List<String> allergies;
+    private User user; // 누구의 강아지인가
+    private List<Dog.Allergy> allergies;
 
     public Dog toEntity(User user) {
         Dog dog = Dog.builder()
@@ -33,8 +35,8 @@ public class DogSaveDto {
                 .dogSize(findDogSize(this.weight))
                 .isNeutered(this.isNeutered)
                 .weight(this.weight)
-                .user(user)
-//                .allergies(new ArrayList<>()) // 빈 리스트로 초기화
+                .user(this.user)
+                .allergies(this.allergies) // 빈 리스트로 초기화
                 .build();
 
 //        for (String allergyType : this.allergies) {

@@ -1,5 +1,7 @@
 package com.yp.puppy.api.entity.shop;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -17,8 +19,6 @@ import javax.persistence.*;
 public class TreatsDetailPic {
 
     @Id
-//    @GenericGenerator(strategy = "uuid2", name = "uuid-generator")
-//    @GeneratedValue(generator = "uuid-generator")
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "treats_detail_pic_id")
@@ -29,6 +29,7 @@ public class TreatsDetailPic {
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "treats_id")
+    @JsonBackReference // Child side
     private Treats treats;
 
 }

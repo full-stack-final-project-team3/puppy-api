@@ -19,10 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.yp.puppy.api.auth.TokenProvider.*;
@@ -54,15 +51,32 @@ public class TreatsService {
 
         Dog userDogInfo = dogRepository.findById(dogId).orElseThrow();
 
+        // 유저의 알레르지 리스트
+        List<Dog.Allergy> dogInfoAllergies = userDogInfo != null ? userDogInfo.getAllergies() : null;
+
+        System.out.println("\n@@@@@@@@@@@@@@@@@@\n" + dogInfoAllergies + "\nn@@@@@@@@@@@@@@@@@@\n");
+
+        List<Treats.Allergic> allergics = convertDogAllergiesToTreatsAllergies(dogInfoAllergies);
+
+        System.out.println("\n@@@@@@@@@@@@@@@@@@\n" + allergics + "\nn@@@@@@@@@@@@@@@@@@\n");
+
+        List<Treats> all = treatsRepository.findAll();
+
+        System.out.println("\n@@@@@@@@@@@@@@@@@@간식간식간식간식간식\n" + all + "\nn@@@@@@@@@@@@@@@@@@\n");
+
         Pageable pageable = PageRequest.of(pageNo - 1, 5);
 
-        Page<Treats> treatsPage = treatsRepository.findTreats(userDogInfo, pageable, sort);
+        Page<Treats> treatsPage = treatsRepository.findTreats(allergics, pageable, sort);
 
         List<Treats> treatsList = treatsPage.getContent();
 
-        List<TreatsListDto> treatsDtoList = treatsList.stream()
-                .map(TreatsListDto::new)
-                .collect(Collectors.toList());
+        System.out.println("\n@@@@@@@@@@@@@@@@@@\n" + treatsList + "\nn@@@@@@@@@@@@@@@@@@\n");
+
+        List<TreatsListDto> treatsDtoList = new ArrayList<>();
+        for (Treats treats : treatsList) {
+            TreatsListDto treatsListDto = new TreatsListDto(treats);
+            treatsDtoList.add(treatsListDto);
+        }
 
         // 렌더링 될 개수
         long totalElements = treatsPage.getTotalElements();
@@ -109,6 +123,43 @@ public class TreatsService {
         foundTreats.changeTreats(dto);
 
         treatsRepository.save(foundTreats);
+    }
+
+    public List<Treats.Allergic> convertDogAllergiesToTreatsAllergies(List<Dog.Allergy> dogAllergies) {
+        if (dogAllergies == null) {
+            return Collections.emptyList();
+        }
+
+        return dogAllergies.stream()
+                .map(this::mapToTreatsAllergy)
+                .collect(Collectors.toList());
+    }
+
+    private Treats.Allergic mapToTreatsAllergy(Dog.Allergy dogAllergy) {
+        switch (dogAllergy) {
+            case BEEF:
+                return Treats.Allergic.BEEF;
+            case CHICKEN:
+                return Treats.Allergic.CHICKEN;
+            case CORN:
+                return Treats.Allergic.CORN;
+            case DAIRY:
+                return Treats.Allergic.DAIRY;
+            case FISH:
+                return Treats.Allergic.FISH;
+            case FLAX:
+                return Treats.Allergic.FLAX;
+            case LAMB:
+                return Treats.Allergic.LAMB;
+            case PORK:
+                return Treats.Allergic.PORK;
+            case TURKEY:
+                return Treats.Allergic.TURKEY;
+            case WHEAT:
+                return Treats.Allergic.WHEAT;
+            default:
+                return null; // 매핑되지 않는 경우
+        }
     }
 
 }

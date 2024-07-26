@@ -62,7 +62,7 @@ public class Dog {
     private boolean isDeleted; // true - 삭제함, false - 삭제안함
 
     @Setter
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
     private List<Allergy> allergies = new ArrayList<>(); // 리스트 초기화
 
