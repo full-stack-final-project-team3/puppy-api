@@ -28,7 +28,7 @@ public class BundleService {
     private final TreatsRepository treatsRepository;
     private final DogRepository dogRepository;
 
-    // 1. 번들 생성 중간 처리
+    @Transactional
     public void createBundle(String userEmail, String dogId, BundleCreateDto dto) {
         Dog dog = dogRepository.findById(dogId)
                 .orElseThrow(() -> new IllegalArgumentException("Dog not found with id: " + dogId));
@@ -37,7 +37,6 @@ public class BundleService {
 
         Bundle bundle = new Bundle();
         bundle.setUser(user);
-        bundle.setDog(dog);
         bundle.setBundlePrice(29900L); // 기본값 설정
         bundle.setBundleTitle("강아지 맞춤 간식 패키지"); // 기본값 설정
 
@@ -53,14 +52,22 @@ public class BundleService {
         }
 
         bundle.setTreats(treatsList);
-        bundleRepository.save(bundle);
 
-        // Bundle이 Dog에 설정되도록 추가
-        dog.setBundle(bundle); // Dog의 bundle 필드에 Bundle 설정
-        dogRepository.save(dog);
+        log.info("Dog before saving: {}", dog);
+        log.info("Bundle before saving: {}", bundle);
 
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@dog.getBundle() = \n\n" + dog.getBundle());
+        // Dog에 Bundle 설정
+        dog.setBundle(bundle);
+        bundle.setDog(dog); // 양방향 관계 설정
+
+        // Bundle 저장
+        bundleRepository.save(bundle); // Bundle을 먼저 저장
+
+        // Dog 저장
+        dogRepository.save(dog); // Dog 저장
     }
+
+
 
 
     // 2. 번들 삭제 중간 처리

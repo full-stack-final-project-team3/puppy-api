@@ -1,5 +1,6 @@
 package com.yp.puppy.api.entity.shop;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.entity.user.User;
 import lombok.*;
@@ -38,16 +39,9 @@ public class Bundle {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "dog_id")
     private Dog dog;
-
-    public void setDog(Dog dog) {
-        this.dog = dog;
-        if (dog != null) {
-            dog.setBundle(this); // Dog의 bundle 필드도 설정
-        }
-    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id")
