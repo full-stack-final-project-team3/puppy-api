@@ -1,6 +1,5 @@
 package com.yp.puppy.api.entity.shop;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.yp.puppy.api.dto.request.shop.TreatsSaveDto;
 import lombok.*;

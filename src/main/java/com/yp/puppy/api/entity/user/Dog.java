@@ -6,6 +6,7 @@ import com.yp.puppy.api.entity.shop.Bundle;
 import com.yp.puppy.api.entity.shop.Cart;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@ToString(exclude = "user")
+@ToString(exclude = {"user", "dogProfileUrl"})
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -60,6 +61,10 @@ public class Dog {
 
     @Setter
     private boolean isDeleted; // true - 삭제함, false - 삭제안함
+
+    @Setter
+    @Column(length = 500000)
+    private String dogProfileUrl; // 강아지 사진 0725 추가
 
     @Setter
     @ElementCollection(fetch = FetchType.EAGER)
@@ -122,10 +127,6 @@ public class Dog {
         // ...
     }
 
-//    public void addAllergy(Allergy allergy) {
-//        this.allergies.add(allergy);
-//        allergy.setDog(this);
-//    }
 
     public void addUser(User user) {
         this.user = user;
