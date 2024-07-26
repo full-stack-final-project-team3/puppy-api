@@ -62,6 +62,10 @@ public class Dog {
     private boolean isDeleted; // true - 삭제함, false - 삭제안함
 
     @Setter
+    @Column(length = 500000)
+    private String dogProfileUrl; // 강아지 사진 0725 추가
+
+    @Setter
     @ElementCollection
     @Builder.Default
     private List<Allergy> allergies = new ArrayList<>(); // 리스트 초기화
@@ -122,10 +126,6 @@ public class Dog {
         // ...
     }
 
-//    public void addAllergy(Allergy allergy) {
-//        this.allergies.add(allergy);
-//        allergy.setDog(this);
-//    }
 
     public void addUser(User user) {
         this.user = user;

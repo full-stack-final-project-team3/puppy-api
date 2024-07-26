@@ -6,6 +6,7 @@ import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.entity.user.User;
 import com.yp.puppy.api.repository.user.DogRepository;
 import com.yp.puppy.api.repository.user.UserRepository;
+import com.yp.puppy.api.util.EnumTranslator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,8 @@ public class DogService {
 
     private final DogRepository dogRepository;
     private final UserRepository userRepository;
+
+    private final EnumTranslator enumTranslator;
 
 
     public Dog saveDog(DogSaveDto dto, String userId) {
@@ -47,6 +50,8 @@ public class DogService {
 
     public List<Dog> findMyPuppies(String userId) {
         User foundUser = userRepository.findById(userId).orElseThrow(NoSuchElementException::new);
-        return dogRepository.findByUser(foundUser);
+        List<Dog> foundList = dogRepository.findByUser(foundUser);
+
+        return foundList;
     }
 }
