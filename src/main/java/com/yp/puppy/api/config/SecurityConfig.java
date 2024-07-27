@@ -37,6 +37,7 @@ public class SecurityConfig {
                 .formLogin().disable() // 로그인창 off
                 // 여기까지는 시큐리티에서 기본제공하는 기능 다 off
                 .authorizeRequests() // 요청 별로 인가 설정
+
                 .antMatchers("/**").permitAll() // 인가 설정 off
         ;
 
