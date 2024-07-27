@@ -28,9 +28,9 @@ public class DogService {
     private final EnumTranslator enumTranslator;
 
 
-    public Dog saveDog(DogSaveDto dto, String userId) {
+    public Dog saveDog(DogSaveDto dto, String email) {
 
-        User foundUser = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("유저 낫 파운드!"));
+        User foundUser = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("유저 낫 파운드!"));
         Dog dog = dto.toEntity(foundUser);
 //        foundUser.addDog(dog);
 

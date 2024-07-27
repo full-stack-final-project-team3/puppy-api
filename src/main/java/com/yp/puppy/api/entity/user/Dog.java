@@ -103,7 +103,7 @@ public class Dog {
     }
 
     public enum Sex {
-        MALE, FEMALE
+        MALE, FEMALE, NEUTER
     }
 
     public enum Reason {
