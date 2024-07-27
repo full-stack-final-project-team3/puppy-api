@@ -25,6 +25,7 @@ public class DogSaveDto {
     private double weight;
     private User user; // 누구의 강아지인가
     private List<Dog.Allergy> allergies;
+    private String dogProfileUrl;
 
     public Dog toEntity(User user) {
         Dog dog = Dog.builder()
@@ -34,6 +35,7 @@ public class DogSaveDto {
                 .dogSex(this.dogSex)
                 .dogSize(findDogSize(this.weight))
                 .isNeutered(this.isNeutered)
+                .dogProfileUrl(this.dogProfileUrl)
                 .weight(this.weight)
                 .user(user)
                 .allergies(this.allergies) // 빈 리스트로 초기화
