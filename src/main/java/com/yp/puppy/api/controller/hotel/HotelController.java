@@ -3,8 +3,11 @@ package com.yp.puppy.api.controller.hotel;
 import com.yp.puppy.api.auth.TokenProvider;
 import com.yp.puppy.api.auth.TokenProvider.TokenUserInfo;
 import com.yp.puppy.api.dto.request.hotel.HotelSaveDto;
+import com.yp.puppy.api.dto.response.hotel.FavoriteDTO;
 import com.yp.puppy.api.dto.response.hotel.HotelOneDto;
+import com.yp.puppy.api.entity.hotel.Favorite;
 import com.yp.puppy.api.entity.hotel.Hotel;
+import com.yp.puppy.api.service.hotel.FavoriteService;
 import com.yp.puppy.api.service.hotel.HotelService;
 import com.yp.puppy.api.util.FileUtil;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +32,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/hotel")
@@ -37,6 +41,7 @@ import java.util.*;
 public class HotelController {
 
     private final HotelService hotelService;
+    private final FavoriteService favoriteService;
 
     @Value("${file.upload-dir}")
     private String uploadDir;
@@ -178,6 +183,61 @@ public class HotelController {
         } catch (MalformedURLException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+
+
+    // 6. 호텔 즐겨찾기 추가
+    /**
+     * @param userInfo 사용자 정보
+     * @param hotelId 즐겨찾기할 호텔의 아이디
+     * @return 즐겨찾기 추가 성공 메시지 또는 오류 메시지
+     */
+    @PostMapping("/{hotelId}/favorite")
+    public ResponseEntity<?> addFavorite(@AuthenticationPrincipal TokenUserInfo userInfo, @PathVariable String hotelId) {
+        try {
+            String result = favoriteService.addFavorite(userInfo.getUserId(), hotelId);
+            return ResponseEntity.ok(result);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("즐겨찾기가 이미 존재합니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("즐겨찾기 추가에 실패했습니다.");
+        }
+    }
+
+
+    // 7. 호텔 즐겨찾기 제거
+    /**
+     * @param userInfo 사용자 정보
+     * @param hotelId 즐겨찾기에서 제거할 호텔의 아이디
+     * @return 즐겨찾기 제거 성공 메시지 또는 오류 메시지
+     */
+    @DeleteMapping("/{hotelId}/favorite")
+    public ResponseEntity<?> removeFavorite(@AuthenticationPrincipal TokenUserInfo userInfo, @PathVariable String hotelId) {
+        try {
+            favoriteService.removeFavorite(userInfo.getUserId(), hotelId);
+            return ResponseEntity.ok("즐겨찾기가 성공적으로 제거되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("즐겨찾기 제거에 실패했습니다.");
+        }
+    }
+
+    // 8. 사용자 즐겨찾기 조회
+    /**
+     * @param userInfo 사용자 정보
+     * @return 사용자의 즐겨찾기 목록과 상태 코드
+     */
+    @GetMapping("/favorites")
+    public ResponseEntity<?> getUserFavorites(@AuthenticationPrincipal TokenUserInfo userInfo) {
+        try {
+            List<Favorite> favorites = favoriteService.getFavoritesByUser(userInfo.getUserId());
+            List<FavoriteDTO> favoriteDTOs = favorites.stream()
+                    .map(FavoriteDTO::new)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(favoriteDTOs);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("즐겨찾기 조회에 실패했습니다.");
         }
     }
 
