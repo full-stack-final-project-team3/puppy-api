@@ -39,7 +39,6 @@ public class Cart {
     private User user;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference
     private List<Bundle> bundles;
 
     public enum CartStatus {

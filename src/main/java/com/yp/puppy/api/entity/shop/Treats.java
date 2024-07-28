@@ -53,7 +53,7 @@ public class Treats {
 
     @ManyToOne
     @JoinColumn(name = "bundle_id")
-//    @JsonBackReference
+    @JsonBackReference
     private Bundle bundle;
 
     @Setter

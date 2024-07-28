@@ -36,7 +36,7 @@ public class Bundle {
     private Long bundlePrice; // 패키지 가격
 
     @OneToMany(mappedBy = "bundle", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonIgnore
+    @JsonManagedReference
     private List<Treats> treats;
 
     @ManyToOne(fetch = FetchType.LAZY)
