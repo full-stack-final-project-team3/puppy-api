@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.HashMap;
 
 @RestController
@@ -37,7 +39,7 @@ public class SnsLoginController {
 
     // 인가코드를 받는 요청 메서드
     @GetMapping("/oauth/kakao")
-    public ResponseEntity<?> kakaoCode(@RequestParam("code") String code) {
+    public void kakaoCode(@RequestParam("code") String code, HttpServletResponse response) throws IOException {
         log.info("카카오 인가코드 발급 - {}", code);
 
         HashMap<String, Object> requestParams = new HashMap<>();
@@ -45,9 +47,11 @@ public class SnsLoginController {
         requestParams.put("redirect", redirectUrl);
         requestParams.put("code", code);
 
-        snsLoginService.kakaoLogin(requestParams);
-        // 인증 액세스 토큰 발급 요청
-        return ResponseEntity.ok("토큰 요청이 성공적으로 접수되었습니다.");
+        try {
+            snsLoginService.kakaoLogin(requestParams, response);
+            response.sendRedirect("http://localhost:3000"); // 리액트 앱으로 리디렉트
+        } catch (Exception e) {
+            response.sendRedirect("http://localhost:3000/login/failure"); // 에러 발생 시 리디렉트
+        }
     }
-
 }
