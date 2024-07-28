@@ -1,6 +1,7 @@
 package com.yp.puppy.api.controller.user;
 
 import com.yp.puppy.api.dto.request.user.LoginRequestDto;
+import com.yp.puppy.api.dto.request.user.UserInfoModifyDto;
 import com.yp.puppy.api.dto.request.user.UserSaveDto;
 import com.yp.puppy.api.dto.response.user.LoginResponseDto;
 import com.yp.puppy.api.dto.response.user.UserResponseDto;
@@ -77,12 +78,27 @@ public class UserController {
         }
     }
 
+
+    // 유저 단일 조회
     @GetMapping("/{email}")
     public ResponseEntity<?> findUser(@PathVariable String email) {
         log.info("find user by email : {}", email);
-        UserResponseDto foundUser = userService.findByEmail(email);
+        UserResponseDto foundUser = userService.findUserByEmail(email);
         log.info("found user by email : {}", foundUser);
         return ResponseEntity.ok().body(foundUser);
+    }
+
+    // 유저 정보 수정 (강아지도 조회해서 다시 넣어줘야함!)
+    @PatchMapping("/{email}")
+    public ResponseEntity<?> modify(@RequestBody UserInfoModifyDto dto,
+                                    @PathVariable String email) {
+        log.info("modify user info - {}", dto);
+        try {
+            userService.modifyUserInfo(dto, email);
+            return ResponseEntity.ok().body("success");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("실패..");
+        }
     }
 
 

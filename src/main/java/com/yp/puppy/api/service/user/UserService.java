@@ -3,12 +3,15 @@ package com.yp.puppy.api.service.user;
 
 import com.yp.puppy.api.auth.TokenProvider;
 import com.yp.puppy.api.dto.request.user.LoginRequestDto;
+import com.yp.puppy.api.dto.request.user.UserInfoModifyDto;
 import com.yp.puppy.api.dto.request.user.UserSaveDto;
 import com.yp.puppy.api.dto.response.user.LoginResponseDto;
 import com.yp.puppy.api.dto.response.user.UserResponseDto;
+import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.entity.user.EmailVerification;
 import com.yp.puppy.api.entity.user.User;
 import com.yp.puppy.api.exception.LoginFailException;
+import com.yp.puppy.api.repository.user.DogRepository;
 import com.yp.puppy.api.repository.user.EmailVerificationRepository;
 import com.yp.puppy.api.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -31,6 +35,7 @@ import java.time.LocalDateTime;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final DogRepository dogRepository;
 
     @Value("${yp.mail.host}")
     private String mailHost;
@@ -255,7 +260,12 @@ public class UserService {
     }
 
 
-    public UserResponseDto findByEmail(String email) {
+    /**
+     *          이메일로 유저를 찾아서 responseDto로 변환
+     * @param email - 클라이언트에게 전송받은 이메일
+     * @return - 렌더링용 dto로 변환
+     */
+    public UserResponseDto findUserByEmail(String email) {
         User foundUser = userRepository.findByEmail(email).orElseThrow();
         UserResponseDto dto = UserResponseDto.builder()
                 .id(foundUser.getId())
@@ -267,9 +277,30 @@ public class UserService {
                 .phoneNumber(foundUser.getPhoneNumber())
                 .profileUrl(foundUser.getProfileUrl())
                 .hasDogInfo(foundUser.isHasDogInfo())
+                .realName(foundUser.getRealName())
+                .address(foundUser.getAddress())
                 .warningCount(foundUser.getWarningCount())
                 .dogList(foundUser.getDogList())
                 .build();
         return dto;
+    }
+
+
+    public void modifyUserInfo(UserInfoModifyDto dto, String email) {
+        User foundUser = userRepository.findByEmail(email).orElseThrow();
+        List<Dog> foundList = dogRepository.findByUser(foundUser);
+
+
+        String encodedPassword = encoder.encode(dto.getPassword());
+
+        foundUser.setEmail(dto.getEmail());
+        foundUser.setNickname(dto.getNickname());
+        foundUser.setPassword(encodedPassword);
+        foundUser.setAddress(dto.getAddress());
+        foundUser.setPhoneNumber(dto.getPhoneNumber());
+        for (Dog dog : foundList) {
+            foundUser.addDog(dog);
+        }
+        userRepository.save(foundUser);
     }
 }
