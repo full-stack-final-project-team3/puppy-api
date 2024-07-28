@@ -1,6 +1,6 @@
 package com.yp.puppy.api.controller.shop;
 
-import com.yp.puppy.api.dto.request.shop.UpdateCartDto;
+import com.yp.puppy.api.dto.request.shop.UpdateBundleDto;
 import com.yp.puppy.api.entity.shop.Cart;
 import com.yp.puppy.api.service.shop.BundleService;
 import com.yp.puppy.api.service.shop.CartService;
@@ -48,13 +48,13 @@ public class CartController {
 
     }
 
-    // 3. 장바구니 상태 변경
+    // 3. 번들 구독 상태 변경
     @PutMapping
     public ResponseEntity<?> checkOutCart(TokenUserInfo userInfo,
-                                          UpdateCartDto dto) {
+                                          UpdateBundleDto dto) {
         try {
-            cartService.updateCart(userInfo.getUserId(), dto);
-            return ResponseEntity.ok().body("장바구니 수정 성공");
+            cartService.updateCheckOutInfoCart(userInfo.getUserId(), dto);
+            return ResponseEntity.ok().body("장바구니 상태 업데이트 성공");
         } catch (IllegalStateException e) {
             log.warn(e.getMessage());
             return ResponseEntity.status(401).body(e.getMessage());
@@ -63,9 +63,9 @@ public class CartController {
 
     // 4. 장바구니에서 번들 삭제
     @DeleteMapping("/{bundleId}")
-    public ResponseEntity<?> deleteTreats(@PathVariable String bundleId) {
+    public ResponseEntity<?> deleteBundleOnCart(@PathVariable String bundleId) {
         try {
-            bundleService.deleteBundle(bundleId);
+            cartService.deleteBundle(bundleId);
             return ResponseEntity.ok().body("삭제성공");
         } catch (Exception e) {
             log.warn("번들 삭제에 실패했습니다.: {}", e.getMessage());

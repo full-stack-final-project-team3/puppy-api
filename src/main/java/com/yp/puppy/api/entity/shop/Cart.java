@@ -28,11 +28,7 @@ public class Cart {
     @Column(nullable = false)
     private Long totalPrice;
 
-    @Column(nullable = false)
     private CartStatus cartStatus;
-
-//    @Column(nullable = false)
-    private SubsType subsType;
 
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
@@ -43,10 +39,6 @@ public class Cart {
 
     public enum CartStatus {
         PENDING, ORDERED, CANCELLED
-    }
-
-    public enum SubsType {
-        ONE, MONTH3, MONTH6
     }
 
 //    public void defaultCart(Cart cart) {

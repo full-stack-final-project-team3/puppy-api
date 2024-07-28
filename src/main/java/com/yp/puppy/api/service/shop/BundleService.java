@@ -29,12 +29,17 @@ public class BundleService {
     private final DogRepository dogRepository;
 
     public void createBundle(String userEmail, String dogId, BundleCreateDto dto) {
+
         Dog dog = dogRepository.findById(dogId)
                 .orElseThrow(() -> new IllegalArgumentException("Dog not found with id: " + dogId));
+
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + userEmail));
 
-        log.info("Creating bundle for user: {}", user.getEmail());
+        // 강아지가 이미 번들을 가지고 있는지 확인
+        if (dog.getBundle() != null) {
+            throw new IllegalArgumentException("이미 번들을 가지고 있습니다.: " + dogId);
+        }
 
         List<Treats> treatsList = getTreatsList(dto);
 
@@ -44,37 +49,20 @@ public class BundleService {
                 .bundleTitle("강아지 맞춤 간식 패키지")
                 .dog(dog)
                 .treats(treatsList)
+                .bundleStatus(Bundle.BundleStatus.PENDING)
                 .build();
 
-        log.info("Dog before saving: {}", dog);
         log.info("Bundle before saving: {}", newBundle);
 
         // Bundle 저장
         Bundle savedBundle = bundleRepository.save(newBundle);
 
-        Dog dogHasBundle = savedBundle.getDog();
+        log.info("Saved Bundle: {}", savedBundle);
 
-        dogHasBundle.setBundle(savedBundle);
-
-        dogRepository.save(dogHasBundle);
-    }
-
-    // 2. 번들 삭제 중간 처리
-    public void deleteBundle(String bundleId) {
-
-        bundleRepository.deleteById(bundleId);
-
-    }
-
-    // 3. 번들 수정 중간 처리
-
-    // 강아지의 번들 정보 추가
-    private void updateDogBundle(Dog dog, Bundle savedBundle) {
-        // Dog에 Bundle 설정
         dog.setBundle(savedBundle);
 
-        // Dog 저장
         dogRepository.save(dog);
+
     }
 
     // 제품리스트 가져오기

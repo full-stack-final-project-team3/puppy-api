@@ -90,7 +90,8 @@ public class Dog {
     private Room room;
 
     // Bundle과의 관계
-    @OneToOne(mappedBy = "dog", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToOne
+    @JoinColumn(name = "bundle_id")
     @Setter
     private Bundle bundle;
 

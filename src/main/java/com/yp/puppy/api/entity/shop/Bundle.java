@@ -41,13 +41,25 @@ public class Bundle {
 
     // Dog과의 관계
     @OneToOne
-    @JoinColumn(name = "dog_id") // Bundle 테이블에서 Dog을 참조하는 외래 키
+    @JoinColumn(name = "dog_id")
     @Setter
     private Dog dog;
+
+    private SubsType subsType;
+
+    private BundleStatus bundleStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id")
     private Cart cart;
+
+    public enum SubsType {
+        ONE, MONTH3, MONTH6
+    }
+
+    public enum BundleStatus {
+        PENDING, ORDERED, CANCELLED
+    }
 
 //    public void setBundleTitle(String bundleTitle) {
 //        this.bundleTitle = "강아지 맞춤 간식 패키지"; // 고정된 값 할당
