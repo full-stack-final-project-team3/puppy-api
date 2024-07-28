@@ -36,19 +36,19 @@ public class Bundle {
     private Long bundlePrice; // 패키지 가격
 
     @OneToMany(mappedBy = "bundle", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference
+    @JsonIgnore
     private List<Treats> treats;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    @JsonBackReference
+    @JsonIgnore
     private User user;
 
     // Dog과의 관계
     @OneToOne
     @JoinColumn(name = "dog_id")
     @Setter
-    @JsonBackReference
+    @JsonIgnore
     private Dog dog;
 
     private SubsType subsType;
@@ -57,7 +57,7 @@ public class Bundle {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id")
-    @JsonBackReference
+    @JsonIgnore
     private Cart cart;
 
     public enum SubsType {

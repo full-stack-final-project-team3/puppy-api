@@ -53,17 +53,15 @@ public class Treats {
 
     @ManyToOne
     @JoinColumn(name = "bundle_id")
-    @JsonBackReference
+//    @JsonBackReference
     private Bundle bundle;
 
     @Setter
     @OneToMany(mappedBy = "treats", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
     private List<TreatsPic> treatsPics = new ArrayList<>();
 
     @Setter
     @OneToMany(mappedBy = "treats", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
     private List<TreatsDetailPic> treatsDetailPics = new ArrayList<>();
 
     @OneToMany(mappedBy = "treats", cascade = CascadeType.ALL, orphanRemoval = true)

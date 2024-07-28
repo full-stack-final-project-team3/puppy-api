@@ -1,6 +1,7 @@
 package com.yp.puppy.api.entity.user;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.yp.puppy.api.entity.hotel.Room;
 import com.yp.puppy.api.entity.shop.Bundle;
@@ -93,7 +94,7 @@ public class Dog {
     @OneToOne
     @JoinColumn(name = "bundle_id")
     @Setter
-    @JsonBackReference
+    @JsonIgnore
     private Bundle bundle;
 
     @PrePersist
