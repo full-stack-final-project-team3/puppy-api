@@ -1,6 +1,7 @@
 package com.yp.puppy.api.service.user;
 
 import com.yp.puppy.api.dto.response.user.AccessTokenDto;
+import com.yp.puppy.api.dto.response.user.KakaoUserDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -43,16 +44,18 @@ public class SnsLoginService {
 
         // 요청 보내기
         RestTemplate template = new RestTemplate();
-        ResponseEntity<Map> response = template.exchange(
+        ResponseEntity<KakaoUserDto> response = template.exchange(
                 requestUri,
                 HttpMethod.POST,
                 new HttpEntity<>(headers),
-                Map.class
+                KakaoUserDto.class
         );
 
         // 응답 정보 json
-        Map json = response.getBody();
+        KakaoUserDto json = response.getBody();
         log.debug("user profile: {}", json);
+
+
     }
 
     // 인가코드로 토큰 발급 요청
