@@ -82,6 +82,7 @@ public class UserController {
     // 유저 단일 조회
     @GetMapping("/{email}")
     public ResponseEntity<?> findUser(@PathVariable String email) {
+        if (!email.contains("@")) return ResponseEntity.badRequest().body("카카오 로그인 시도");
         log.info("find user by email : {}", email);
         UserResponseDto foundUser = userService.findUserByEmail(email);
         log.info("found user by email : {}", foundUser);
