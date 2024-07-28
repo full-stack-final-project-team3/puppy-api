@@ -52,7 +52,11 @@ public class BundleService {
         // Bundle 저장
         Bundle savedBundle = bundleRepository.save(newBundle);
 
-        updateDogBundle(dog, savedBundle);
+        Dog dogHasBundle = savedBundle.getDog();
+
+        dogHasBundle.setBundle(savedBundle);
+
+        dogRepository.save(dogHasBundle);
     }
 
     // 2. 번들 삭제 중간 처리

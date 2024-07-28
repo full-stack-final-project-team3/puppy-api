@@ -39,8 +39,10 @@ public class Bundle {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "dog_id")
+    // Dog과의 관계
+    @OneToOne
+    @JoinColumn(name = "dog_id") // Bundle 테이블에서 Dog을 참조하는 외래 키
+    @Setter
     private Dog dog;
 
     @ManyToOne(fetch = FetchType.LAZY)
