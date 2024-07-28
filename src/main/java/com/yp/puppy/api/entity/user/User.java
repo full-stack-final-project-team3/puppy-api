@@ -82,6 +82,9 @@ public class User {
     @Setter
     private String profileUrl;
 
+    @Setter
+    private String provider; // 로그인 제공자 (카카오, 네이버..) 0728 추가
+
     private boolean hasDogInfo; // 회원가입때 강아지 정보 등록했는지?
 
     @CreationTimestamp

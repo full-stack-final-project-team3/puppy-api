@@ -19,7 +19,7 @@ public class KakaoUserDto {
     private KakaoAccount kakaoAccount;
 
     @Getter @ToString
-    private static class Properties {
+    public static class Properties {
         private String nickname;
 
         @JsonProperty("profile_image")
@@ -27,7 +27,7 @@ public class KakaoUserDto {
     }
 
     @Getter @ToString
-    private static class KakaoAccount {
+    public static class KakaoAccount {
 
         private String email;
 
