@@ -25,6 +25,9 @@ public class TokenProvider {
     private String SECRET_KEY;
 
 
+    // 클라이언트에게 회원 인증정보 전달 (claims에서)
+
+
     /**
      * JWT를 생성하는 메서드
      * @param user - 토큰에 포함될 로그인한 유저의 정보
@@ -63,7 +66,7 @@ public class TokenProvider {
                 .setIssuer("puppy-company") // 발급자 정보
                 .setIssuedAt(new Date()) // 발급 시간
                 .setExpiration(Date.from(
-                        Instant.now().plus(1, ChronoUnit.DAYS)
+                        Instant.now().plus(30, ChronoUnit.DAYS) // 30일 만료
                 )) // 토큰 만료 시간
                 .setSubject(user.getId()) // 토큰을 식별할수 있는 유일한 값
                 .compact();

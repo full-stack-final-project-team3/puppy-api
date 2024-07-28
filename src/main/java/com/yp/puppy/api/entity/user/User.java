@@ -40,12 +40,15 @@ public class User {
     @Column(name = "user_id")
     private String id;
 
+    @Setter
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
+    @Setter
     private String realName;
 
     @Column(length = 500)
+    @Setter
     private String password;
 
     @Enumerated(EnumType.STRING)
@@ -64,9 +67,13 @@ public class User {
 
     private LocalDate birthday;
 
+    @Setter
+    private String address; // 0727 추가
+
     private boolean autoLogin;
 
     @Column(length = 50)
+    @Setter
     private String phoneNumber;
 
     private Integer point;
@@ -74,6 +81,9 @@ public class User {
     @Column(length = 500000)
     @Setter
     private String profileUrl;
+
+    @Setter
+    private String provider; // 로그인 제공자 (카카오, 네이버..) 0728 추가
 
     private boolean hasDogInfo; // 회원가입때 강아지 정보 등록했는지?
 
@@ -85,6 +95,7 @@ public class User {
     private boolean isDeleted; // 탈퇴한 적이 있나?
     // false - 탈퇴 x,  true - 탈퇴한적 있음
 
+    @Setter
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true,
             cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
     @Builder.Default

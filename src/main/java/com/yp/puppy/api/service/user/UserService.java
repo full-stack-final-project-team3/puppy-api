@@ -3,12 +3,15 @@ package com.yp.puppy.api.service.user;
 
 import com.yp.puppy.api.auth.TokenProvider;
 import com.yp.puppy.api.dto.request.user.LoginRequestDto;
+import com.yp.puppy.api.dto.request.user.UserInfoModifyDto;
 import com.yp.puppy.api.dto.request.user.UserSaveDto;
 import com.yp.puppy.api.dto.response.user.LoginResponseDto;
 import com.yp.puppy.api.dto.response.user.UserResponseDto;
+import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.entity.user.EmailVerification;
 import com.yp.puppy.api.entity.user.User;
 import com.yp.puppy.api.exception.LoginFailException;
+import com.yp.puppy.api.repository.user.DogRepository;
 import com.yp.puppy.api.repository.user.EmailVerificationRepository;
 import com.yp.puppy.api.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -31,6 +35,7 @@ import java.time.LocalDateTime;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final DogRepository dogRepository;
 
     @Value("${yp.mail.host}")
     private String mailHost;
@@ -198,7 +203,6 @@ public class UserService {
         return false;
     }
 
-
     // 회원 인증 처리 (login)
     public LoginResponseDto authenticate(final LoginRequestDto dto) {
         User user = userRepository.findByEmail(dto.getEmail())
@@ -206,17 +210,19 @@ public class UserService {
                         () -> new LoginFailException("가입된 회원이 아닙니다.")
                 );
 
-        // 이메일 인증이 안되어있거나 패스워드를 설정하지 않은 회원
-        if (!user.isEmailVerified() || user.getPassword() == null) {
+        // 이메일 인증이 안되어있거나 패스워드를 설정하지 않은 회원 (카카오 로그인 사용자는 예외)
+        if (!"KAKAO".equals(user.getProvider()) && (!user.isEmailVerified() || user.getPassword() == null)) {
             throw new LoginFailException("회원가입이 중단된 회원입니다");
         }
 
-        // 패스워드 검증
-        String inputPassword = dto.getPassword(); // 방금 입력값
-        String encodedPassword = user.getPassword(); // db에 저장된 값
+        // 패스워드 검증 (카카오 로그인 사용자는 패스워드 검증 생략)
+        if (!"KAKAO".equals(user.getProvider())) {  // KAKAO는 카카오 로그인 사용자의 provider
+            String inputPassword = dto.getPassword(); // 방금 입력값
+            String encodedPassword = user.getPassword(); // db에 저장된 값
 
-        if (!encoder.matches(inputPassword, encodedPassword)) { // 일치하지 않으면~
-            throw new LoginFailException("비밀번호가 틀렸습니다.");
+            if (!encoder.matches(inputPassword, encodedPassword)) { // 일치하지 않으면~
+                throw new LoginFailException("비밀번호가 틀렸습니다.");
+            }
         }
 
         // 로그인 성공, 토큰 생성 섹션.
@@ -229,7 +235,22 @@ public class UserService {
                 .token(token)
                 .nickname(user.getNickname())
                 .build();
+    }
 
+    // 회원가입 마무리 단계 (카카오 로그인용)
+    public User confirmSignUpKakao(UserSaveDto dto) {
+
+        String password = dto.getPassword();
+        String encodedPassword = encoder.encode(password);
+
+        User user = User.builder()
+                .nickname(dto.getNickname())
+                .password(encodedPassword)
+                .email(dto.getEmail())
+                .provider("KAKAO") // 카카오 로그인 사용자의 provider 설정
+                .build();
+
+        return userRepository.save(user);
     }
 
 
@@ -255,7 +276,12 @@ public class UserService {
     }
 
 
-    public UserResponseDto findByEmail(String email) {
+    /**
+     *          이메일로 유저를 찾아서 responseDto로 변환
+     * @param email - 클라이언트에게 전송받은 이메일
+     * @return - 렌더링용 dto로 변환
+     */
+    public UserResponseDto findUserByEmail(String email) {
         User foundUser = userRepository.findByEmail(email).orElseThrow();
         UserResponseDto dto = UserResponseDto.builder()
                 .id(foundUser.getId())
@@ -267,9 +293,37 @@ public class UserService {
                 .phoneNumber(foundUser.getPhoneNumber())
                 .profileUrl(foundUser.getProfileUrl())
                 .hasDogInfo(foundUser.isHasDogInfo())
+                .realName(foundUser.getRealName())
+                .address(foundUser.getAddress())
                 .warningCount(foundUser.getWarningCount())
                 .dogList(foundUser.getDogList())
                 .build();
         return dto;
     }
+
+
+    public void modifyUserInfo(UserInfoModifyDto dto, String email) {
+        User foundUser = userRepository.findByEmail(email).orElseThrow();
+        List<Dog> foundList = dogRepository.findByUser(foundUser);
+
+
+        String encodedPassword = encoder.encode(dto.getPassword());
+
+        foundUser.setEmail(dto.getEmail());
+        foundUser.setNickname(dto.getNickname());
+        foundUser.setPassword(encodedPassword);
+        foundUser.setAddress(dto.getAddress());
+        foundUser.setPhoneNumber(dto.getPhoneNumber());
+        for (Dog dog : foundList) {
+            foundUser.addDog(dog);
+        }
+        userRepository.save(foundUser);
+    }
+
+    public boolean checkIdentifier(String email) {
+
+        // 있으면 true, 없으면 false
+        return userRepository.findByEmail(email).isPresent();
+    }
+
 }

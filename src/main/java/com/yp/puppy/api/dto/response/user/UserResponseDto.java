@@ -25,6 +25,8 @@ public class UserResponseDto {
     private LocalDate birthday;
     private String phoneNumber;
     private Integer point;
+    private String address;
+    private String realName;
     private String profileUrl;
     private boolean hasDogInfo;
     private int warningCount;
