@@ -51,11 +51,6 @@ public class Treats {
     @Setter
     private int treatsStock;
 
-    @ManyToOne
-    @JoinColumn(name = "bundle_id")
-    @JsonBackReference
-    private Bundle bundle;
-
     @Setter
     @OneToMany(mappedBy = "treats", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TreatsPic> treatsPics = new ArrayList<>();

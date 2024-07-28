@@ -34,6 +34,10 @@ public class CartService {
 
         User user = userRepository.findById(userId).orElseThrow();
 
+        if(user.getCart() != null) {
+            cartRepository.deleteById(user.getCart().getId());
+        }
+
         Cart cart = createCart(user);
 
         System.out.println("@@@@@@@@@@@@@@@@@@@cart = \n\n\n" + cart);

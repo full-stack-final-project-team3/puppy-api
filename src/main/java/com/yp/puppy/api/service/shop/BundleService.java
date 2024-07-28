@@ -62,11 +62,6 @@ public class BundleService {
         // Bundle 저장
         Bundle savedBundle = bundleRepository.save(newBundle);
 
-        for (Treats treats : treatsList) {
-            treats.setBundle(savedBundle);
-            treatsRepository.save(treats);
-        }
-
         log.info("@@@@@@@@@@@@@@@@@@@@savedBundle = \n\n\n {}", savedBundle);
 
         dog.setBundle(savedBundle);
