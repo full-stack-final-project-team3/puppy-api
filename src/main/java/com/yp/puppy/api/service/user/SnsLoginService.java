@@ -1,5 +1,6 @@
 package com.yp.puppy.api.service.user;
 
+import com.yp.puppy.api.dto.response.user.AccessTokenDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -25,10 +26,36 @@ public class SnsLoginService {
         // 토큰 발급 요청
         String accessToken = getKakaoAccessToken(requestParams);
 
-
+        // 발급받은 토큰으로 사용자 정보 가져오기
+        getKakaoUserInfo(accessToken);
 
     }
 
+    // 토큰으로 사용자 정보 요청
+    private void getKakaoUserInfo(String accessToken) {
+
+        String requestUri = "https://kapi.kakao.com/v2/user/me";
+
+        // 2개 넣어야함
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + accessToken);
+        headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+
+        // 요청 보내기
+        RestTemplate template = new RestTemplate();
+        ResponseEntity<Map> response = template.exchange(
+                requestUri,
+                HttpMethod.POST,
+                new HttpEntity<>(headers),
+                Map.class
+        );
+
+        // 응답 정보 json
+        Map json = response.getBody();
+        log.debug("user profile: {}", json);
+    }
+
+    // 인가코드로 토큰 발급 요청
     private String getKakaoAccessToken(Map<String, Object> requestParams) {
         // 요청 URL
         String requestUri = "https://kauth.kakao.com/oauth/token";
@@ -49,11 +76,19 @@ public class SnsLoginService {
 
         // 카카오 인증 서버로 post요청
         RestTemplate template = new RestTemplate();
-        ResponseEntity<Map> response = template.exchange(requestUri, HttpMethod.POST, entity, Map.class);
+        ResponseEntity<AccessTokenDto> response = template.exchange(requestUri, HttpMethod.POST, entity, AccessTokenDto.class);
 
-        log.debug("response: {}", response);
 
-        return null;
+        AccessTokenDto json = response.getBody();
+
+//        log.debug("json: {}", json);
+        String accessToken = json.getAccessToken();
+        String refreshToken = json.getRefreshToken();
+
+//        log.debug("accessToken - {}", accessToken);
+//        log.debug("refreshToken - {}", refreshToken);
+
+        return accessToken;
     }
 
 }
