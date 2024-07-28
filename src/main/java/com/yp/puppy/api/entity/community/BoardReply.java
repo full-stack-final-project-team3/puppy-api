@@ -3,14 +3,17 @@ package com.yp.puppy.api.entity.community;
 
 import com.yp.puppy.api.entity.user.User;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UpdateTimestamp;
 
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
-@Getter
+@Getter @Setter
 @ToString(exclude = {"user", "board", "subReplies"})
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
@@ -32,8 +35,10 @@ public class BoardReply {
     //    @Column(name = "reply_content")
     private String replyContent;  // 댓글 내용
     //    @Column(name = "reply_created_at")
+    @CreationTimestamp
     private LocalDateTime replyCreatedAt = LocalDateTime.now();  // 댓글 작성일
     //    @Column(name = "reply_updated_at")
+    @UpdateTimestamp
     private LocalDateTime replyUpdatedAt;  // 댓글 수정일
     //    @Column(name = "is_clean")
     private int isClean;  // 클린 여부 : (1) / 신고글 : (0)/검토중: (2)
@@ -47,9 +52,9 @@ public class BoardReply {
     private User user;  // 유저 FK. ⇒ 유저ID, 닉네임, 프로필
 
     @OneToMany(mappedBy = "boardReply", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<BoardSubReply> subReplies;
+    private List<BoardSubReply> subReplies= new ArrayList<>();
 
     @OneToMany(mappedBy = "boardReply", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Like> likes;
+    private List<Like> likes = new ArrayList<>();
 
 }
