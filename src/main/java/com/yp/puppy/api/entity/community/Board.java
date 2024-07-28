@@ -2,16 +2,20 @@ package com.yp.puppy.api.entity.community;
 
 import com.yp.puppy.api.entity.user.User;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UpdateTimestamp;
 
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 
 @Getter
-@ToString(exclude = {"user","replies"})
+@Setter
+@ToString(exclude = {"user", "replies"})
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,26 +32,34 @@ public class Board {
     @Column(name = "board_id")
     private String id;
 
-//    @Column(name = "board_title")
+    //    @Column(name = "board_title")
+
     private String boardTitle;  // 게시판 제목
-//    @Column(name = "board_content")
+    //    @Column(name = "board_content")
+
     private String boardContent;  // 게시판 내용
-//    @Column(name = "board_created_at")
+
+    @Column(name = "board_image_path")
+    private String image; // 이벤트 메인 이미지 경로
+    //    @Column(name = "board_created_at")
+    @CreationTimestamp
     private LocalDateTime boardCreatedAt = LocalDateTime.now();  // 게시글 작성일
-//    @Column(name = "board_updated_at")
+    //    @Column(name = "board_updated_at")
+    @UpdateTimestamp
     private LocalDateTime boardUpdatedAt;  // 게시글 수정시간
-//    @Column(name = "view_count")
+    //    @Column(name = "view_count")
     private int viewCount;  // 조회수
-//    @Column(name = "is_clean")
+    //    @Column(name = "is_clean")
+
     private int isClean;  // 클린 여부 : (1) / 신고글 : (0)/검토중: (2)
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="user_id")
+    @JoinColumn(name = "user_id")
     private User user;  // 유저 FK. ⇒ 유저ID, 닉네임, 프로필
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<BoardReply> replies;
+    private List<BoardReply> replies = new ArrayList<>();
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Like> likes;
+    private List<Like> likes = new ArrayList<>();
 }
