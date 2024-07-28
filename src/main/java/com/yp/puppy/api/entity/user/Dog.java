@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@ToString(exclude = {"user", "dogProfileUrl"})
+@ToString(exclude = {"user", "dogProfileUrl", "bundle"})
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -93,6 +93,7 @@ public class Dog {
     @OneToOne
     @JoinColumn(name = "bundle_id")
     @Setter
+    @JsonBackReference
     private Bundle bundle;
 
     @PrePersist

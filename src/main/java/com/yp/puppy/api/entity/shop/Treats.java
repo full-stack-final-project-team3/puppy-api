@@ -1,5 +1,6 @@
 package com.yp.puppy.api.entity.shop;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.yp.puppy.api.dto.request.shop.TreatsSaveDto;
 import lombok.*;
@@ -15,7 +16,7 @@ import static com.yp.puppy.api.entity.user.Dog.*;
 
 @Getter
 @Setter
-@ToString(exclude = {"treatsPic", "treatsDetailPics", "reviews"})
+@ToString(exclude = {"treatsPic", "treatsDetailPics", "reviews", "bundle"})
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -50,8 +51,9 @@ public class Treats {
     @Setter
     private int treatsStock;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "bundle_id")
+    @JsonBackReference
     private Bundle bundle;
 
     @Setter

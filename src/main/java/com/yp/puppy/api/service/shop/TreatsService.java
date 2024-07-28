@@ -60,8 +60,6 @@ public class TreatsService {
 
 //        System.out.println("\n@@@@@@@@@@@@@@@@@@\n" + allergics + "\nn@@@@@@@@@@@@@@@@@@\n");
 
-        List<Treats> all = treatsRepository.findAll();
-
 //        System.out.println("\n@@@@@@@@@@@@@@@@@@간식간식간식간식간식\n" + all + "\nn@@@@@@@@@@@@@@@@@@\n");
 
         Pageable pageable = PageRequest.of(pageNo - 1, 5);

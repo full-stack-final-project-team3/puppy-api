@@ -1,11 +1,14 @@
 package com.yp.puppy.api.service.shop;
 
 import com.yp.puppy.api.dto.request.shop.BundleCreateDto;
+import com.yp.puppy.api.dto.request.shop.UpdateBundleDto;
 import com.yp.puppy.api.entity.shop.Bundle;
+import com.yp.puppy.api.entity.shop.Cart;
 import com.yp.puppy.api.entity.shop.Treats;
 import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.entity.user.User;
 import com.yp.puppy.api.repository.shop.BundleRepository;
+import com.yp.puppy.api.repository.shop.CartRepository;
 import com.yp.puppy.api.repository.shop.TreatsRepository;
 import com.yp.puppy.api.repository.user.DogRepository;
 import com.yp.puppy.api.repository.user.UserRepository;
@@ -14,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +31,7 @@ public class BundleService {
     private final UserRepository userRepository;
     private final TreatsRepository treatsRepository;
     private final DogRepository dogRepository;
+    private final CartRepository cartRepository;
 
     public void createBundle(String userEmail, String dogId, BundleCreateDto dto) {
 
@@ -57,12 +62,52 @@ public class BundleService {
         // Bundle 저장
         Bundle savedBundle = bundleRepository.save(newBundle);
 
-        log.info("Saved Bundle: {}", savedBundle);
+        log.info("@@@@@@@@@@@@@@@@@@@@savedBundle = \n\n\n {}", savedBundle);
 
         dog.setBundle(savedBundle);
 
         dogRepository.save(dog);
 
+    }
+
+    // 3. 번들 구독 상태 변경 중간 처리 (유저가 옵션을 수정하면)
+    public void updateCheckOutInfoCart(String userId, UpdateBundleDto dto) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+
+        Cart cart = user.getCart();
+
+        String bundleId = dto.getBundle_id();
+
+        // 장바구니에서 번들 목록 가져오기
+        List<Bundle> bundles = cart.getBundles();
+
+        // 일치하는 번들 찾기 및 상태 변경
+        for (Bundle bundle : bundles) {
+            if (bundle.getId().equals(bundleId)) {
+                bundle.setSubsType(dto.getSubsType()); // 원하는 상태로 변경
+                break; // 일치하는 번들을 찾았으므로 반복 종료
+            }
+        }
+
+        cartRepository.save(cart);
+    }
+
+    // 4. 번들 삭제 중간 처리
+    public void deleteBundle(String bundleId) {
+
+        Bundle bundle = bundleRepository.findById(bundleId).orElseThrow(() ->
+                new EntityNotFoundException("Bundle not found"));
+
+        Dog dog = bundle.getDog();
+
+        if (dog != null) {
+            dog.setBundle(null);
+            dogRepository.save(dog);
+        }
+
+        bundleRepository.deleteById(bundleId);
     }
 
     // 제품리스트 가져오기

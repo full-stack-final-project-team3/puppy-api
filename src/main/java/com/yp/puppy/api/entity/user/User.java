@@ -1,6 +1,7 @@
 package com.yp.puppy.api.entity.user;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.yp.puppy.api.entity.community.Board;
 import com.yp.puppy.api.entity.community.BoardReply;
@@ -16,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@ToString(exclude = "profileUrl")
+@ToString(exclude = {"profileUrl", "cart", "orders"})
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -100,12 +102,16 @@ public class User {
     private List<Favorite> wishHotelList; // 유저가 찜한 호텔 리스트
 
     @OneToOne
+    @JoinColumn(name = "cart_id")
+    @Setter
+    @JsonManagedReference
     private Cart cart;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> orders;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Bundle> createdBundles; // 유저가 생성한 번들 리스트
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
@@ -132,7 +138,6 @@ public class User {
     }
 
 
-
     @PrePersist // 컬럼의 default value 설정
     public void prePersist() {
         if (this.point == null) {
@@ -155,10 +160,8 @@ public class User {
     }
 
 
-
-
     // 객실 예약할때 포인트 입 출금 메서드
-    public void withdrawalPoints (int amount) {
+    public void withdrawalPoints(int amount) {
         log.info("현재 포인트: {}, 차감할 포인트: {}", this.point, amount);
         if (this.point < amount) {
             throw new IllegalArgumentException("돈이 모자라~~");
@@ -172,7 +175,6 @@ public class User {
         this.point += amount;
         log.info("포인트 추가 후: {}", this.point);
     }
-
 
 
 }

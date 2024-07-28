@@ -31,58 +31,49 @@ public class CartService {
 
     // 1. 유저가 생성한 번들을 포함한 장바구니 생성하기 중간 처리
     public void createUserCart(String userId) {
+
         User user = userRepository.findById(userId).orElseThrow();
+
         Cart cart = createCart(user);
-        cartRepository.save(cart);
+
+        System.out.println("@@@@@@@@@@@@@@@@@@@cart = \n\n\n" + cart);
+
+        user.setCart(cart);
+
+        userRepository.save(user);
+
     }
 
-    // 2. 유저의 장바구니 정보 조회 중간 처리
     public Cart getCart(String userId) {
 
-        // PENDING 상태인 장바구니만 조회
-        User user = userRepository.findById(userId).orElseThrow();
-
-        return user.getCart();
-    }
-
-    // 3. 번들 구독 상태 변경 중간 처리 (유저가 옵션을 수정하면)
-    public void updateCheckOutInfoCart(String userId, UpdateBundleDto dto) {
-
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+                .orElseThrow();
 
         Cart cart = user.getCart();
 
-        String bundleId = dto.getBundle_id();
+        log.info("Retrieved Cart: {}", cart.getBundles());
 
-        // 장바구니에서 번들 목록 가져오기
-        List<Bundle> bundles = cart.getBundles();
-
-        // 일치하는 번들 찾기 및 상태 변경
-        for (Bundle bundle : bundles) {
-            if (bundle.getId().equals(bundleId)) {
-                bundle.setSubsType(dto.getSubsType()); // 원하는 상태로 변경
-                break; // 일치하는 번들을 찾았으므로 반복 종료
-            }
-        }
-
-        cartRepository.save(cart);
+        return cart;
     }
 
-    // 4. 번들 삭제 중간 처리
-    public void deleteBundle(String bundleId) {
+    // 5. 장바구니 비우기
+    public void deleteCart(String cartId) {
 
-        Bundle bundle = bundleRepository.findById(bundleId).orElseThrow(() ->
-                new EntityNotFoundException("Bundle not found"));
+        Cart cart = cartRepository.findById(cartId).orElseThrow();
 
-        Dog dog = bundle.getDog();
+        List<Bundle> bundles = cart.getBundles();
 
-        if (dog != null) {
-            dog.setBundle(null);
-            dogRepository.save(dog);
+        for (Bundle bundle : bundles) {
+            bundle.setCart(null);
+            bundle.getDog().setBundle(null);
         }
-        
-        bundleRepository.deleteById(bundleId);
+
+        User user = cart.getUser();
+
+        user.setCart(null);
+
+        cartRepository.deleteById(cartId);
+
     }
 
     private Cart createCart(User user) {
@@ -99,6 +90,12 @@ public class CartService {
         cart.setUser(user);
         cart.setBundles(createdBundles);
         cart.setCartStatus(Cart.CartStatus.PENDING);
+
+        cartRepository.save(cart);
+
+        for (Bundle bundle : createdBundles) {
+            bundle.setCart(cart); // 각 Bundle의 cart 필드를 설정
+        }
 
         return cart;
     }

@@ -1,9 +1,12 @@
 package com.yp.puppy.api.entity.shop;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.entity.user.User;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -11,7 +14,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@ToString(exclude = {"treats", "cart"})
+@ToString(exclude = {"cart", "user", "dog"})
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -33,16 +36,19 @@ public class Bundle {
     private Long bundlePrice; // 패키지 가격
 
     @OneToMany(mappedBy = "bundle", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Treats> treats;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @JsonBackReference
     private User user;
 
     // Dog과의 관계
     @OneToOne
     @JoinColumn(name = "dog_id")
     @Setter
+    @JsonBackReference
     private Dog dog;
 
     private SubsType subsType;
@@ -51,6 +57,7 @@ public class Bundle {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id")
+    @JsonBackReference
     private Cart cart;
 
     public enum SubsType {
