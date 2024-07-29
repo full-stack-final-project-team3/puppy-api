@@ -326,4 +326,22 @@ public class UserService {
         return userRepository.findByEmail(email).isPresent();
     }
 
+    /**
+     * 닉네임 중복확인 처리
+     *
+     * @param - email 로 유저가 존재하나 탐색
+     * @return - false. 중복이지만 마무리 되지 않은 경우, 메일 재발송 후 false 리턴
+     * @return - true. 중복이 아닐 경우
+     */
+    public boolean checkNicknameDuplicate(String nickname) {
+        if (nickname == null || nickname.isEmpty()) {
+            throw new IllegalArgumentException("닉네임이 비어있습니다");
+        }
+
+        boolean exists = userRepository.existsByNickname(nickname);
+        log.info("Checking nickname {} is duplicated : {}", nickname, exists);
+
+        return exists;
+    }
+
 }
