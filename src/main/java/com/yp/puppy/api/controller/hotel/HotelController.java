@@ -12,6 +12,8 @@ import com.yp.puppy.api.service.hotel.HotelService;
 import com.yp.puppy.api.util.FileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -42,6 +44,9 @@ public class HotelController {
 
     private final HotelService hotelService;
     private final FavoriteService favoriteService;
+
+    private static final Logger logger = LoggerFactory.getLogger(HotelController.class);
+
 
     @Value("${file.upload-dir}")
     private String uploadDir;
@@ -168,24 +173,29 @@ public class HotelController {
     }
 
 
-    @GetMapping("/images/{filename:.+}")
-    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
+    // 이미지 제공 엔드포인트
+    @GetMapping("/images/{year}/{month}/{day}/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> getImage(@PathVariable String year, @PathVariable String month, @PathVariable String day, @PathVariable String filename) {
         try {
-            Path file = Paths.get("uploads").resolve(filename);
+            Path file = Paths.get(uploadDir, year, month, day).resolve(filename);
+            logger.info("Fetching image from path: " + file.toString());
             Resource resource = new UrlResource(file.toUri());
+
             if (resource.exists() || resource.isReadable()) {
+                logger.info("Successfully found the file: " + file.toString());
                 return ResponseEntity.ok()
-                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
                         .body(resource);
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                logger.error("Could not read the file: " + file.toString());
+                throw new RuntimeException("Could not read the file: " + file.toString());
             }
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        } catch (Exception e) {
+            logger.error("Error reading file: " + filename, e);
+            throw new RuntimeException("Could not read the file!", e);
         }
     }
-
 
 
     // 6. 호텔 즐겨찾기 추가
