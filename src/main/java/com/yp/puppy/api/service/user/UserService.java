@@ -228,14 +228,16 @@ public class UserService {
         // 로그인 성공, 토큰 생성 섹션.
         // 인증정보(이메일, 닉네임, 프사, 토큰정보)를 클라이언트(프론트)에게 전송
         String token = tokenProvider.createToken(user);
-        log.debug("users nickname : {}, ", user.getNickname());
+//        log.debug("users nickname : {}, ", user.getNickname());
         return LoginResponseDto.builder()
                 .email(dto.getEmail())
                 .role(user.getRole().toString())
                 .token(token)
-                .nickname(user.getNickname())
+//                .nickname(user.getNickname())
                 .build();
     }
+
+    // 회원정보 수정을 통해 수정을 한 경우, 다시 setItem 해야함
 
     // 회원가입 마무리 단계 (카카오 로그인용)
     public User confirmSignUpKakao(UserSaveDto dto) {
@@ -314,6 +316,7 @@ public class UserService {
         foundUser.setPassword(encodedPassword);
         foundUser.setAddress(dto.getAddress());
         foundUser.setPhoneNumber(dto.getPhoneNumber());
+        foundUser.setRealName(dto.getRealName());
         for (Dog dog : foundList) {
             foundUser.addDog(dog);
         }
