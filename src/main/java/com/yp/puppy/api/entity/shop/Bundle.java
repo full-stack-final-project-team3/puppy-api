@@ -1,16 +1,21 @@
 package com.yp.puppy.api.entity.shop;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.entity.user.User;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
-@ToString(exclude = {"treats", "cart"})
+@ToString(exclude = {"cart", "user", "dog"})
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -31,26 +36,48 @@ public class Bundle {
     @Column(nullable = false)
     private Long bundlePrice; // 패키지 가격
 
-    @OneToMany(mappedBy = "bundle", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Treats> treats;
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "bundle_treats",
+            joinColumns = @JoinColumn(name = "bundle_id"),
+            inverseJoinColumns = @JoinColumn(name = "treats_id")
+    )
+    private List<Treats> treats = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
 
+    // Dog과의 관계
     @OneToOne
     @JoinColumn(name = "dog_id")
+    @Setter
+    @JsonIgnore
     private Dog dog;
+
+    private SubsType subsType;
+
+    private BundleStatus bundleStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id")
+    @JsonIgnore
     private Cart cart;
 
-    public void setBundleTitle(String bundleTitle) {
-        this.bundleTitle = "강아지 맞춤 간식 패키지"; // 고정된 값 할당
+    public enum SubsType {
+        ONE, MONTH3, MONTH6
     }
 
-    public void setBundlePrice(Long bundlePrice) {
-        this.bundlePrice = 29900L;
+    public enum BundleStatus {
+        PENDING, ORDERED, CANCELLED
     }
+
+//    public void setBundleTitle(String bundleTitle) {
+//        this.bundleTitle = "강아지 맞춤 간식 패키지"; // 고정된 값 할당
+//    }
+//
+//    public void setBundlePrice(Long bundlePrice) {
+//        this.bundlePrice = 29900L;
+//    }
 }

@@ -1,6 +1,8 @@
 package com.yp.puppy.api.entity.user;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.yp.puppy.api.entity.hotel.Room;
 import com.yp.puppy.api.entity.shop.Bundle;
 import com.yp.puppy.api.entity.shop.Cart;
@@ -16,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@ToString(exclude = {"user", "dogProfileUrl"})
+@ToString(exclude = {"user", "dogProfileUrl", "bundle"})
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -88,7 +90,11 @@ public class Dog {
     @JoinColumn(name = "room_id")
     private Room room;
 
+    // Bundle과의 관계
     @OneToOne
+    @JoinColumn(name = "bundle_id")
+    @Setter
+    @JsonIgnore
     private Bundle bundle;
 
     @PrePersist
@@ -126,7 +132,6 @@ public class Dog {
         POMERANIAN,
         // ...
     }
-
 
     public void addUser(User user) {
         this.user = user;
