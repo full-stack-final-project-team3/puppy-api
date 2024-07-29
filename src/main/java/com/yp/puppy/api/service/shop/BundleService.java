@@ -72,50 +72,7 @@ public class BundleService {
 
     }
 
-    // 3. 번들 구독 상태 변경 중간 처리 (유저가 옵션을 수정하면)
-    public void updateCheckOutInfoCart(String userId, UpdateBundleDto dto) {
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
-
-        Cart cart = user.getCart();
-
-        String bundleId = dto.getBundle_id();
-
-        // 장바구니에서 번들 목록 가져오기
-        List<Bundle> bundles = cart.getBundles();
-
-        // 일치하는 번들 찾기 및 상태 변경
-        for (Bundle bundle : bundles) {
-            if (bundle.getId().equals(bundleId)) {
-                bundle.setSubsType(dto.getSubsType()); // 원하는 상태로 변경
-                break; // 일치하는 번들을 찾았으므로 반복 종료
-            }
-        }
-
-        cartRepository.save(cart);
-    }
-
-    // 4. 번들 삭제 중간 처리
-    public void deleteBundle(String bundleId) {
-
-        Bundle bundle = bundleRepository.findById(bundleId).orElseThrow(() ->
-                new EntityNotFoundException("Bundle not found"));
-
-        String userId = bundle.getUser().getId();
-
-        Dog dog = bundle.getDog();
-
-        if (dog != null) {
-            dog.setBundle(null);
-            dogRepository.save(dog);
-        }
-
-        bundle.setCart(null);
-
-        bundleRepository.deleteById(bundleId);
-
-    }
 
     // 제품리스트 가져오기
     private List<Treats> getTreatsList(BundleCreateDto dto) {
