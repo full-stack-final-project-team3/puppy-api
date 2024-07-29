@@ -136,10 +136,4 @@ public class Treats {
         this.treatsDetailPics.addAll(updatedImages);
     }
 
-    public void TreatsInBundleDto(Treats treats) {
-        this.id = treats.getId();
-        this.treatsTitle = treats.getTreatsTitle();
-        this.treatsPics = treats.getTreatsPics();
-    }
-
 }

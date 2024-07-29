@@ -2,6 +2,7 @@ package com.yp.puppy.api.service.shop;
 
 import com.yp.puppy.api.entity.shop.Bundle;
 import com.yp.puppy.api.entity.shop.Cart;
+import com.yp.puppy.api.entity.shop.Treats;
 import com.yp.puppy.api.entity.user.User;
 import com.yp.puppy.api.repository.shop.BundleRepository;
 import com.yp.puppy.api.repository.shop.CartRepository;
@@ -12,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -68,7 +70,6 @@ public class CartService {
         for (Bundle bundle : bundles) {
             bundle.setCart(null);
             bundle.getDog().setBundle(null);
-            bundleService.deleteBundle(bundle.getId());
         }
 
         User user = cart.getUser();
@@ -89,21 +90,13 @@ public class CartService {
         Long totalPrice = calculateTotalPrice(createdBundles);
 
         Cart cart = new Cart();
+
         cart.setTotalPrice(totalPrice);
         cart.setUser(user);
         cart.setBundles(createdBundles);
         cart.setCartStatus(Cart.CartStatus.PENDING);
 
         cartRepository.save(cart);
-
-//        for (Bundle bundle : createdBundles) {
-//            bundle.setCart(cart); // 각 Bundle의 cart 필드를 설정
-//            List<Treats> treats = bundle.getTreats();
-//            for (Treats treat : treats) {
-//                TreatsCartlDto treatsCartlDto = treatsInCart(treat);
-//
-//            }
-//        }
 
         return cart;
     }
