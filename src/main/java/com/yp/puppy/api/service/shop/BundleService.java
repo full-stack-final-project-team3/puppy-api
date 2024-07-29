@@ -2,6 +2,7 @@ package com.yp.puppy.api.service.shop;
 
 import com.yp.puppy.api.dto.request.shop.BundleCreateDto;
 import com.yp.puppy.api.dto.request.shop.UpdateBundleDto;
+import com.yp.puppy.api.dto.response.shop.TreatsInBundleDto;
 import com.yp.puppy.api.entity.shop.Bundle;
 import com.yp.puppy.api.entity.shop.Cart;
 import com.yp.puppy.api.entity.shop.Treats;
@@ -46,14 +47,18 @@ public class BundleService {
             throw new IllegalArgumentException("이미 번들을 가지고 있습니다.: " + dogId);
         }
 
+        // 번들을 구성하는 간식 리스트를 가져옮
         List<Treats> treatsList = getTreatsList(dto);
+
+        // 간식 리스트들을 간소화 후에 번들에 저장함
+        List<Treats> treatsInBundleDtos = treatsInBundle(treatsList);
 
         Bundle newBundle = Bundle.builder()
                 .user(user)
                 .bundlePrice(29900L)
                 .bundleTitle("강아지 맞춤 간식 패키지")
                 .dog(dog)
-                .treats(treatsList)
+                .treats(treatsInBundleDtos)
                 .bundleStatus(Bundle.BundleStatus.PENDING)
                 .build();
 
@@ -121,5 +126,19 @@ public class BundleService {
             }
         }
         return treatsList;
+    }
+
+    // 번들안에 있는 간식 정보를 간소화
+    private List<Treats> treatsInBundle(List<Treats> treatsList) {
+
+        List<Treats> treatsInBundleList = new ArrayList<>();
+
+        for (Treats treats : treatsList) {
+            treats.TreatsInBundleDto(treats);
+            treatsInBundleList.add(treats);
+        }
+
+        return treatsInBundleList;
+
     }
 }

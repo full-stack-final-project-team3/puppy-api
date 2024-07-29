@@ -3,10 +3,10 @@ package com.yp.puppy.api.entity.shop;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.yp.puppy.api.dto.response.shop.TreatsInBundleDto;
 import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.entity.user.User;
 import lombok.*;
-import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -36,12 +36,13 @@ public class Bundle {
     @Column(nullable = false)
     private Long bundlePrice; // 패키지 가격
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinTable(
             name = "bundle_treats",
             joinColumns = @JoinColumn(name = "bundle_id"),
             inverseJoinColumns = @JoinColumn(name = "treats_id")
     )
+    @JsonManagedReference
     private List<Treats> treats = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
