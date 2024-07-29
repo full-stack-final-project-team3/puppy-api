@@ -8,6 +8,7 @@ import com.yp.puppy.api.entity.community.BoardSubReply;
 import com.yp.puppy.api.entity.community.Like;
 import com.yp.puppy.api.entity.hotel.Favorite;
 import com.yp.puppy.api.entity.hotel.Reservation;
+import com.yp.puppy.api.entity.hotel.Review;
 import com.yp.puppy.api.entity.shop.Bundle;
 import com.yp.puppy.api.entity.shop.Cart;
 import com.yp.puppy.api.entity.shop.Order;
@@ -23,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@ToString(exclude = "profileUrl")
+@ToString(exclude = {"profileUrl", "hotelReviews"}) // 순환 참조를 피하기 위해 추가
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -131,6 +132,9 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Like> likes;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Review> hotelReviews;
 
     public void addDog(Dog dog) {
         this.dogList.add(dog);
