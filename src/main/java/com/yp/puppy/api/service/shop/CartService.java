@@ -56,18 +56,18 @@ public class CartService {
 
         log.info("Retrieved Cart: {}", cart.getBundles());
 
-        return cart; // 장바구니가 없으면 빈 장바구니 객체 반환
+        return cart;
     }
 
     // 3. 번들 구독 상태 변경 중간 처리 (유저가 옵션을 수정하면)
-    public void updateCheckOutInfoCart(String userId, UpdateBundleDto dto) {
+    public Cart updateSubsInfoCart(String userId, UpdateBundleDto dto) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
 
         Cart cart = user.getCart();
 
-        String bundleId = dto.getBundle_id();
+        String bundleId = dto.getBundleId();
 
         // 장바구니에서 번들 목록 가져오기
         List<Bundle> bundles = cart.getBundles();
@@ -81,6 +81,8 @@ public class CartService {
         }
 
         cartRepository.save(cart);
+
+        return user.getCart();
     }
 
     // 4. 번들 삭제 중간 처리
@@ -91,7 +93,6 @@ public class CartService {
         Bundle bundle = bundleRepository.findById(bundleId).orElseThrow(() ->
                 new EntityNotFoundException("Bundle not found"));
 
-        // 번들이 속한 개를 가져오기
         Cart cart = bundle.getCart();
         if (cart != null) {
             // 장바구니에서 번들을 제거
@@ -104,6 +105,7 @@ public class CartService {
             cartRepository.save(cart);
         }
 
+        // 번들이 속한 개를 가져오기
         Dog dog = bundle.getDog();
 
         if (dog != null) {

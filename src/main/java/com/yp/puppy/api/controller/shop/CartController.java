@@ -63,8 +63,8 @@ public class CartController {
     public ResponseEntity<?> checkOutCart(@AuthenticationPrincipal TokenUserInfo userInfo,
                                           UpdateBundleDto dto) {
         try {
-            cartService.updateCheckOutInfoCart(userInfo.getUserId(), dto);
-            Cart cart = cartService.getCart(userInfo.getUserId());
+            Cart cart = cartService.updateSubsInfoCart(userInfo.getUserId(), dto);
+//            Cart cart = cartService.getCart(userInfo.getUserId());
             return ResponseEntity.ok().body(cart);
         } catch (IllegalStateException e) {
             log.warn(e.getMessage());
