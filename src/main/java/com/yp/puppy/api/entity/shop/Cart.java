@@ -43,9 +43,4 @@ public class Cart {
         PENDING, ORDERED, CANCELLED
     }
 
-//    public void defaultCart(Cart cart) {
-//
-//        this.cartStatus = CartStatus.PENDING;
-//
-//    }
 }

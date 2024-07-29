@@ -2,7 +2,9 @@ package com.yp.puppy.api.controller.shop;
 
 import com.yp.puppy.api.dto.request.shop.BundleCreateDto;
 import com.yp.puppy.api.dto.request.shop.UpdateBundleDto;
+import com.yp.puppy.api.entity.shop.Cart;
 import com.yp.puppy.api.service.shop.BundleService;
+import com.yp.puppy.api.service.shop.CartService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,7 @@ import static com.yp.puppy.api.auth.TokenProvider.*;
 public class BundleController {
 
     private final BundleService bundleService;
+    private final CartService cartService;
 
     // 1. 번들 생성
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
@@ -48,7 +51,7 @@ public class BundleController {
                                           UpdateBundleDto dto) {
         try {
             bundleService.updateCheckOutInfoCart(userInfo.getUserId(), dto);
-            return ResponseEntity.ok().body("장바구니 상태 업데이트 성공");
+            return ResponseEntity.ok().body("구독 상태 업데이트 성공");
         } catch (IllegalStateException e) {
             log.warn(e.getMessage());
             return ResponseEntity.status(401).body(e.getMessage());
@@ -61,9 +64,12 @@ public class BundleController {
         if (bundleId == null || bundleId.isEmpty()) {
             return ResponseEntity.badRequest().body("유효하지 않은 번들 ID입니다.");
         }
-
+        
         try {
             bundleService.deleteBundle(bundleId);
+//            cartService.deleteCart(userId);
+//            cartService.createUserCart(userId);
+//            Cart cart = cartService.getCart(userId);
             return ResponseEntity.ok().body("삭제 성공");
         } catch (EntityNotFoundException e) {
             log.warn("번들을 찾지 못했습니다.: {}", e.getMessage());

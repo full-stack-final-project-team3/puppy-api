@@ -2,7 +2,6 @@ package com.yp.puppy.api.service.shop;
 
 import com.yp.puppy.api.dto.request.shop.BundleCreateDto;
 import com.yp.puppy.api.dto.request.shop.UpdateBundleDto;
-import com.yp.puppy.api.dto.response.shop.TreatsInBundleDto;
 import com.yp.puppy.api.entity.shop.Bundle;
 import com.yp.puppy.api.entity.shop.Cart;
 import com.yp.puppy.api.entity.shop.Treats;
@@ -33,6 +32,7 @@ public class BundleService {
     private final TreatsRepository treatsRepository;
     private final DogRepository dogRepository;
     private final CartRepository cartRepository;
+    private final CartService cartService;
 
     public void createBundle(String userEmail, String dogId, BundleCreateDto dto) {
 
@@ -102,6 +102,8 @@ public class BundleService {
         Bundle bundle = bundleRepository.findById(bundleId).orElseThrow(() ->
                 new EntityNotFoundException("Bundle not found"));
 
+        String userId = bundle.getUser().getId();
+
         Dog dog = bundle.getDog();
 
         if (dog != null) {
@@ -109,7 +111,10 @@ public class BundleService {
             dogRepository.save(dog);
         }
 
+        bundle.setCart(null);
+
         bundleRepository.deleteById(bundleId);
+
     }
 
     // 제품리스트 가져오기
