@@ -162,6 +162,7 @@ public class User {
 //        }
 
     }
+    // 병아리 사진
 
     public void confirm(String password, String nickname) {
         this.password = password;

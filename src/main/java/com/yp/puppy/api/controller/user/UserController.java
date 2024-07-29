@@ -102,6 +102,28 @@ public class UserController {
         }
     }
 
+    @GetMapping("/forgot-email")
+    public ResponseEntity<?> forgotEmail(@RequestParam String email) {
+
+        boolean flag = userService.existByEmail(email);
+
+        if (flag) {
+            return ResponseEntity.ok().body(true);
+        } else {
+            return ResponseEntity.badRequest().body(false);
+        }
+    }
+
+
+    // 인증 코드 검증 API
+    @GetMapping("/forgot-code")
+    public ResponseEntity<?> forgotVerifyCode(@RequestParam String email, @RequestParam String code) {
+        log.info("{}'s  verify code is [  {}  ]", email, code);
+        boolean isMatch = userService.checkMatchCode(email, code);
+        return ResponseEntity.ok().body(isMatch);
+    }
+
+
     // 닉네임 중복확인
     @GetMapping("/check-nickname")
     public ResponseEntity<?> checkNickname(String nickname) {
