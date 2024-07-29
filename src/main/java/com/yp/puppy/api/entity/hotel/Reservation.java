@@ -49,7 +49,7 @@ public class Reservation {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonBackReference("user-reservation")
+    @JsonBackReference("user-reservations")
     private User user; // 예약한 사용자
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -59,7 +59,7 @@ public class Reservation {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hotel_id", nullable = false)
-    @JsonBackReference("hotel-reservation")
+    @JsonBackReference("hotel-reservations")
     private Hotel hotel; // 예약된 호텔
 
     @PrePersist

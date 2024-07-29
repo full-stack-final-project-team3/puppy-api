@@ -37,12 +37,12 @@ public class Review {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonBackReference
+    @JsonBackReference("user-reviews")
     private User user; // 리뷰 작성자
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hotel_id", nullable = false)
-    @JsonBackReference
+    @JsonBackReference("hotel-reviews")
     private Hotel hotel; // 리뷰가 작성된 호텔
 
     public void changeReview(ReviewSaveDto dto) {
