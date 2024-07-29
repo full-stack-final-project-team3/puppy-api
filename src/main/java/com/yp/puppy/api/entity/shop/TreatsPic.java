@@ -1,6 +1,7 @@
 package com.yp.puppy.api.entity.shop;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -30,7 +31,7 @@ public class TreatsPic {
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "treats_id")
-    @JsonBackReference // Child side
+    @JsonIgnore// Child side
     private Treats treats;
 
     // 추가적인 유효성 검사 메서드
