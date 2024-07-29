@@ -1,46 +1,53 @@
 package com.yp.puppy.api.entity.hotel;
 
-import com.yp.puppy.api.entity.shop.ReviewPic;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.yp.puppy.api.dto.request.hotel.ReviewSaveDto;
 import com.yp.puppy.api.entity.user.User;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@ToString
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity(name = "HotelReview") // 엔티티 이름 명시
+@Entity(name = "HotelReview")
 @Table(name = "hotel_review")
+@ToString(exclude = {"user", "hotel"}) // 순환 참조를 피하기 위해 추가
 public class Review {
 
     @Id
-//    @GenericGenerator(strategy = "uuid2", name = "uuid-generator")
-//    @GeneratedValue(generator = "uuid-generator")
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "review_id")
     private String id;
 
     @Column(nullable = false)
-    private String reviewContent;
+    private String reviewContent; // 내용
 
     @Column(nullable = false)
-    private int rate;
+    private int rate; // 별점
 
-    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ReviewPic> reviewPics;
+    @Column(nullable = false)
+    private LocalDateTime reviewDate; // 리뷰 작성 시간
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JsonBackReference("user-reviews")
+    private User user; // 리뷰 작성자
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hotel_id", nullable = false)
-    private Hotel hotel;
+    @JsonBackReference("hotel-reviews")
+    private Hotel hotel; // 리뷰가 작성된 호텔
+
+    public void changeReview(ReviewSaveDto dto) {
+        this.reviewContent = dto.getReviewContent();
+        this.rate = dto.getRate();
+        this.reviewDate = LocalDateTime.now();
+    }
 }

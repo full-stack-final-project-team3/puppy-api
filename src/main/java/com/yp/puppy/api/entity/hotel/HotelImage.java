@@ -11,14 +11,12 @@ import javax.persistence.*;
 @EqualsAndHashCode(of ="imageId")
 @NoArgsConstructor
 @AllArgsConstructor
-
+@Builder
 @Entity
 @Table(name = "hotel_images")
 public class HotelImage {
 
     @Id
-//    @GenericGenerator(strategy = "uuid2", name = "uuid-generator")
-//    @GeneratedValue(generator = "uuid-generator")
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "image_id")
@@ -34,11 +32,12 @@ public class HotelImage {
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hotel_id")
-    @JsonBackReference
+    @JsonBackReference("hotel-images")
     private Hotel hotel; // 호텔
 
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
+    @JsonBackReference("room-images")
     private Room room; // 객실
 }
