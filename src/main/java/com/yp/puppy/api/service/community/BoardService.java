@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,4 +27,14 @@ private final BoardRepository boardRepository;
         log.debug("saved board:{}",saveBoard);
         return getBoards("date");
     }
+    // ID로 게시글 조회
+    public Board getBoardById(String id) {
+        Optional<Board> boardOptional = boardRepository.findById(id);
+        if (boardOptional.isPresent()) {
+            return boardOptional.get();
+        } else {
+            throw new RuntimeException("Board not found with id: " + id);
+        }
+    }
+
 }
