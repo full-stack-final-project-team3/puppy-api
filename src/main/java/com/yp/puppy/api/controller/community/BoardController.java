@@ -31,4 +31,15 @@ public class BoardController {
      List<Board> boards = boardService.saveBoard(dto);
      return ResponseEntity.ok().body(boards);
     }
+
+    // 특정 ID의 게시글 조회 요청
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getBoard(@PathVariable String id) {
+        try {
+            Board board = boardService.getBoardById(id);
+            return ResponseEntity.ok().body(board);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
