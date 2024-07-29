@@ -1,5 +1,8 @@
 package com.yp.puppy.api.entity.shop;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.yp.puppy.api.entity.user.User;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -9,7 +12,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@ToString(exclude = {"user", "bundles"})
+@ToString(exclude = {"user"})
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,14 +31,11 @@ public class Cart {
     @Column(nullable = false)
     private Long totalPrice;
 
-    @Column(nullable = false)
     private CartStatus cartStatus;
-
-//    @Column(nullable = false)
-    private SubsType subsType;
 
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    @JsonIgnore
     private User user;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -43,10 +43,6 @@ public class Cart {
 
     public enum CartStatus {
         PENDING, ORDERED, CANCELLED
-    }
-
-    public enum SubsType {
-        ONE, MONTH3, MONTH6
     }
 
 //    public void defaultCart(Cart cart) {
