@@ -1,7 +1,7 @@
 package com.yp.puppy.api.dto.request.shop;
 
 import com.sun.istack.NotNull;
-import com.yp.puppy.api.entity.shop.Cart;
+import com.yp.puppy.api.entity.shop.Bundle;
 import lombok.*;
 
 @Getter
@@ -11,13 +11,12 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UpdateCartDto {
+public class UpdateBundleDto {
 
     @NotNull
-    private Cart.SubsType subsType;
+    private String bundle_id;
 
-//    @NotNull
-//    private Cart.CartStatus cartStatus;
-
+    @NotNull
+    private Bundle.SubsType subsType;
 
 }

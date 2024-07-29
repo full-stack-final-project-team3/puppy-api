@@ -26,13 +26,14 @@ public class TreatsController {
 
     // 0. 유저의 강아지 목록 보여주기
     @GetMapping
-    public ResponseEntity<?> showDogList(TokenUserInfo userInfo) {
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
+    public ResponseEntity<?> showDogList(@AuthenticationPrincipal TokenUserInfo userInfo) {
 
-            List<Dog> UsersDoglist = treatsService.showUsersDogList(userInfo);
+        List<Dog> UsersDoglist = treatsService.showUsersDogList(userInfo);
 
-            return ResponseEntity.ok().body(UsersDoglist);
+        return ResponseEntity.ok().body(UsersDoglist);
 
-            // UserDogList가 null이면 그냥 아무거나 추천? 개 등록 시키기?
+        // UserDogList가 null이면 그냥 아무거나 추천? 개 등록 시키기?
 
     }
 
