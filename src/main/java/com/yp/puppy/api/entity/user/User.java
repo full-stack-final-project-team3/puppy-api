@@ -157,9 +157,10 @@ public class User {
         if (this.profileUrl == null) {
             this.profileUrl = "default_profile_url";
         }
-        if (this.nickname == null) {
-            this.nickname = "user";
-        }
+//        if (this.nickname == null) {
+//            this.nickname = "user"; // 기본 닉네임 설정
+//        }
+
     }
 
     public void confirm(String password, String nickname) {

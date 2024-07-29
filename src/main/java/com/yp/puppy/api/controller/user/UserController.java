@@ -102,6 +102,11 @@ public class UserController {
         }
     }
 
-
+    // 닉네임 중복확인
+    @GetMapping("/check-nickname")
+    public ResponseEntity<?> checkNickname(String nickname) {
+        boolean flag = userService.checkNicknameDuplicate(nickname);
+        return ResponseEntity.ok().body(flag);
+    }
 
 }
