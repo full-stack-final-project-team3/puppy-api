@@ -47,6 +47,8 @@ public class SnsLoginController {
         requestParams.put("redirect", redirectUrl);
         requestParams.put("code", code);
 
+        // 인증 후 로그인 시켜야함
+
         try {
             snsLoginService.kakaoLogin(requestParams, response);
             response.sendRedirect("http://localhost:3000"); // 리액트 앱으로 리디렉트

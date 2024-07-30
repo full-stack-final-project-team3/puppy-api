@@ -106,14 +106,18 @@ public class UserService {
     }
 
 
-    private void generateAndSendCode(String email, User foundUser) {
+    private void generateAndSendCode(String email, User user) {
+        // 기존 인증 코드 삭제
+        emailVerificationRepository.findByUser(user).ifPresent(emailVerificationRepository::delete);
+
+        // 새 인증 코드 생성
         String code = sendVerificationEmail(email);
 
         // 인증코드 db 저장 로직
         EmailVerification verification = EmailVerification.builder()
                 .verificationCode(code) // 인증코드
                 .expiryDate(LocalDateTime.now().plusMinutes(5))
-                .user(foundUser)
+                .user(user)
                 .build();
 
         emailVerificationRepository.save(verification);
@@ -228,14 +232,16 @@ public class UserService {
         // 로그인 성공, 토큰 생성 섹션.
         // 인증정보(이메일, 닉네임, 프사, 토큰정보)를 클라이언트(프론트)에게 전송
         String token = tokenProvider.createToken(user);
-        log.debug("users nickname : {}, ", user.getNickname());
+//        log.debug("users nickname : {}, ", user.getNickname());
         return LoginResponseDto.builder()
                 .email(dto.getEmail())
                 .role(user.getRole().toString())
                 .token(token)
-                .nickname(user.getNickname())
+//                .nickname(user.getNickname())
                 .build();
     }
+
+    // 회원정보 수정을 통해 수정을 한 경우, 다시 setItem 해야함
 
     // 회원가입 마무리 단계 (카카오 로그인용)
     public User confirmSignUpKakao(UserSaveDto dto) {
@@ -314,6 +320,7 @@ public class UserService {
         foundUser.setPassword(encodedPassword);
         foundUser.setAddress(dto.getAddress());
         foundUser.setPhoneNumber(dto.getPhoneNumber());
+        foundUser.setRealName(dto.getRealName());
         for (Dog dog : foundList) {
             foundUser.addDog(dog);
         }
@@ -342,6 +349,45 @@ public class UserService {
         log.info("Checking nickname {} is duplicated : {}", nickname, exists);
 
         return exists;
+    }
+
+
+    // 이메일 유무를 체크하고, 존재하면 이메일 발송 로직
+    public boolean existByEmail(String email) {
+
+        boolean exists = userRepository.existsByEmail(email);
+        // 이메일 있으니까 db에서 회원인지 조회 -> 회원 아니면 false리턴
+        // 회원이면 true 리턴하고 그 이메일로 유저 찾아서 코드까지 보내줌
+        if (exists) {
+            User foundUser = userRepository.findByEmail(email).orElseThrow();
+
+            generateAndSendCode(email, foundUser);
+            log.info("foundUser: {}", foundUser);
+            return true;
+        } else {
+            return false;
+        } // 응답 잘 옴! 이제 이거 가지고 프론트 작업
+    }
+
+    public boolean checkMatchCode(String email, String code) {
+        // 이메일을 통해 회원정보 탐색
+        User user = userRepository.findByEmail(email).orElse(null);
+
+        if (user != null) {
+            // 인증코드를 받았었는지 탐색
+            EmailVerification ev = emailVerificationRepository.findByUser(user).orElse(null);
+
+            // 인증코드가 있고 만료시간이 지나지 않았고 코드번호가 일치할 경우 인증 성공
+            if (ev != null && ev.getExpiryDate().isAfter(LocalDateTime.now()) && code.equals(ev.getVerificationCode())) {
+                emailVerificationRepository.delete(ev); // 인증코드 삭제
+                return true;
+            } else if (ev != null) { // 인증코드 틀렸거나, 만료된 경우
+                emailVerificationRepository.delete(ev); // 기존 코드 삭제
+                log.debug("인증코드 삭제! - {}", ev);
+                generateAndSendCode(email, user); // 재발송 & db저장
+            }
+        }
+        return false;
     }
 
 }
