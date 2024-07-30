@@ -131,4 +131,11 @@ public class UserController {
         return ResponseEntity.ok().body(flag);
     }
 
+    @PatchMapping("/password")
+    public ResponseEntity<?> changePassword(@RequestParam String password, @RequestParam String email) {
+        log.info("파라미터로 받은 패스워드!! - {}", password);
+        userService.changePassword(email, password);
+        return ResponseEntity.ok().body("success");
+    }
+
 }

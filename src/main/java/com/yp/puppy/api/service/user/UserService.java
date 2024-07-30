@@ -390,4 +390,14 @@ public class UserService {
         return false;
     }
 
+    public void changePassword(String email, String password) {
+        // 패스워드 인코딩
+        String encodedPassword = encoder.encode(password);
+        log.info("인코딩된 패스워드! - {}", encodedPassword);
+        User foundUser = userRepository.findByEmail(email).orElseThrow();
+        foundUser.setPassword(encodedPassword);
+        log.info("패스워드 세터 발동");
+        userRepository.save(foundUser);
+        log.info("유저 세이브함!");
+    }
 }
