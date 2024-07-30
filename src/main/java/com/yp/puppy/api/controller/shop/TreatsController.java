@@ -29,6 +29,10 @@ public class TreatsController {
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
     public ResponseEntity<?> showDogList(@AuthenticationPrincipal TokenUserInfo userInfo) {
 
+        if(userInfo == null){
+            return ResponseEntity.ok().body("로그인이 필요합니다.");
+        }
+
         List<Dog> UsersDoglist = treatsService.showUsersDogList(userInfo);
 
         return ResponseEntity.ok().body(UsersDoglist);
@@ -37,7 +41,9 @@ public class TreatsController {
 
     }
 
-    // 1. 상품 전체 조회
+    // 0. 관리자 모든 상품 조회
+
+    // 1. 상품 전체 맞춤 조회
 
     /**
      * @param sort   정렬 기준 (기본값 'name')
@@ -46,13 +52,13 @@ public class TreatsController {
      */
     @GetMapping("/list/{dogId}")
     public ResponseEntity<?> getTreatsList(@RequestParam(required = false, defaultValue = "name") String sort,
-                                           TokenUserInfo userInfo,
+//                                           TokenUserInfo userInfo,
                                            @PathVariable String dogId,
                                            @RequestParam(defaultValue = "1") int pageNo) {
 
         // userInfo가 null이면 에러 개가 없다면 그냥 아무거나 / 개 정보 등록
 
-        Map<String, Object> treatsList = treatsService.getTreatsList(userInfo, dogId, pageNo, sort);
+        Map<String, Object> treatsList = treatsService.getTreatsList(dogId, pageNo, sort);
         if (treatsList.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
