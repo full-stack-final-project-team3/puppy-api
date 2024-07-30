@@ -2,6 +2,7 @@ package com.yp.puppy.api.controller.dog;
 
 import com.yp.puppy.api.dto.request.dog.DogDetailDto;
 import com.yp.puppy.api.dto.request.dog.DogSaveDto;
+import com.yp.puppy.api.dto.response.dog.DogResponseDto;
 import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.service.dog.DogService;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +47,7 @@ public class DogController {
      */
     @GetMapping("/{dogId}")
     public ResponseEntity<?> getDog(@PathVariable String dogId) {
+        log.info("request dog : {}", dogId);
         try {
             Dog dog = dogService.findDog(dogId);
             return ResponseEntity.ok(dog);

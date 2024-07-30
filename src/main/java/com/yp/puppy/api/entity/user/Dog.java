@@ -88,6 +88,7 @@ public class Dog {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
+    @JsonIgnore
     private Room room;
 
     // Bundle과의 관계
