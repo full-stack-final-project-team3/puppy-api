@@ -14,7 +14,7 @@ import lombok.*;
 public class UpdateBundleDto {
 
     @NotNull
-    private String bundle_id;
+    private String bundleId;
 
     @NotNull
     private Bundle.SubsType subsType;
