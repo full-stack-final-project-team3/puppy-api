@@ -1,6 +1,7 @@
 package com.yp.puppy.api.dto.request.hotel;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.yp.puppy.api.dto.response.hotel.ImageDto;
 import com.yp.puppy.api.entity.hotel.Hotel;
 import com.yp.puppy.api.entity.hotel.HotelImage;
 import com.yp.puppy.api.entity.hotel.Room;
@@ -11,6 +12,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -34,15 +36,10 @@ public class RoomSaveDto {
     private long price;
 
     @JsonProperty("room-images")
-    private List<HotelImage> roomImage;
+    private List<ImageDto> roomImages; // List<ImageDto>로 변경
 
-    @JsonProperty("hotel-id")  // 이 필드를 추가
+    @JsonProperty("hotel-id")
     private String hotelId;
-
-    @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "hotel_id", nullable = false)
-    private Hotel hotel;
 
     public Room toEntity() {
         Room room = Room.builder()
@@ -52,11 +49,20 @@ public class RoomSaveDto {
                 .price(this.price)
                 .build();
 
-        for (HotelImage image : this.roomImage) {
-            image.setRoom(room);
-        }
+        if (this.roomImages != null) {
+            List<HotelImage> images = this.roomImages.stream()
+                    .filter(dto -> dto.getHotelImgUri() != null && !dto.getHotelImgUri().isEmpty())
+                    .map(dto -> {
+                        HotelImage image = new HotelImage();
+                        image.setHotelImgUri(dto.getHotelImgUri());
+                        image.setType(dto.getType());
+                        image.setRoom(room);
+                        return image;
+                    })
+                    .collect(Collectors.toList());
 
-        room.setImages(this.roomImage);
+            room.setImages(images);
+        }
 
         return room;
     }

@@ -8,16 +8,18 @@ import lombok.*;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ImageDto {
 
-    @JsonProperty("image-uri")
-    private String imageUri;
+    @JsonProperty("hotelImgUri")
+    private String hotelImgUri;
 
-    @JsonProperty("image-type")
-    private ImageType imageType;
+    @JsonProperty("type")
+    private ImageType type;
 
     public ImageDto(HotelImage hotelImage) {
-        this.imageUri = hotelImage.getHotelImgUri();
-        this.imageType = hotelImage.getType();
+        this.hotelImgUri = hotelImage.getHotelImgUri();
+        this.type = hotelImage.getType();
     }
 }

@@ -63,35 +63,48 @@ public class RoomService {
 
 
     public void saveRoom(RoomSaveDto dto, String userId) {
-        // 회원 정보 조회
-        User roomUser = userRepository.findById(userId).orElseThrow();
+        // 유저 확인
+        User roomUser = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        // 권한 검사
+        // 관리자 권한 확인
         if (roomUser.getRole() != Role.ADMIN) {
-            throw new IllegalStateException("관리자만 등록을 할 수 있습니다.");
+            throw new IllegalStateException("Only admins can register rooms.");
         }
 
-        // 호텔 ID 검사 및 호텔 조회
-        if (dto.getHotelId() == null) {
-            throw new IllegalArgumentException("Hotel ID가 제공되지 않았습니다.");
+        // 호텔 ID 확인 및 조회
+        if (dto.getHotelId() == null || dto.getHotelId().trim().isEmpty()) {
+            throw new IllegalArgumentException("Hotel ID must be provided.");
         }
+
         Hotel hotel = hotelRepository.findById(dto.getHotelId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid hotel ID: " + dto.getHotelId()));
 
-        // Room 엔티티 생성 및 저장
+        // Room 엔터티 생성 및 초기화
         Room newRoom = dto.toEntity();
         newRoom.setHotel(hotel);
         newRoom.setRoomUser(roomUser);
 
-
-        if (dto.getRoomImage() != null) {
-            List<HotelImage> images = dto.getRoomImage().stream()
-                    .peek(image -> image.setRoom(newRoom))
+        // 이미지 처리
+        if (dto.getRoomImages() != null && !dto.getRoomImages().isEmpty()) {
+            List<HotelImage> images = dto.getRoomImages().stream()
+                    .filter(imageDto -> imageDto.getHotelImgUri() != null && !imageDto.getHotelImgUri().isEmpty())
+                    .map(imageDto -> {
+                        HotelImage image = new HotelImage();
+                        image.setHotelImgUri(imageDto.getHotelImgUri());
+                        image.setType(imageDto.getType());
+                        image.setRoom(newRoom); // 이 곳에서 객실과 이미지 연결
+                        return image;
+                    })
                     .collect(Collectors.toList());
+
             newRoom.setImages(images);
         }
+
+        // 객실 정보 저장
         roomRepository.save(newRoom);
     }
+
+
 
 
     // 객실 상세조회 중간처리
