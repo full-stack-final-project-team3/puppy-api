@@ -47,28 +47,20 @@ public class TreatsService {
     }
 
     // 1. 상품 전체 조회 중간처리
-    public Map<String, Object> getTreatsList(TokenUserInfo userInfo, String dogId, int pageNo, String sort) {
+    public Map<String, Object> getTreatsList(String dogId, int pageNo, String sort) {
 
         Dog userDogInfo = dogRepository.findById(dogId).orElseThrow();
 
         // 유저의 알레르지 리스트
         List<Dog.Allergy> dogInfoAllergies = userDogInfo != null ? userDogInfo.getAllergies() : null;
 
-//        System.out.println("\n@@@@@@@@@@@@@@@@@@\n" + dogInfoAllergies + "\nn@@@@@@@@@@@@@@@@@@\n");
-
         List<Treats.Allergic> allergics = convertDogAllergiesToTreatsAllergies(dogInfoAllergies);
-
-//        System.out.println("\n@@@@@@@@@@@@@@@@@@\n" + allergics + "\nn@@@@@@@@@@@@@@@@@@\n");
-
-//        System.out.println("\n@@@@@@@@@@@@@@@@@@간식간식간식간식간식\n" + all + "\nn@@@@@@@@@@@@@@@@@@\n");
 
         Pageable pageable = PageRequest.of(pageNo - 1, 5);
 
         Page<Treats> treatsPage = treatsRepository.findTreats(allergics, pageable, sort);
 
         List<Treats> treatsList = treatsPage.getContent();
-
-//        System.out.println("\n@@@@@@@@@@@@@@@@@@\n" + treatsList + "\nn@@@@@@@@@@@@@@@@@@\n");
 
         List<TreatsListDto> treatsDtoList = new ArrayList<>();
         for (Treats treats : treatsList) {
