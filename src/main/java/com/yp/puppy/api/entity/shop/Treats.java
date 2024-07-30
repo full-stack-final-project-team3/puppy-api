@@ -1,8 +1,9 @@
 package com.yp.puppy.api.entity.shop;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.yp.puppy.api.dto.request.shop.TreatsDetailPicDto;
+import com.yp.puppy.api.dto.request.shop.TreatsPicDto;
 import com.yp.puppy.api.dto.request.shop.TreatsSaveDto;
+import com.yp.puppy.api.entity.user.Dog;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -12,11 +13,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.yp.puppy.api.entity.user.Dog.*;
-
 @Getter
 @Setter
-@ToString(exclude = {"treatsPic", "treatsDetailPics", "reviews", "bundle"})
+@ToString(exclude = {"treatsPics", "treatsDetailPics", "reviews", "bundle"})
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -45,19 +44,20 @@ public class Treats {
     private int treatsWeight;
 
     @Setter
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private DogSize dogSize;
+    private Dog.DogSize dogSize;
 
     @Setter
     private int treatsStock;
 
     @Setter
     @OneToMany(mappedBy = "treats", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TreatsPic> treatsPics = new ArrayList<>();
+    private List<TreatsPic> treatsPics = new ArrayList<>(); // 변경: TreatsPicDto -> TreatsPic
 
     @Setter
     @OneToMany(mappedBy = "treats", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TreatsDetailPic> treatsDetailPics = new ArrayList<>();
+    private List<TreatsDetailPic> treatsDetailPics = new ArrayList<>(); // 변경: TreatsDetailPicDto -> TreatsDetailPic
 
     @OneToMany(mappedBy = "treats", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews = new ArrayList<>();
@@ -71,30 +71,34 @@ public class Treats {
         DRY, WET
     }
 
+//    public enum DogSize {
+//        SMALL, MEDIUM, LARGE
+//    }
+
     public enum Allergic {
         BEEF, CHICKEN, CORN, DAIRY, FISH, FLAX, LAMB, PORK, TURKEY, WHEAT
     }
 
     public void changeTreats(TreatsSaveDto dto) {
-
         this.treatsTitle = dto.getTitle();
         this.treatsWeight = dto.getTreatsWeight();
         this.treatsType = dto.getTreatsType();
         this.dogSize = dto.getDogSize();
         updateImages(dto.getTreatsPics());
         updateDetailImages(dto.getTreatsDetailPics());
-
     }
 
-    public void updateImages(List<TreatsPic> newImages) {
-        // 이미지 식별자 즉 uri 를 사용해 매핑
+    public void updateImages(List<TreatsPicDto> newImageDtos) {
+        // 이미지 DTO에서 TreatsPic으로 변환
         Map<String, TreatsPic> existingImages = this.treatsPics
                 .stream()
                 .collect(Collectors.toMap(TreatsPic::getTreatsPic, image -> image));
 
         List<TreatsPic> updatedImages = new ArrayList<>();
 
-        for (TreatsPic newImage : newImages) {
+        for (TreatsPicDto newImageDto : newImageDtos) {
+            TreatsPic newImage = new TreatsPic();
+            newImage.setTreatsPic(newImageDto.getTreatsPicFile().getOriginalFilename()); // 파일 이름 저장
             // 새 이미지를 기존 이미지와 비교하여 유지하거나 추가
             if (existingImages.containsKey(newImage.getTreatsPic())) {
                 // 이미 존재하는 이미지를 유지
@@ -111,23 +115,25 @@ public class Treats {
         this.treatsPics.addAll(updatedImages);
     }
 
-    public void updateDetailImages(List<TreatsDetailPic> newImages) {
-        // 이미지 식별자 즉 uri 를 사용해 매핑
+    public void updateDetailImages(List<TreatsDetailPicDto> newDetailImageDtos) {
+        // 이미지 DTO에서 TreatsDetailPic으로 변환
         Map<String, TreatsDetailPic> existingImages = this.treatsDetailPics
                 .stream()
                 .collect(Collectors.toMap(TreatsDetailPic::getTreatsDetailPic, image -> image));
 
         List<TreatsDetailPic> updatedImages = new ArrayList<>();
 
-        for (TreatsDetailPic newImage : newImages) {
+        for (TreatsDetailPicDto newDetailImageDto : newDetailImageDtos) {
+            TreatsDetailPic newDetailImage = new TreatsDetailPic();
+            newDetailImage.setTreatsDetailPic(newDetailImageDto.getTreatsDetailPicFile().getOriginalFilename()); // 파일 이름 저장
             // 새 이미지를 기존 이미지와 비교하여 유지하거나 추가
-            if (existingImages.containsKey(newImage.getTreatsDetailPic())) {
+            if (existingImages.containsKey(newDetailImage.getTreatsDetailPic())) {
                 // 이미 존재하는 이미지를 유지
-                updatedImages.add(existingImages.get(newImage.getTreatsDetailPic()));
+                updatedImages.add(existingImages.get(newDetailImage.getTreatsDetailPic()));
             } else {
                 // 새 이미지 추가
-                updatedImages.add(newImage);
-                newImage.setTreats(this); // 관계 설정
+                updatedImages.add(newDetailImage);
+                newDetailImage.setTreats(this); // 관계 설정
             }
         }
 
@@ -135,5 +141,4 @@ public class Treats {
         this.treatsDetailPics.clear();
         this.treatsDetailPics.addAll(updatedImages);
     }
-
 }

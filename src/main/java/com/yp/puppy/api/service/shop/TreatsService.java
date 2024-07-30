@@ -5,19 +5,24 @@ import com.yp.puppy.api.dto.request.shop.TreatsSaveDto;
 import com.yp.puppy.api.dto.response.shop.TreatsDetailDto;
 import com.yp.puppy.api.dto.response.shop.TreatsListDto;
 import com.yp.puppy.api.entity.shop.Treats;
+import com.yp.puppy.api.entity.shop.TreatsDetailPic;
+import com.yp.puppy.api.entity.shop.TreatsPic;
 import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.entity.user.Role;
 import com.yp.puppy.api.entity.user.User;
 import com.yp.puppy.api.repository.shop.TreatsRepository;
 import com.yp.puppy.api.repository.user.DogRepository;
 import com.yp.puppy.api.repository.user.UserRepository;
+import com.yp.puppy.api.util.FileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -33,6 +38,9 @@ public class TreatsService {
     private final TreatsRepository treatsRepository;
     private final UserRepository userRepository;
     private final DogRepository dogRepository;
+
+    @Value("${file.upload-dir}")
+    private String uploadDir;
 
     // 0. 유저의 강아지 정보 출력하기
     public List<Dog> showUsersDogList(TokenUserInfo userInfo) {
@@ -87,18 +95,16 @@ public class TreatsService {
     }
 
     // 3. 상품 생성 중간처리
-    public void saveTreats(TreatsSaveDto dto, String userId) {
-        // 회원정보조회 (관리자냐?)
-        User admin = userRepository.findById(userId).orElseThrow();
+    public void saveTreats(Treats treats, String userId) {
+        // 회원정보 조회 (관리자냐?)
+        User admin = userRepository.findById(userId).orElseThrow(() -> new IllegalStateException("사용자를 찾을 수 없습니다."));
 
         // 권한에 따른 글쓰기 제한
         if (admin.getRole() != Role.ADMIN) throw new IllegalStateException("관리자만 등록을 할 수 있습니다.");
 
-        Treats newTreats = dto.toEntity();
-
-        Treats saveTreats = treatsRepository.save(newTreats);
-
-        log.info("treats: {}", saveTreats);
+        // 데이터베이스에 저장
+        Treats savedTreats = treatsRepository.save(treats);
+        log.info("treats: {}", savedTreats);
     }
 
     // 4. 상품 삭제 중간처리

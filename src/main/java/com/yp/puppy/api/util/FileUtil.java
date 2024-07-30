@@ -33,8 +33,6 @@ public class FileUtil {
         // 이 첨부파일을 날짜별로 관리하기 위해 날짜 폴더 생성
         String newUploadPath = makeDateFormatDirectory(rootPath);
 
-
-
         // 파일 업로드 수행
         try {
             file.transferTo(new File(newUploadPath, newFileName));
