@@ -3,6 +3,7 @@ package com.yp.puppy.api.entity.hotel;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.yp.puppy.api.dto.request.hotel.RoomSaveDto;
+import com.yp.puppy.api.dto.response.hotel.ImageDto;
 import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.entity.user.User;
 import lombok.*;
@@ -75,34 +76,63 @@ public class Room {
         this.content = dto.getContent();
         this.type = dto.getType();
         this.price = dto.getPrice();
-        updateImages(dto.getRoomImage());
+        updateImages(dto.getRoomImages());
 
     }
+//
+//    private void updateImages(List<HotelImage> roomImage) {
+//        // 이미지 식별자 즉 uri 를 사용해 매핑
+//        Map<String, HotelImage> imageMap = this.images
+//                .stream()
+//                .collect(Collectors.toMap(HotelImage::getHotelImgUri, image -> image));
+//
+//        List<HotelImage> updatedImages = new ArrayList<>();
+//
+//        for (HotelImage hotelImage : roomImage) {
+//            // 새 이미지를 기존 이미지와 비교하여 유지하거나 추가
+//            if (imageMap.containsKey(hotelImage.getHotelImgUri())) {
+//                // 이미 존재하는 이미지를 유지
+//                updatedImages.add(imageMap.get(hotelImage.getHotelImgUri()));
+//            } else {
+//                // 새 이미지 추가
+//                updatedImages.add(hotelImage);
+//                hotelImage.setRoom(this);   // 관계 설정
+//            }
+//        }
+//
+//        // 기존 리스트를 업데이트 된 리스트로 교체
+//        this.images.clear();
+//        this.images.addAll(updatedImages);
+//
+//    }
 
-    private void updateImages(List<HotelImage> roomImage) {
-        // 이미지 식별자 즉 uri 를 사용해 매핑
-        Map<String, HotelImage> imageMap = this.images
+    public void updateImages(List<ImageDto> newImages) {
+        if (newImages == null) {
+            return;
+        }
+
+        Map<String, HotelImage> existingImages = this.images
                 .stream()
+                .filter(image -> image.getHotelImgUri() != null)
                 .collect(Collectors.toMap(HotelImage::getHotelImgUri, image -> image));
 
         List<HotelImage> updatedImages = new ArrayList<>();
 
-        for (HotelImage hotelImage : roomImage) {
-            // 새 이미지를 기존 이미지와 비교하여 유지하거나 추가
-            if (imageMap.containsKey(hotelImage.getHotelImgUri())) {
-                // 이미 존재하는 이미지를 유지
-                updatedImages.add(imageMap.get(hotelImage.getHotelImgUri()));
+        for (ImageDto newImageDto : newImages) {
+            if (newImageDto.getHotelImgUri() != null && existingImages.containsKey(newImageDto.getHotelImgUri())) {
+                updatedImages.add(existingImages.get(newImageDto.getHotelImgUri()));
             } else {
-                // 새 이미지 추가
-                updatedImages.add(hotelImage);
-                hotelImage.setRoom(this);   // 관계 설정
+                HotelImage newImage = new HotelImage();
+                newImage.setHotelImgUri(newImageDto.getHotelImgUri());
+                newImage.setType(newImageDto.getType());
+                newImage.setRoom(this);
+
+                updatedImages.add(newImage);
             }
         }
 
-        // 기존 리스트를 업데이트 된 리스트로 교체
         this.images.clear();
         this.images.addAll(updatedImages);
-
     }
 
 }

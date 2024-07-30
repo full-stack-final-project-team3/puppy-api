@@ -105,6 +105,7 @@ public class HotelController {
     @PostMapping
     public ResponseEntity<?> register(@AuthenticationPrincipal TokenUserInfo userInfo,
                                       @RequestBody HotelSaveDto dto) {
+            log.info("dto - {}",dto);
         try {
             Hotel newHotel = hotelService.saveHotel(dto, userInfo.getUserId());
             Map<String, Object> response = new HashMap<>();

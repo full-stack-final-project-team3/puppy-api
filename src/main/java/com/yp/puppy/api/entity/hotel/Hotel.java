@@ -2,6 +2,7 @@ package com.yp.puppy.api.entity.hotel;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.yp.puppy.api.dto.request.hotel.HotelSaveDto;
+import com.yp.puppy.api.dto.response.hotel.ImageDto;
 import com.yp.puppy.api.entity.user.User;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -89,19 +90,23 @@ public class Hotel {
         updateImages(dto.getHotelImages());
     }
 
-    public void updateImages(List<HotelImage> newImages) {
+    public void updateImages(List<ImageDto> newImages) {
         Map<String, HotelImage> existingImages = this.images
                 .stream()
                 .collect(Collectors.toMap(HotelImage::getHotelImgUri, image -> image));
 
         List<HotelImage> updatedImages = new ArrayList<>();
 
-        for (HotelImage newImage : newImages) {
-            if (existingImages.containsKey(newImage.getHotelImgUri())) {
-                updatedImages.add(existingImages.get(newImage.getHotelImgUri()));
+        for (ImageDto newImageDto : newImages) {
+            if (existingImages.containsKey(newImageDto.getHotelImgUri())) {
+                updatedImages.add(existingImages.get(newImageDto.getHotelImgUri()));
             } else {
+                HotelImage newImage = HotelImage.builder()
+                        .type(newImageDto.getType())
+                        .hotelImgUri(newImageDto.getHotelImgUri())
+                        .hotel(this)
+                        .build();
                 updatedImages.add(newImage);
-                newImage.setHotel(this);
             }
         }
 
@@ -109,3 +114,4 @@ public class Hotel {
         this.images.addAll(updatedImages);
     }
 }
+

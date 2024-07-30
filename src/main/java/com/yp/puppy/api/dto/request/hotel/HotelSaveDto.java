@@ -1,11 +1,13 @@
 package com.yp.puppy.api.dto.request.hotel;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.yp.puppy.api.dto.response.hotel.ImageDto;
 import com.yp.puppy.api.entity.hotel.Hotel;
 import com.yp.puppy.api.entity.hotel.HotelImage;
 import lombok.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -41,9 +43,7 @@ public class HotelSaveDto {
     private String phoneNumber; // 호텔 전화번호
 
     @JsonProperty("hotel-images")
-    private List<HotelImage> hotelImages; // 호텔 이미지 목록
-
-
+    private List<ImageDto> hotelImages; // 호텔 이미지 목록
 
     public Hotel toEntity() {
         Hotel hotel = Hotel.builder()
@@ -57,12 +57,15 @@ public class HotelSaveDto {
                 .phoneNumber(this.phoneNumber)
                 .build();
 
-        // 각 이미지에 현재 호텔 객체를 설정
-        // 이미지를 저장할때 어떤 호텔의 이미지인지 알려줘야 하기때문 즉 데이터베이스에 넣어주려고
-        for (HotelImage image : this.hotelImages) {
-            image.setHotel(hotel);
-        }
-        hotel.setImages(this.hotelImages);
+        List<HotelImage> images = this.hotelImages.stream()
+                .map(dto -> HotelImage.builder()
+                        .type(dto.getType())
+                        .hotelImgUri(dto.getHotelImgUri())
+                        .hotel(hotel) // 역참조 설정
+                        .build())
+                .collect(Collectors.toList());
+
+        hotel.setImages(images);
 
         return hotel;
     }

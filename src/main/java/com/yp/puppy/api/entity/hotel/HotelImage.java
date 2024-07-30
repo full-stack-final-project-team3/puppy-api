@@ -8,7 +8,7 @@ import javax.persistence.*;
 
 @Getter
 @ToString(exclude = {"hotel", "room"})
-@EqualsAndHashCode(of ="imageId")
+@EqualsAndHashCode(of = "imageId")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -24,9 +24,11 @@ public class HotelImage {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Setter
     private ImageType type; // 이미지 타입 (호텔이미지, 객실이미지)
 
     @Column(nullable = false)
+    @Setter
     private String hotelImgUri; // 이미지 URI
 
     @Setter
