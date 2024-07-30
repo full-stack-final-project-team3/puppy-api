@@ -2,6 +2,7 @@ package com.yp.puppy.api.service.dog;
 
 
 import com.yp.puppy.api.dto.request.dog.DogSaveDto;
+import com.yp.puppy.api.dto.response.dog.DogResponseDto;
 import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.entity.user.User;
 import com.yp.puppy.api.repository.user.DogRepository;
@@ -41,6 +42,10 @@ public class DogService {
 
     public Dog findDog(String dogId) {
         Dog dog = dogRepository.findById(dogId).orElseThrow();
+//        DogResponseDto dto = null;
+//        DogResponseDto entity = dto.toEntity(dog);
+//        log.info("DogResponseDto: {}", entity);
+
         return dog;
     }
 

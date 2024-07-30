@@ -42,7 +42,7 @@ public class Bundle {
             joinColumns = @JoinColumn(name = "bundle_id"),
             inverseJoinColumns = @JoinColumn(name = "treats_id")
     )
-    @JsonManagedReference
+//    @JsonManagedReference
     private List<Treats> treats = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
