@@ -1,8 +1,6 @@
 package com.yp.puppy.api.controller.shop;
 
 import com.yp.puppy.api.dto.request.shop.BundleCreateDto;
-import com.yp.puppy.api.dto.request.shop.UpdateBundleDto;
-import com.yp.puppy.api.entity.shop.Cart;
 import com.yp.puppy.api.service.shop.BundleService;
 import com.yp.puppy.api.service.shop.CartService;
 import lombok.RequiredArgsConstructor;
@@ -11,8 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import javax.persistence.EntityNotFoundException;
 
 import static com.yp.puppy.api.auth.TokenProvider.*;
 

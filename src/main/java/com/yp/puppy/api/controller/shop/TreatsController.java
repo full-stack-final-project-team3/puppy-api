@@ -37,7 +37,9 @@ public class TreatsController {
 
     }
 
-    // 1. 상품 전체 조회
+    // 0. 관리자 모든 상품 조회
+
+    // 1. 상품 전체 맞춤 조회
 
     /**
      * @param sort   정렬 기준 (기본값 'name')
