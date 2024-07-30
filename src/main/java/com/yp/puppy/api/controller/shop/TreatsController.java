@@ -29,6 +29,10 @@ public class TreatsController {
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
     public ResponseEntity<?> showDogList(@AuthenticationPrincipal TokenUserInfo userInfo) {
 
+        if(userInfo == null){
+            return ResponseEntity.ok().body("로그인이 필요합니다.");
+        }
+
         List<Dog> UsersDoglist = treatsService.showUsersDogList(userInfo);
 
         return ResponseEntity.ok().body(UsersDoglist);
