@@ -42,17 +42,17 @@ public class TreatsService {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
-    // 0. 유저의 강아지 정보 출력하기
-    public List<Dog> showUsersDogList(TokenUserInfo userInfo) {
-
-        String userId = userInfo.getUserId();
-
-        User user = userRepository.findById(userId).orElseThrow();
-
-        List<Dog> dogList = user.getDogList();
-
-        return dogList;
-    }
+//    // 0. 유저의 강아지 정보 출력하기
+//    public List<Dog> showUsersDogList(TokenUserInfo userInfo) {
+//
+//        String userId = userInfo.getUserId();
+//
+//        User user = userRepository.findById(userId).orElseThrow();
+//
+//        List<Dog> dogList = user.getDogList();
+//
+//        return dogList;
+//    }
 
     // 1. 상품 전체 조회 중간처리
     public Map<String, Object> getTreatsList(String dogId, int pageNo, String sort) {
