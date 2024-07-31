@@ -400,4 +400,16 @@ public class UserService {
         userRepository.save(foundUser);
 
     }
+
+    // 휴대폰 번호 중복 검증
+    public boolean checkPhoneNumberDuplicate(String phoneNumber) {
+        if (phoneNumber == null || phoneNumber.isEmpty()) {
+            throw new IllegalArgumentException("휴대폰 번호가 비어있습니다");
+        }
+
+        boolean exists = userRepository.existsByPhoneNumber(phoneNumber);
+        log.info("Checking phoneNumber {} is duplicated : {}", phoneNumber, exists);
+
+        return exists;
+    }
 }
