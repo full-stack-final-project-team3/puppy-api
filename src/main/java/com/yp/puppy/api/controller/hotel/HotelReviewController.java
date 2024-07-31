@@ -1,6 +1,7 @@
 package com.yp.puppy.api.controller.hotel;
 
 import com.yp.puppy.api.dto.request.hotel.ReviewSaveDto;
+import com.yp.puppy.api.dto.response.hotel.HotelReviewDetailDto;
 import com.yp.puppy.api.entity.hotel.Review;
 import com.yp.puppy.api.service.hotel.HotelReviewService;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/reviews")
@@ -46,8 +48,12 @@ public class HotelReviewController {
 
     // 3. 리뷰 조회
     @GetMapping
-    public List<Review> getAllReviews() {
-        return hotelReviewService.getAllReviews();
+    public ResponseEntity<List<HotelReviewDetailDto>> getReviewsByHotelId(@RequestParam String hotelId) {
+        List<HotelReviewDetailDto> reviews = hotelReviewService.getReviewsByHotelId(hotelId)
+                .stream()
+                .map(HotelReviewDetailDto::new)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(reviews);
     }
 
     // 4. 리뷰 수정
