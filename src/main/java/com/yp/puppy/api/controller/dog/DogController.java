@@ -101,6 +101,13 @@ public class DogController {
             List<Dog> myPuppies = dogService.findMyPuppies(userId);
             log.info("강아지 정보: {}", myPuppies);
             return ResponseEntity.ok(myPuppies);
-
     }
+
+    @DeleteMapping("/allergy")
+    public ResponseEntity<?> deleteAllergy(@RequestParam Dog.Allergy allergy, @RequestParam String dogId) {
+        log.info("dog id and allergy : {} - {}", dogId, allergy);
+        dogService.deleteAllergy(dogId, allergy);
+        return ResponseEntity.ok().body("삭제 완료");
+    }
+
 }
