@@ -1,6 +1,7 @@
 package com.yp.puppy.api.service.dog;
 
 
+import com.yp.puppy.api.dto.request.dog.DogModifyDto;
 import com.yp.puppy.api.dto.request.dog.DogSaveDto;
 import com.yp.puppy.api.dto.response.dog.DogResponseDto;
 import com.yp.puppy.api.entity.user.Dog;
@@ -76,5 +77,15 @@ public class DogService {
             // 알레르기 리스트가 null이거나 알레르기가 리스트에 없는 경우 처리
             throw new IllegalArgumentException("Allergy not found in dog's allergy list.");
         }
+    }
+
+    /**
+     *  마이페이지에서 수정하는 요청을 받는 dto (알러지 제외)
+     * @param dto - 마이페이지에서의 입력값
+     */
+    public void modifyInMyPage(String dogId, DogModifyDto dto) {
+        Dog foundDog = dogRepository.findById(dogId).orElseThrow();
+        foundDog.setWeight(dto.getWeight());
+        dogRepository.save(foundDog);
     }
 }

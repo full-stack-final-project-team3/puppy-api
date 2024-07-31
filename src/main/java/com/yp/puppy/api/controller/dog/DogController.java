@@ -1,6 +1,7 @@
 package com.yp.puppy.api.controller.dog;
 
 import com.yp.puppy.api.dto.request.dog.DogDetailDto;
+import com.yp.puppy.api.dto.request.dog.DogModifyDto;
 import com.yp.puppy.api.dto.request.dog.DogSaveDto;
 import com.yp.puppy.api.dto.response.dog.DogResponseDto;
 import com.yp.puppy.api.entity.user.Dog;
@@ -80,14 +81,9 @@ public class DogController {
      * @return - 수정된 강아지 정보
      */
     @PatchMapping("/{dogId}")
-    public ResponseEntity<?> updateDog(@PathVariable String dogId, @RequestBody DogDetailDto dto) {
-//        try {
-//            Dog updatedDog = dogService.updateDog(dogId, dto);
-//            return ResponseEntity.ok(updatedDog);
-//        } catch (Exception e) {
-//            return ResponseEntity.badRequest().body(e.getMessage());
-//        }
-        return null;
+    public ResponseEntity<?> updateDog(@PathVariable String dogId, @RequestBody DogModifyDto dto) {
+        dogService.modifyInMyPage(dogId, dto); // 마이페이지에서 수정하는 요청을 받는 dto (알러지 제외)
+        return ResponseEntity.ok().body("수정 완료");
     }
 
     /**
