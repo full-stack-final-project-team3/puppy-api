@@ -1,16 +1,25 @@
 package com.yp.puppy.api.controller.shop;
 
+import com.yp.puppy.api.dto.request.shop.TreatsDetailPicDto;
+import com.yp.puppy.api.dto.request.shop.TreatsPicDto;
 import com.yp.puppy.api.dto.request.shop.TreatsSaveDto;
 import com.yp.puppy.api.dto.response.shop.TreatsDetailDto;
+import com.yp.puppy.api.entity.shop.Treats;
 import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.service.shop.TreatsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -24,12 +33,15 @@ public class TreatsController {
 
     private final TreatsService treatsService;
 
+    @Value("${file.upload-dir}")
+    private String uploadDir;
+
     // 0. 유저의 강아지 목록 보여주기
     @GetMapping
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
     public ResponseEntity<?> showDogList(@AuthenticationPrincipal TokenUserInfo userInfo) {
 
-        if(userInfo == null){
+        if (userInfo == null) {
             return ResponseEntity.ok().body("로그인이 필요합니다.");
         }
 
@@ -45,11 +57,6 @@ public class TreatsController {
 
     // 1. 상품 전체 맞춤 조회
 
-    /**
-     * @param sort   정렬 기준 (기본값 'name')
-     * @param pageNo 페이지 번호 (기본값 1)
-     * @return 간식 목록
-     */
     @GetMapping("/list/{dogId}")
     public ResponseEntity<?> getTreatsList(@RequestParam(required = false, defaultValue = "name") String sort,
 //                                           TokenUserInfo userInfo,
@@ -68,12 +75,6 @@ public class TreatsController {
 
     // 2. 제품 상세 조회
 
-    /**
-     * 제품 상세 정보를 조회합니다.
-     *
-     * @param treatsId URL 경로에서 제공된 제품의 식별자
-     * @return 제품의 상세 정보를 반환합니다. 제품 ID가 유효하지 않으면, 400 Bad Request 를 반환.
-     */
     @GetMapping("/{treatsId}")
     public ResponseEntity<?> getTreats(@PathVariable String treatsId) {
         try {
@@ -88,32 +89,29 @@ public class TreatsController {
 
     // 3 제품 생성
 
-    /**
-     * @param userInfo 사용자 정보
-     * @param dto      제품 저장 데이터 전송 객체
-     * @return 생성 성공 메시지 또는 오류 메시지
-     * @PreAuthorize 관리자만 작성가능
-     */
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PostMapping
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> registerTreats(@AuthenticationPrincipal TokenUserInfo userInfo,
-                                            @RequestBody TreatsSaveDto dto) {
+                                            @ModelAttribute TreatsSaveDto dto) {
+        log.info("Received DTO: {}", dto);
+
         try {
-            treatsService.saveTreats(dto, userInfo.getUserId());
+            // Treats 객체 생성
+            Treats treats = dto.toEntity(uploadDir);// 실제 저장할 경로로 변경
+            // Treats 저장
+            treatsService.saveTreats(treats, userInfo.getUserId());
             return ResponseEntity.ok().body("제품 생성 성공");
-        } catch (IllegalStateException e) {
-            log.warn(e.getMessage());
-            return ResponseEntity.status(401).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            log.error("유효성 검사 실패: {}", e.getMessage());
+            return ResponseEntity.badRequest().body("유효하지 않은 입력입니다: " + e.getMessage());
+        } catch (Exception e) {
+            log.error("예상치 못한 오류 발생: {}", e.getMessage(), e);
+            return ResponseEntity.status(500).body("서버 오류가 발생했습니다.");
         }
     }
 
     // 4. 제품 삭제
 
-    /**
-     * @param treatsId 삭제할 제품의 아이디
-     * @return 삭제 성공 메시지 또는 오류 메시지
-     * @PreAuthorize 관리자만 삭제가능
-     */
     @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/{treatsId}")
     public ResponseEntity<?> deleteTreats(@PathVariable String treatsId) {
@@ -128,12 +126,6 @@ public class TreatsController {
 
     // 5. 제품 수정
 
-    /**
-     * @param dto      제품 수정 정보를 담은 데이터 전송 객체
-     * @param treatsId 수정할 제품의 아이디
-     * @return 수정 성공 메시지 또는 오류 메시지
-     * @PreAuthorize 관리자만 수정 가능
-     */
     @PreAuthorize("hasAuthority('ADMIN')")
     @PatchMapping("/{treatsId}")
     public ResponseEntity<?> modifyTreats(@RequestBody TreatsSaveDto dto,
@@ -143,7 +135,8 @@ public class TreatsController {
             return ResponseEntity.ok().body("수정 성공");
         } catch (Exception e) {
             log.warn("수정에 실패했습니다.: {}", e.getMessage());
-            return ResponseEntity.status(404).body("수정할 호텔을 찾지 못했습니다..");
+            return ResponseEntity.status(404).body("수정할 제품을 찾지 못했습니다..");
         }
     }
+
 }

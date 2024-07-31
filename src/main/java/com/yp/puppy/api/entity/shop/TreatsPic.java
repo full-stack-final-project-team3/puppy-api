@@ -5,10 +5,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 
 @Getter
+@Setter
 @ToString(exclude = "treats")
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
@@ -26,19 +28,18 @@ public class TreatsPic {
     private String id;
 
     @Column(nullable = false)
-    private String treatsPic;
+    private String treatsPic; // URL
 
-    @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "treats_id")
     @JsonIgnore// Child side
     private Treats treats;
 
     // 추가적인 유효성 검사 메서드
-    public void setTreatsPic(String treatsPic) {
-        if (treatsPic == null || treatsPic.isEmpty()) {
-            throw new IllegalArgumentException("Image URI cannot be null or empty");
-        }
-        this.treatsPic = treatsPic;
-    }
+//    public void setTreatsPic(String treatsPic) {
+//        if (treatsPic == null || treatsPic.isEmpty()) {
+//            throw new IllegalArgumentException("Image URI cannot be null or empty");
+//        }
+//        this.treatsPic = treatsPic;
+//    }
 }
