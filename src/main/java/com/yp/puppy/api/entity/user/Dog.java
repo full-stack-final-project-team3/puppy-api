@@ -69,7 +69,8 @@ public class Dog {
     private String dogProfileUrl; // 강아지 사진 0725 추가
 
     @Setter
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(targetClass = Allergy.class, fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
     @Builder.Default
     private List<Allergy> allergies = new ArrayList<>(); // 리스트 초기화
 
@@ -137,7 +138,7 @@ public class Dog {
         ROTTWEILER,
         SAINT_BERNARD,
         SAMOYED,
-        진돗개,
+        JINDOTGAE,
     }
 
     public void addUser(User user) {
@@ -163,6 +164,8 @@ public class Dog {
         OAT,
         POTATO,
         TOMATO,
+        SALMON,
+        DUCK
 
     }
 

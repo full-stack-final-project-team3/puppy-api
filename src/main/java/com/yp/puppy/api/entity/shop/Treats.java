@@ -76,7 +76,25 @@ public class Treats {
 //    }
 
     public enum Allergic {
-        BEEF, CHICKEN, CORN, DAIRY, FISH, FLAX, LAMB, PORK, TURKEY, WHEAT
+        BEEF,
+        CHICKEN,
+        CORN,
+        DAIRY,
+        FISH,
+        FLAX,
+        LAMB,
+        PORK,
+        TURKEY,
+        WHEAT,
+        SOY,
+        RICE,
+        PEANUT,
+        BARLEY,
+        OAT,
+        POTATO,
+        TOMATO,
+        SALMON,
+        DUCK
     }
 
     public void changeTreats(TreatsSaveDto dto) {
