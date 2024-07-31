@@ -14,11 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
-/**
- * HotelReviewService는 호텔 리뷰 엔티티에 대한 비즈니스 로직을 처리합니다.
- */
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -34,9 +31,9 @@ public class HotelReviewService {
         log.info("리뷰 저장 중: {}", dto);
 
         User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다"));
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + dto.getUserId()));
         Hotel hotel = hotelRepository.findById(dto.getHotelId())
-                .orElseThrow(() -> new IllegalArgumentException("호텔을 찾을 수 없습니다"));
+                .orElseThrow(() -> new IllegalArgumentException("호텔을 찾을 수 없습니다: " + dto.getHotelId()));
 
         Review newReview = dto.toEntity();
         newReview.setUser(user);
@@ -48,25 +45,29 @@ public class HotelReviewService {
         return saveReview;
     }
 
-    // 리뷰 조회 중간처리
+    // 리뷰 전체조회 중간처리 아마안쓸듯?
     public List<Review> getAllReviews() {
         return hotelReviewRepository.findAll();
+    }
+
+    // 리뷰 조회 중간처리
+    public List<Review> getReviewsByHotelId(String hotelId) {
+        return hotelReviewRepository.findByHotelHotelId(hotelId);
     }
 
     // 리뷰 수정 중간처리
     public Review updateReview(String id, ReviewSaveDto dto) {
         Review review = hotelReviewRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("리뷰를 찾을 수 없습니다"));
+                .orElseThrow(() -> new IllegalArgumentException("리뷰를 찾을 수 없습니다: " + id));
 
         review.changeReview(dto);
-
         return hotelReviewRepository.save(review);
     }
 
     // 리뷰 삭제 중간처리
     public void deleteReview(String id) {
         Review review = hotelReviewRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("리뷰를 찾을 수 없습니다"));
+                .orElseThrow(() -> new IllegalArgumentException("리뷰를 찾을 수 없습니다: " + id));
         hotelReviewRepository.delete(review);
     }
 }
