@@ -237,6 +237,7 @@ public class UserService {
                 .email(dto.getEmail())
                 .role(user.getRole().toString())
                 .token(token)
+                .userId(user.getId())
 //                .nickname(user.getNickname())
                 .build();
     }

@@ -131,7 +131,13 @@ public class Dog {
         SHIH_TZU,
         BOSTON_TERRIER,
         POMERANIAN,
-        // ...
+        CHIHUAHUA,
+        MALTESE,
+        PIT_BULL,
+        ROTTWEILER,
+        SAINT_BERNARD,
+        SAMOYED,
+        진돗개,
     }
 
     public void addUser(User user) {
@@ -140,7 +146,24 @@ public class Dog {
     }
 
     public enum Allergy {
-        BEEF, CHICKEN, CORN, DAIRY, FISH, FLAX, LAMB, PORK, TURKEY, WHEAT
+        BEEF,
+        CHICKEN,
+        CORN,
+        DAIRY,
+        FISH,
+        FLAX,
+        LAMB,
+        PORK,
+        TURKEY,
+        WHEAT,
+        SOY,
+        RICE,
+        PEANUT,
+        BARLEY,
+        OAT,
+        POTATO,
+        TOMATO,
+
     }
 
 }
