@@ -21,20 +21,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import static com.yp.puppy.api.auth.TokenProvider.*;
 
 @RestController
 @RequestMapping("/treats")
+@CrossOrigin(origins = "http://localhost:3000")
 @Slf4j
 @RequiredArgsConstructor
 public class TreatsController {
@@ -46,30 +42,12 @@ public class TreatsController {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
-    // 0. 유저의 강아지 목록 보여주기
-//    @GetMapping
-//    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
-//    public ResponseEntity<?> showDogList(@AuthenticationPrincipal TokenUserInfo userInfo) {
-//
-//        if (userInfo == null) {
-//            return ResponseEntity.ok().body("로그인이 필요합니다.");
-//        }
-//
-//        List<Dog> UsersDoglist = treatsService.showUsersDogList(userInfo);
-//
-//        return ResponseEntity.ok().body(UsersDoglist);
-//
-//        // UserDogList가 null이면 그냥 아무거나 추천? 개 등록 시키기?
-//
-//    }
-
     // 0. 관리자 모든 상품 조회
 
     // 1. 상품 전체 맞춤 조회
 
     @GetMapping("/list/{dogId}")
     public ResponseEntity<?> getTreatsList(@RequestParam(required = false, defaultValue = "name") String sort,
-//                                           TokenUserInfo userInfo,
                                            @PathVariable String dogId,
                                            @RequestParam(defaultValue = "1") int pageNo) {
 
@@ -98,7 +76,6 @@ public class TreatsController {
     }
 
     // 3 제품 생성
-
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> registerTreats(@AuthenticationPrincipal TokenUserInfo userInfo,
@@ -110,13 +87,13 @@ public class TreatsController {
             Treats treats = dto.toEntity(uploadDir);// 실제 저장할 경로로 변경
             // Treats 저장
             treatsService.saveTreats(treats, userInfo.getUserId());
-            return ResponseEntity.ok().body("제품 생성 성공");
+            return ResponseEntity.ok().body("상품 추가 완료");
         } catch (IllegalArgumentException e) {
             log.error("유효성 검사 실패: {}", e.getMessage());
             return ResponseEntity.badRequest().body("유효하지 않은 입력입니다: " + e.getMessage());
         } catch (Exception e) {
             log.error("예상치 못한 오류 발생: {}", e.getMessage(), e);
-            return ResponseEntity.status(500).body("서버 오류가 발생했습니다.");
+            return ResponseEntity.status(500).body("서버 오류가 발생");
         }
     }
 
