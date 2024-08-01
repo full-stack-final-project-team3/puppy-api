@@ -1,5 +1,6 @@
 package com.yp.puppy.api.controller.shop;
 
+import com.yp.puppy.api.controller.hotel.HotelController;
 import com.yp.puppy.api.dto.request.shop.TreatsDetailPicDto;
 import com.yp.puppy.api.dto.request.shop.TreatsPicDto;
 import com.yp.puppy.api.dto.request.shop.TreatsSaveDto;
@@ -9,7 +10,12 @@ import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.service.shop.TreatsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,6 +25,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -33,25 +41,27 @@ public class TreatsController {
 
     private final TreatsService treatsService;
 
+    private static final Logger logger = LoggerFactory.getLogger(TreatsController.class);
+
     @Value("${file.upload-dir}")
     private String uploadDir;
 
     // 0. 유저의 강아지 목록 보여주기
-    @GetMapping
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
-    public ResponseEntity<?> showDogList(@AuthenticationPrincipal TokenUserInfo userInfo) {
-
-        if (userInfo == null) {
-            return ResponseEntity.ok().body("로그인이 필요합니다.");
-        }
-
-        List<Dog> UsersDoglist = treatsService.showUsersDogList(userInfo);
-
-        return ResponseEntity.ok().body(UsersDoglist);
-
-        // UserDogList가 null이면 그냥 아무거나 추천? 개 등록 시키기?
-
-    }
+//    @GetMapping
+//    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
+//    public ResponseEntity<?> showDogList(@AuthenticationPrincipal TokenUserInfo userInfo) {
+//
+//        if (userInfo == null) {
+//            return ResponseEntity.ok().body("로그인이 필요합니다.");
+//        }
+//
+//        List<Dog> UsersDoglist = treatsService.showUsersDogList(userInfo);
+//
+//        return ResponseEntity.ok().body(UsersDoglist);
+//
+//        // UserDogList가 null이면 그냥 아무거나 추천? 개 등록 시키기?
+//
+//    }
 
     // 0. 관리자 모든 상품 조회
 
@@ -136,6 +146,30 @@ public class TreatsController {
         } catch (Exception e) {
             log.warn("수정에 실패했습니다.: {}", e.getMessage());
             return ResponseEntity.status(404).body("수정할 제품을 찾지 못했습니다..");
+        }
+    }
+
+    // 이미지 제공 엔드포인트
+    @GetMapping("/images/{year}/{month}/{day}/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> getImage(@PathVariable String year, @PathVariable String month, @PathVariable String day, @PathVariable String filename) {
+        try {
+            Path file = Paths.get(uploadDir, year, month, day).resolve(filename);
+            logger.info("Fetching image from path: " + file.toString());
+            Resource resource = new UrlResource(file.toUri());
+
+            if (resource.exists() || resource.isReadable()) {
+                logger.info("Successfully found the file: " + file.toString());
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                        .body(resource);
+            } else {
+                logger.error("Could not read the file: " + file.toString());
+                throw new RuntimeException("Could not read the file: " + file.toString());
+            }
+        } catch (Exception e) {
+            logger.error("Error reading file: " + filename, e);
+            throw new RuntimeException("Could not read the file!", e);
         }
     }
 
