@@ -46,30 +46,12 @@ public class TreatsController {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
-    // 0. 유저의 강아지 목록 보여주기
-//    @GetMapping
-//    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
-//    public ResponseEntity<?> showDogList(@AuthenticationPrincipal TokenUserInfo userInfo) {
-//
-//        if (userInfo == null) {
-//            return ResponseEntity.ok().body("로그인이 필요합니다.");
-//        }
-//
-//        List<Dog> UsersDoglist = treatsService.showUsersDogList(userInfo);
-//
-//        return ResponseEntity.ok().body(UsersDoglist);
-//
-//        // UserDogList가 null이면 그냥 아무거나 추천? 개 등록 시키기?
-//
-//    }
-
     // 0. 관리자 모든 상품 조회
 
     // 1. 상품 전체 맞춤 조회
 
     @GetMapping("/list/{dogId}")
     public ResponseEntity<?> getTreatsList(@RequestParam(required = false, defaultValue = "name") String sort,
-//                                           TokenUserInfo userInfo,
                                            @PathVariable String dogId,
                                            @RequestParam(defaultValue = "1") int pageNo) {
 
