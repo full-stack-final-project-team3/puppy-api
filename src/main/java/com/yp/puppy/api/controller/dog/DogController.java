@@ -1,5 +1,6 @@
 package com.yp.puppy.api.controller.dog;
 
+import com.yp.puppy.api.dto.request.dog.AllergyRequestDto;
 import com.yp.puppy.api.dto.request.dog.DogDetailDto;
 import com.yp.puppy.api.dto.request.dog.DogModifyDto;
 import com.yp.puppy.api.dto.request.dog.DogSaveDto;
@@ -101,9 +102,16 @@ public class DogController {
 
     @DeleteMapping("/allergy")
     public ResponseEntity<?> deleteAllergy(@RequestParam Dog.Allergy allergy, @RequestParam String dogId) {
-        log.info("dog id and allergy : {} - {}", dogId, allergy);
+
         dogService.deleteAllergy(dogId, allergy);
         return ResponseEntity.ok().body("삭제 완료");
+    }
+
+    @PatchMapping("/allergy")
+    public ResponseEntity<?> postAllergy(@RequestBody AllergyRequestDto dto) {
+        log.info("allergy dto : {}", dto.toString());
+        Dog dog = dogService.postAllergy(dto.getDogId(), dto.getAllergies());
+        return ResponseEntity.ok().body(dog);
     }
 
 }

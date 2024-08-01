@@ -88,4 +88,13 @@ public class DogService {
         foundDog.setWeight(dto.getWeight());
         dogRepository.save(foundDog);
     }
+
+    // 알러지 수정 로직
+    public Dog postAllergy(String dogId, List<Dog.Allergy> allergy) {
+        Dog foundDog = dogRepository.findById(dogId).orElseThrow();
+        log.info("allergies : {}", allergy);
+        foundDog.setAllergies(allergy);
+        dogRepository.save(foundDog);
+        return foundDog;
+    }
 }
