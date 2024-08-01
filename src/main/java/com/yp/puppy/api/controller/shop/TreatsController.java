@@ -87,13 +87,13 @@ public class TreatsController {
             Treats treats = dto.toEntity(uploadDir);// 실제 저장할 경로로 변경
             // Treats 저장
             treatsService.saveTreats(treats, userInfo.getUserId());
-            return ResponseEntity.ok().body("제품 생성 성공");
+            return ResponseEntity.ok().body("상품 추가 완료");
         } catch (IllegalArgumentException e) {
             log.error("유효성 검사 실패: {}", e.getMessage());
             return ResponseEntity.badRequest().body("유효하지 않은 입력입니다: " + e.getMessage());
         } catch (Exception e) {
             log.error("예상치 못한 오류 발생: {}", e.getMessage(), e);
-            return ResponseEntity.status(500).body("서버 오류가 발생했습니다.");
+            return ResponseEntity.status(500).body("서버 오류가 발생");
         }
     }
 

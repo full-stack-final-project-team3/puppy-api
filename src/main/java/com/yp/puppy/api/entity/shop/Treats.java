@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.yp.puppy.api.entity.user.Dog.*;
+
 @Getter
 @Setter
 @ToString(exclude = {"treatsPics", "treatsDetailPics", "reviews", "bundle"})
@@ -46,7 +48,7 @@ public class Treats {
     @Setter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Dog.DogSize dogSize;
+    private DogSize dogSize;
 
     @Setter
     private int treatsStock;
