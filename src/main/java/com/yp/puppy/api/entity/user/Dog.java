@@ -78,7 +78,8 @@ public class Dog {
     @Column(updatable = false) // 수정 불가
     private LocalDateTime createdAt; // 강아지 등록 일자
 
-    private int age;
+    private int age; // 3년
+    private int month; // 6개월
 
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
