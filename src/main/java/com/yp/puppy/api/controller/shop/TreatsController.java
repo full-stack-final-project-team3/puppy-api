@@ -21,20 +21,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import static com.yp.puppy.api.auth.TokenProvider.*;
 
 @RestController
 @RequestMapping("/treats")
+@CrossOrigin(origins = "http://localhost:3000")
 @Slf4j
 @RequiredArgsConstructor
 public class TreatsController {
@@ -80,7 +76,6 @@ public class TreatsController {
     }
 
     // 3 제품 생성
-
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> registerTreats(@AuthenticationPrincipal TokenUserInfo userInfo,
