@@ -28,16 +28,12 @@ public class DogService {
     private final DogRepository dogRepository;
     private final UserRepository userRepository;
 
-    private final EnumTranslator enumTranslator;
 
 
     public Dog saveDog(DogSaveDto dto, String email) {
 
         User foundUser = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("유저 낫 파운드!"));
         Dog dog = dto.toEntity(foundUser);
-//        foundUser.addDog(dog);
-
-//        userRepository.save(foundUser);
         dogRepository.save(dog);
         return dog;
     }
@@ -87,5 +83,14 @@ public class DogService {
         Dog foundDog = dogRepository.findById(dogId).orElseThrow();
         foundDog.setWeight(dto.getWeight());
         dogRepository.save(foundDog);
+    }
+
+    // 알러지 수정 로직
+    public Dog postAllergy(String dogId, List<Dog.Allergy> allergy) {
+        Dog foundDog = dogRepository.findById(dogId).orElseThrow();
+        log.info("allergies : {}", allergy);
+        foundDog.setAllergies(allergy);
+        dogRepository.save(foundDog);
+        return foundDog;
     }
 }
