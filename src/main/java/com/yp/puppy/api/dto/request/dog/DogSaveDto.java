@@ -3,6 +3,8 @@ package com.yp.puppy.api.dto.request.dog;
 import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.entity.user.User;
 import lombok.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,6 +18,7 @@ import static com.yp.puppy.api.entity.user.Dog.*;
 @Builder
 public class DogSaveDto {
 
+    private static final Logger log = LoggerFactory.getLogger(DogSaveDto.class);
     private String dogName;
     private Breed dogBreed;
     private LocalDate birthday;
@@ -26,6 +29,7 @@ public class DogSaveDto {
     private User user; // 누구의 강아지인가
     private List<Dog.Allergy> allergies;
     private String dogProfileUrl;
+    private int age;
 
     public Dog toEntity(User user) {
         Dog dog = Dog.builder()
@@ -37,18 +41,18 @@ public class DogSaveDto {
                 .isNeutered(this.isNeutered)
                 .dogProfileUrl(this.dogProfileUrl)
                 .weight(this.weight)
+                .age(decideDogAge(this.birthday))
                 .user(user)
                 .allergies(this.allergies) // 빈 리스트로 초기화
                 .build();
-
-//        for (String allergyType : this.allergies) {
-//            Allergy allergy = Allergy.builder()
-//                    .type(Allergy.AllergicType.valueOf(allergyType))
-//                    .build();
-//            dog.addAllergy(allergy);
-//        }
-
         return dog;
+    }
+
+    private int decideDogAge(LocalDate birthday) {
+        log.info("시발 왜 안됨? - {} ", birthday);
+        this.age = Math.abs((int) (this.getBirthday().getYear() - 2024));
+        log.info("age : {}", this.age);
+        return age;
     }
 
     private DogSize findDogSize(double weight) {
@@ -61,5 +65,7 @@ public class DogSaveDto {
         }
         return dogSize;
     }
+
+
 
 }

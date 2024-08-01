@@ -28,16 +28,12 @@ public class DogService {
     private final DogRepository dogRepository;
     private final UserRepository userRepository;
 
-    private final EnumTranslator enumTranslator;
 
 
     public Dog saveDog(DogSaveDto dto, String email) {
 
         User foundUser = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("유저 낫 파운드!"));
         Dog dog = dto.toEntity(foundUser);
-//        foundUser.addDog(dog);
-
-//        userRepository.save(foundUser);
         dogRepository.save(dog);
         return dog;
     }

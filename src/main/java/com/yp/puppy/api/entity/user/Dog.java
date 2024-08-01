@@ -78,7 +78,6 @@ public class Dog {
     @Column(updatable = false) // 수정 불가
     private LocalDateTime createdAt; // 강아지 등록 일자
 
-    @Transient
     private int age;
 
     @Setter
@@ -99,12 +98,12 @@ public class Dog {
     @JsonIgnore
     private Bundle bundle;
 
-    @PrePersist
-    private void prePersist() {
-        if (this.age == 0) {
-            this.age = Math.abs((int) (this.getBirthday().getYear() - 2024));
-        }
-    }
+//    @PrePersist
+//    private void prePersist() {
+//        if (this.age == 0) {
+//            this.age = Math.abs((int) (this.getBirthday().getYear() - 2024));
+//        }
+//    }
 
     public enum DogSize {
         SMALL, MEDIUM, LARGE
