@@ -54,4 +54,12 @@ public class FavoriteService {
         log.info("user: {}", user);
         return favoriteRepository.findByUser(user);
     }
+
+    // 호텔삭제할떄 즐겨찾기먼저 삭제하고 해야해
+    public void removeAllFavoritesByHotel(String hotelId) {
+        List<Favorite> favorites = favoriteRepository.findByHotelHotelId(hotelId);
+        if (!favorites.isEmpty()) {
+            favoriteRepository.deleteAll(favorites);
+        }
+    }
 }

@@ -11,4 +11,5 @@ public interface FavoriteRepository extends JpaRepository<Favorite, String> {
     List<Favorite> findByUser(User user);
     List<Favorite> findByHotel(Hotel hotel);
     Favorite findByUserAndHotel(User user, Hotel hotel);
+    List<Favorite> findByHotelHotelId(String hotelId);
 }

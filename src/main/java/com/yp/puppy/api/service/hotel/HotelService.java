@@ -32,6 +32,7 @@ public class HotelService {
 
     private final HotelRepository hotelRepository;
     private final UserRepository userRepository;
+    private final FavoriteService favoriteService;
 
     // 1. 호텔 전체조회 중간처리
     @Transactional(readOnly = true)
@@ -80,6 +81,7 @@ public class HotelService {
 
     // 4. 호텔 삭제 중간처리
     public void deleteHotel(String hotelId) {
+        favoriteService.removeAllFavoritesByHotel(hotelId);  // 즐겨찾기 먼저 제거
         hotelRepository.deleteById(hotelId);
     }
 
