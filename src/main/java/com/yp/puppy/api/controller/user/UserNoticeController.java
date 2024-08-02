@@ -2,6 +2,7 @@ package com.yp.puppy.api.controller.user;
 
 import com.yp.puppy.api.dto.request.user.NoticeRequestDto;
 import com.yp.puppy.api.dto.response.user.UserNoticeDto;
+import com.yp.puppy.api.entity.user.User;
 import com.yp.puppy.api.entity.user.UserNotice;
 import com.yp.puppy.api.service.user.UserNoticeService;
 import lombok.RequiredArgsConstructor;
@@ -33,11 +34,10 @@ public class UserNoticeController {
     }
 
     // 유저가 메시지를 클릭했을때 읽음처리.
-    @PostMapping("/click/{noticeId}")
-    public ResponseEntity<?> clickUserNotice(@PathVariable String noticeId) {
+    @PostMapping("/click/{noticeId}/{userId}")
+    public ResponseEntity<?> clickUserNotice(@PathVariable String noticeId, @PathVariable String userId) {
         log.info("noticeId: {}", noticeId);
-        // clicked -> true, 알림 숫자 감소
-        noticeService.clickHandler(noticeId);
-        return ResponseEntity.ok().body("ok");
+        User foundUser = noticeService.clickHandler(noticeId, userId);
+        return ResponseEntity.ok().body(foundUser);
     }
 }

@@ -87,6 +87,7 @@ public class User {
     private boolean hasDogInfo;
 
     @Setter
+    @ColumnDefault("0")
     private int noticeCount;
 
     @CreationTimestamp

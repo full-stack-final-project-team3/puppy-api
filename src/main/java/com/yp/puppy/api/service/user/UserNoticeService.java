@@ -45,9 +45,14 @@ public class UserNoticeService {
                 .collect(Collectors.toList());
     }
 
-    public void clickHandler(String noticeId) {
+    public User clickHandler(String noticeId, String userId) {
+        User foundUser = userRepository.findById(userId).orElseThrow();
+        foundUser.setNoticeCount(foundUser.getNoticeCount()-1);
         UserNotice notice = noticeRepository.findById(noticeId).orElseThrow();
         notice.setClicked(true);
+        // 유저의 카운트 감소시켜야함
         noticeRepository.save(notice);
+        userRepository.save(foundUser);
+        return foundUser;
     }
 }
