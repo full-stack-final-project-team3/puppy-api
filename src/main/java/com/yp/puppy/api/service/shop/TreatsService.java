@@ -64,7 +64,7 @@ public class TreatsService {
 
         List<Treats.Allergic> allergics = convertDogAllergiesToTreatsAllergies(dogInfoAllergies);
 
-        Pageable pageable = PageRequest.of(pageNo - 1, 5);
+        Pageable pageable = PageRequest.of(pageNo - 1, 100);
 
         Page<Treats> treatsPage = treatsRepository.findTreats(allergics, pageable, sort);
 
