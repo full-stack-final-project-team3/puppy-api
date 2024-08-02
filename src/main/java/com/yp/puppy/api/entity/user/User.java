@@ -86,6 +86,10 @@ public class User {
 
     private boolean hasDogInfo;
 
+    @Setter
+    @ColumnDefault("0")
+    private int noticeCount;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 
@@ -137,6 +141,12 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference("user-reviews")
     private List<Review> hotelReviews;
+
+    // 알림 테이블 만듬. (0801)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @Builder.Default
+    @JsonManagedReference("user-notices")
+    private List<UserNotice> userNotices = new ArrayList<>();
 
     public void addDog(Dog dog) {
         this.dogList.add(dog);
