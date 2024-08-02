@@ -3,7 +3,6 @@ package com.yp.puppy.api.entity.shop;
 import com.yp.puppy.api.dto.request.shop.TreatsDetailPicDto;
 import com.yp.puppy.api.dto.request.shop.TreatsPicDto;
 import com.yp.puppy.api.dto.request.shop.TreatsSaveDto;
-import com.yp.puppy.api.entity.user.Dog;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -70,12 +69,8 @@ public class Treats {
     private List<Allergic> allergieList = new ArrayList<>();
 
     public enum TreatsType {
-        DRY, WET
+        DRY, WET, GUM, KIBBLE, SUPPS
     }
-
-//    public enum DogSize {
-//        SMALL, MEDIUM, LARGE
-//    }
 
     public enum Allergic {
         BEEF,
