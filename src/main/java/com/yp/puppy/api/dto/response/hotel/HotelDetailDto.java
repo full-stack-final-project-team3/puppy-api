@@ -21,6 +21,9 @@ public class HotelDetailDto {
     private String location; // 호텔 위치
     private long price; // 호텔 가격
     private String phoneNumber; // 호텔 전화번호
+    private String businessOwner; // 사업자 정보
+    private String rulesPolicy; // 호텔 규칙
+    private String cancelPolicy; // 취소 규정
 
     @JsonProperty("hotel-images")
     private List<HotelImage> hotelImages; // 호텔 이미지 목록
@@ -34,6 +37,10 @@ public class HotelDetailDto {
         this.price = hotel.getPrice();
         this.phoneNumber = hotel.getPhoneNumber();
         this.hotelImages = hotel.getImages();
+        this.businessOwner = hotel.getBusinessOwner();
+        this.rulesPolicy = hotel.getRulesPolicy();
+        this.cancelPolicy = hotel.getCancelPolicy();
+
     }
 
 }
