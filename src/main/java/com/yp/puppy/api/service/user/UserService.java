@@ -300,6 +300,7 @@ public class UserService {
                 .phoneNumber(foundUser.getPhoneNumber())
                 .profileUrl(foundUser.getProfileUrl())
                 .hasDogInfo(foundUser.isHasDogInfo())
+                .noticeCount(foundUser.getNoticeCount())
                 .realName(foundUser.getRealName())
                 .address(foundUser.getAddress())
                 .warningCount(foundUser.getWarningCount())
