@@ -38,18 +38,22 @@ public class UserNoticeService {
     }
 
     public List<UserNoticeDto> findUserNotice(String userId) {
-        User foundUser = userRepository.findById(userId).orElseThrow();
-        log.info("users notices {}", foundUser.getUserNotices());
-        return foundUser.getUserNotices().stream()
+        userRepository.findById(userId).orElseThrow();
+        List<UserNotice> userNotices = noticeRepository.findByTimeDesc(userId);
+        return userNotices.stream()
                 .map(UserNoticeDto::new)
                 .collect(Collectors.toList());
     }
 
     public User clickHandler(String noticeId, String userId) {
         User foundUser = userRepository.findById(userId).orElseThrow();
-        foundUser.setNoticeCount(foundUser.getNoticeCount()-1);
+        if (foundUser.getNoticeCount() != 0) {
+            foundUser.setNoticeCount(foundUser.getNoticeCount()-1);
+        } else {
+            foundUser.setNoticeCount(0);
+        }
         UserNotice notice = noticeRepository.findById(noticeId).orElseThrow();
-        notice.setClicked(true);
+        notice.setIsClicked(true);
         // 유저의 카운트 감소시켜야함
         noticeRepository.save(notice);
         userRepository.save(foundUser);

@@ -18,7 +18,7 @@ public class UserNoticeDto {
     private String message;
     private LocalDateTime createdAt;
     private boolean isClicked;
-    private User user;
+//    private User user;
 
     // UserNotice를 받는 생성자
     public UserNoticeDto(UserNotice userNotice) {
@@ -26,6 +26,6 @@ public class UserNoticeDto {
         this.message = userNotice.getMessage();
         this.createdAt = userNotice.getCreatedAt();
         this.isClicked = userNotice.isClicked();
-        this.user = userNotice.getUser();
+//        this.user = userNotice.getUser();
     }
 }

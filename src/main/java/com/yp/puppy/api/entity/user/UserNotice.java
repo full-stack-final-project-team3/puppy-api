@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 @Builder
 @Entity
 @Table(name = "user_notices")
-// 알림 테이블 만듬. (0801)
 public class UserNotice {
 
     @Id
@@ -31,10 +30,15 @@ public class UserNotice {
     private LocalDateTime createdAt;
 
     // 읽었냐? 안읽었냐
+    @Column(name = "is_clicked")
     private boolean isClicked;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @JsonBackReference("user-notices")
     private User user;
+
+    public void setIsClicked(boolean flag) {
+        this.isClicked = flag;
+    }
 }

@@ -31,6 +31,7 @@ public class UserResponseDto {
     private boolean hasDogInfo;
     private int warningCount;
     private List<Dog> dogList;
+    private int noticeCount;
 
 
 }
