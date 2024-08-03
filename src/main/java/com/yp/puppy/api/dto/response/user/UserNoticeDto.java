@@ -25,7 +25,7 @@ public class UserNoticeDto {
         this.id = userNotice.getId();
         this.message = userNotice.getMessage();
         // LocalDateTime을 포맷된 문자열로 변환
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         this.createdAt = userNotice.getCreatedAt().format(formatter);
         this.isClicked = userNotice.isClicked();
     }

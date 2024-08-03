@@ -25,7 +25,7 @@ public class UserNoticeService {
     private final UserRepository userRepository;
 
 
-    public void addNotice(NoticeRequestDto dto) {
+    public UserNotice addNotice(NoticeRequestDto dto) {
         log.info("addNotice {}", dto);
         User foundUser = userRepository.findById(dto.getUserId()).orElseThrow();
         UserNotice notice = UserNotice.builder()
@@ -35,6 +35,7 @@ public class UserNoticeService {
         foundUser.setNoticeCount(foundUser.getNoticeCount()+1);
         foundUser.getUserNotices().add(notice);
         userRepository.save(foundUser);
+        return notice;
     }
 
     public List<UserNoticeDto> findUserNotice(String userId) {

@@ -23,8 +23,8 @@ public class UserNoticeController {
 
     @PostMapping("/add")
     public ResponseEntity<?> addUserNotice(@RequestBody NoticeRequestDto dto) {
-        noticeService.addNotice(dto);
-        return ResponseEntity.ok().body("ok");
+        UserNotice userNotice = noticeService.addNotice(dto);
+        return ResponseEntity.ok().body(userNotice);
     }
 
     @GetMapping("/user/{userId}")
