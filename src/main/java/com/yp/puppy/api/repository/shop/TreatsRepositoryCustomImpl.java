@@ -55,7 +55,7 @@ public class TreatsRepositoryCustomImpl implements TreatsRepositoryCustom {
             case "type":
                 return treats.treatsType.asc();
             default:
-                return treats.treatsType.asc(); // 기본 정렬 옵션으로 변경
+                return treats.treatsTitle.asc(); // 기본 정렬 옵션으로 변경
         }
     }
 
