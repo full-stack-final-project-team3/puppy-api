@@ -2,6 +2,7 @@ package com.yp.puppy.api.service.hotel;
 
 import com.yp.puppy.api.dto.request.hotel.ReservationSaveDto;
 import com.yp.puppy.api.dto.response.hotel.ReservationOneDto;
+import com.yp.puppy.api.entity.hotel.CancellationStatus;
 import com.yp.puppy.api.entity.hotel.Hotel;
 import com.yp.puppy.api.entity.hotel.Reservation;
 import com.yp.puppy.api.entity.hotel.Room;
@@ -52,7 +53,7 @@ public class ReservationService {
         Reservation reservation = Reservation.builder()
                 .reservationAt(dto.getReservationAt())
                 .reservationEndAt(dto.getReservationEndAt())
-                .cancelled(dto.getCancelled())
+                .cancelled(CancellationStatus.SUCCESS)
                 .price(roomPrice)
                 .room(foundRoom)
                 .hotel(foundHotel)
@@ -89,9 +90,10 @@ public class ReservationService {
 
         log.info("예약 취소 후 포인트 반환: {}", user.getPoint());
 
-        reservationRepository.deleteById(reservationId);
-
+        reservation.setCancelled(CancellationStatus.CANCELLED);
+        reservationRepository.save(reservation);
     }
+
 
 
     // 예약 수정 중간처리

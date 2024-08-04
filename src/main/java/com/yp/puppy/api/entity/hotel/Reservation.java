@@ -44,6 +44,7 @@ public class Reservation {
     @Column(nullable = false)
     private long price; // 예약 금액
 
+    @Setter
     @Column(nullable = false)
     private CancellationStatus cancelled; // 예약 취소 여부
 
