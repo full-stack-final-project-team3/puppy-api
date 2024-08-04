@@ -94,15 +94,14 @@ public class ReviewController {
     }
 
     /**
-     * 특정 ID의 리뷰를 삭제하는 메소드
+     * 아이디 리뷰 삭제
      *
-     * @param id 삭제할 리뷰의 ID
+     * @param id 삭제할 리뷰 아이디
      * @return HTTP 응답 (삭제가 성공적으로 수행된 경우)
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReview(@PathVariable String id) {
         try {
-            // 특정 ID의 리뷰를 삭제
             reviewService.deleteReview(id);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
