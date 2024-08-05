@@ -4,6 +4,7 @@ import com.yp.puppy.api.dto.request.shop.ReviewSaveDto;
 import com.yp.puppy.api.entity.shop.Review;
 import com.yp.puppy.api.entity.shop.Treats;
 import com.yp.puppy.api.entity.user.User;
+import com.yp.puppy.api.repository.shop.ReviewPicRepository;
 import com.yp.puppy.api.repository.shop.ReviewRepository;
 import com.yp.puppy.api.repository.shop.TreatsRepository;
 import com.yp.puppy.api.repository.user.UserRepository;
@@ -24,13 +25,9 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
     private final TreatsRepository treatsRepository;
+    private final ReviewPicRepository reviewPicRepository;
 
-    /**
-     * 리뷰를 저장하는 메소드
-     *
-     * @param reviewSaveDto 리뷰 정보를 담고 있는 DTO 객체
-     * @return 저장된 리뷰 객체
-     */
+    // 리뷰 저장
     public Review saveReview(ReviewSaveDto reviewSaveDto) {
         // 로그를 통해서 유저랑 간식 아이디를 확잉
         log.info("Looking for userId: {} and treatsId: {}", reviewSaveDto.getUserId(), reviewSaveDto.getTreatsId());
@@ -79,32 +76,17 @@ public class ReviewService {
         }
     }
 
-    /**
-     * 모든 리뷰를 조회하는 메소드
-     *
-     * @return 모든 리뷰의 리스트
-     */
+    //리뷰를 조회하
     public List<Review> findAllReviews() {
         return reviewRepository.findAll();
     }
 
-    /**
-     * 특정 ID로 리뷰를 조회하는 메소드
-     *
-     * @param id 조회할 리뷰의 ID
-     * @return 해당 ID의 리뷰 객체, 없으면 null
-     */
+    //리뷰를 조회
     public Review findReviewById(String id) {
         return reviewRepository.findById(id).orElse(null);
     }
 
-    /**
-     * 특정 ID의 리뷰를 업데이트하는 메소드
-     *
-     * @param id 리뷰의 ID
-     * @param reviewSaveDto 업데이트할 리뷰 정보를 담고 있는 DTO 객체
-     * @return 업데이트된 리뷰 객체
-     */
+    //리뷰를 업데이트
     public Review updateReview(String id, ReviewSaveDto reviewSaveDto) {
         // 리뷰를 조회
         Optional<Review> reviewOptional = reviewRepository.findById(id);
@@ -120,42 +102,23 @@ public class ReviewService {
         }
     }
 
-    /**
-     * 특정 ID의 리뷰를 삭제하는 메소드
-     *
-     * @param id 삭제할 리뷰의 ID
-     */
+    //리뷰를 삭제
     public void deleteReview(String id) {
         reviewRepository.deleteById(id);
     }
 
-    /**
-     * 사용자가 특정 간식을 구매했는지 확인하는 메소드
-     *
-     * @param userId 사용자의 ID
-     * @param treatsId 간식의 ID
-     * @return 사용자가 해당 간식을 구매했으면 true, 아니면 false
-     */
+    //사용자가 간식을 구매했는지 확인
     public boolean userHasPurchasedTreat(String userId, String treatsId) {
 
         return true;  // 현재는 항상 true 반환
     }
 
-    /**
-     * 특정 ID로 간식을 조회하는 메소드
-     *
-     * @param id 조회할 간식의 ID
-     * @return 해당 ID의 간식 객체, 없으면 null
-     */
+    //아이디로 간식 조회
     public Treats findTreatById(String id) {
         return treatsRepository.findById(id).orElse(null);
     }
 
-    /**
-     * 모든 간식을 조회하는 메소드
-     *
-     * @return 모든 간식의 리스트
-     */
+    //모든 간식을 조회
     public List<Treats> findAllTreats() {
         return treatsRepository.findAll();
     }
