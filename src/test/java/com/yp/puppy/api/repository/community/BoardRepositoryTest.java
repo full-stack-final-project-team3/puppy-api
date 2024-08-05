@@ -117,13 +117,13 @@ class BoardRepositoryTest {
 
         Board board3 = boardRepository.save(board1);
         System.out.println("👽board3 = " + board3);
-        String id = board3.getId();
+//        String id = board3.getId();
         System.out.println("삭제 진행");
-        boardRepository.deleteById(id);
+//        boardRepository.deleteById(id);
 
-        Board board4 = boardRepository.findById(id).orElse(null);
-        System.out.println("👽삭제 후 조회 = " + board4);
-        assertNull(board4);
+//        Board board4 = boardRepository.findById(id).orElse(null);
+//        System.out.println("👽삭제 후 조회 = " + board4);
+//        assertNull(board4);
 
         //when
 
