@@ -2,6 +2,7 @@ package com.yp.puppy.api.service.shop;
 
 import com.yp.puppy.api.dto.request.shop.ReviewSaveDto;
 import com.yp.puppy.api.entity.shop.Review;
+import com.yp.puppy.api.entity.shop.ReviewPic;
 import com.yp.puppy.api.entity.shop.Treats;
 import com.yp.puppy.api.entity.user.User;
 import com.yp.puppy.api.repository.shop.ReviewPicRepository;
@@ -10,9 +11,15 @@ import com.yp.puppy.api.repository.shop.TreatsRepository;
 import com.yp.puppy.api.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -27,12 +34,12 @@ public class ReviewService {
     private final TreatsRepository treatsRepository;
     private final ReviewPicRepository reviewPicRepository;
 
-    // 리뷰 저장
+    @Value("${file.upload-dir}")
+    private String uploadDir;
+
     public Review saveReview(ReviewSaveDto reviewSaveDto) {
-        // 로그를 통해서 유저랑 간식 아이디를 확잉
         log.info("Looking for userId: {} and treatsId: {}", reviewSaveDto.getUserId(), reviewSaveDto.getTreatsId());
 
-        // 유저 아이디랑 간식 아이디가 비어있는지 확인하거 비어있다면 예외를 던짐
         if (reviewSaveDto.getUserId() == null || reviewSaveDto.getUserId().trim().isEmpty()) {
             throw new IllegalArgumentException("User ID is missing");
         }
@@ -40,11 +47,9 @@ public class ReviewService {
             throw new IllegalArgumentException("Treats ID is missing");
         }
 
-        //유저랑 간식을 디비에서 조회함
         Optional<User> userOptional = userRepository.findById(reviewSaveDto.getUserId());
         Optional<Treats> treatsOptional = treatsRepository.findById(reviewSaveDto.getTreatsId());
 
-        // 유저랑 간식이 존재하는지 확인하거 로그를 남ㄱ
         if (userOptional.isPresent()) {
             log.info("유저 아이디 찾기 : {}", userOptional.get());
         } else {
@@ -57,68 +62,117 @@ public class ReviewService {
             log.warn("간식 아이디를 찾지 못했습니다 : {}", reviewSaveDto.getTreatsId());
         }
 
-        //유저랑 간식이 존재? 있으믄 리뷰 생성해서 저장함
         if (userOptional.isPresent() && treatsOptional.isPresent()) {
             User user = userOptional.get();
             Treats treats = treatsOptional.get();
 
             Review review = Review.builder()
-                    .reviewContent(reviewSaveDto.getReviewContent())  // 리뷰 내용 설정
-                    .rate(reviewSaveDto.getRate())  // 별점 설정
-                    .user(user)  // 리뷰를 작성한 사용자 설정
-                    .treats(treats)  // 리뷰를 남긴 간식 설정
-                    .createdAt(LocalDateTime.now())  // 작성 일자 설정
+                    .reviewContent(reviewSaveDto.getReviewContent())
+                    .rate(reviewSaveDto.getRate())
+                    .user(user)
+                    .treats(treats)
+                    .createdAt(LocalDateTime.now())
                     .build();
 
-            return reviewRepository.save(review);  //리뷰를 디비에 저장하거 반환
+            if (review.getReviewPics() == null) {
+                review.setReviewPics(new ArrayList<>());
+            }
+
+            List<MultipartFile> reviewPics = reviewSaveDto.getReviewPics();
+            if (reviewPics != null && !reviewPics.isEmpty()) {
+                for (MultipartFile pic : reviewPics) {
+                    String picName = saveImage(pic);
+                    ReviewPic reviewPic = ReviewPic.builder()
+                            .reviewPic(picName)
+                            .review(review)
+                            .build();
+                    review.getReviewPics().add(reviewPic);
+                }
+            }
+
+            return reviewRepository.save(review);
         } else {
             throw new IllegalArgumentException("잘못된 유저 아이디 또는 간식 아이디");
         }
     }
 
-    //리뷰를 조회하
-    public List<Review> findAllReviews() {
-        return reviewRepository.findAll();
+    public String saveImage(MultipartFile image) {
+        try {
+            String originalFilename = image.getOriginalFilename();
+            String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            String newFilename = UUID.randomUUID().toString() + extension;
+            Path path = Paths.get(uploadDir).resolve(newFilename);
+
+            // 디렉토리가 존재하지 않으면 생성
+            if (Files.notExists(path.getParent())) {
+                Files.createDirectories(path.getParent());
+            }
+
+            // 경로 출력
+            System.out.println("이미지 저장 경로 : " + path.toString());
+
+            Files.write(path, image.getBytes());
+
+            // 로그 출력
+            log.info("이미지 저장 성공: {}", path.toString());
+
+            return newFilename;
+        } catch (IOException e) {
+            log.error("이미지 저장 실패: {}", e.getMessage());
+            throw new RuntimeException("이미지 저장 실패: " + e.getMessage(), e);
+        }
     }
 
-    //리뷰를 조회
-    public Review findReviewById(String id) {
-        return reviewRepository.findById(id).orElse(null);
-    }
-
-    //리뷰를 업데이트
     public Review updateReview(String id, ReviewSaveDto reviewSaveDto) {
-        // 리뷰를 조회
         Optional<Review> reviewOptional = reviewRepository.findById(id);
 
-        // 리뷰가 있으면 내용을 업데이트 후 저장
         if (reviewOptional.isPresent()) {
             Review review = reviewOptional.get();
-            review.setReviewContent(reviewSaveDto.getReviewContent());  // 리뷰 내용 업데이트
-            review.setRate(reviewSaveDto.getRate());  // 별점 업데이트
-            return reviewRepository.save(review);  // 업데이트된 리뷰 저장
+            review.setReviewContent(reviewSaveDto.getReviewContent());
+            review.setRate(reviewSaveDto.getRate());
+
+            // 기존 이미지 삭제
+            reviewPicRepository.deleteAll(review.getReviewPics());
+            review.getReviewPics().clear();
+
+            List<MultipartFile> reviewPics = reviewSaveDto.getReviewPics();
+            if (reviewPics != null && !reviewPics.isEmpty()) {
+                for (MultipartFile pic : reviewPics) {
+                    String picName = saveImage(pic);
+                    ReviewPic reviewPic = ReviewPic.builder()
+                            .reviewPic(picName)
+                            .review(review)
+                            .build();
+                    review.getReviewPics().add(reviewPic);
+                }
+            }
+
+            return reviewRepository.save(review);
         } else {
             throw new IllegalArgumentException("Invalid reviewId");
         }
     }
 
-    //리뷰를 삭제
+    public List<Review> findAllReviews() {
+        return reviewRepository.findAll();
+    }
+
+    public Review findReviewById(String id) {
+        return reviewRepository.findById(id).orElse(null);
+    }
+
     public void deleteReview(String id) {
         reviewRepository.deleteById(id);
     }
 
-    //사용자가 간식을 구매했는지 확인
     public boolean userHasPurchasedTreat(String userId, String treatsId) {
-
-        return true;  // 현재는 항상 true 반환
+        return true;
     }
 
-    //아이디로 간식 조회
     public Treats findTreatById(String id) {
         return treatsRepository.findById(id).orElse(null);
     }
 
-    //모든 간식을 조회
     public List<Treats> findAllTreats() {
         return treatsRepository.findAll();
     }
