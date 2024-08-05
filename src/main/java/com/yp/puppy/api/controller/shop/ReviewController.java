@@ -1,6 +1,7 @@
 package com.yp.puppy.api.controller.shop;
 
 import com.yp.puppy.api.dto.request.shop.ReviewSaveDto;
+import com.yp.puppy.api.dto.response.shop.ReviewResponseDto;
 import com.yp.puppy.api.entity.shop.Review;
 import com.yp.puppy.api.service.shop.ReviewService;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/shop/reviews")
@@ -64,10 +66,13 @@ public class ReviewController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Review>> getAllReviews() {
+    public ResponseEntity<List<ReviewResponseDto>> getAllReviews() {
         try {
             List<Review> reviews = reviewService.findAllReviews();
-            return ResponseEntity.ok(reviews);
+            List<ReviewResponseDto> reviewResponseDtos = reviews.stream()
+                    .map(this::convertToDto)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(reviewResponseDtos);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
@@ -75,10 +80,13 @@ public class ReviewController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Review> getReviewById(@PathVariable String id) {
+    public ResponseEntity<ReviewResponseDto> getReviewById(@PathVariable String id) {
         try {
             Review review = reviewService.findReviewById(id);
-            return ResponseEntity.ok(review);
+            if (review == null) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(convertToDto(review));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
@@ -113,5 +121,27 @@ public class ReviewController {
         } catch (Exception e) {
             throw new RuntimeException("파일을 불러오는 데 실패했습니다.", e);
         }
+    }
+
+    private ReviewResponseDto convertToDto(Review review) {
+        List<ReviewResponseDto.ReviewPicDto> reviewPicDtos = review.getReviewPics().stream()
+                .map(pic -> new ReviewResponseDto.ReviewPicDto(pic.getId(), pic.getReviewPic()))
+                .collect(Collectors.toList());
+
+        ReviewResponseDto.UserDTO userDTO = new ReviewResponseDto.UserDTO(
+                review.getUser().getId(),
+                review.getUser().getNickname(),
+                review.getUser().getProfileUrl(),
+                review.getUser().getEmail()
+        );
+
+        return new ReviewResponseDto(
+                review.getId(),
+                review.getReviewContent(),
+                review.getRate(),
+                review.getCreatedAt(),
+                reviewPicDtos,
+                userDTO
+        );
     }
 }
