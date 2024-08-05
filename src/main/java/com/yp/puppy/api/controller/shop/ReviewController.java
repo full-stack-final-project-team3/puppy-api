@@ -101,6 +101,7 @@ public class ReviewController {
         try {
             Path file = Paths.get(uploadDir).resolve(filename);
             Resource resource = new UrlResource(file.toUri());
+            System.out.println("리소스스스스스 = " + resource);
 
             if (resource.exists() || resource.isReadable()) {
                 return ResponseEntity.ok()
