@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -42,31 +43,34 @@ public class TreatsService {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
-//    // 0. 유저의 강아지 정보 출력하기
-//    public List<Dog> showUsersDogList(TokenUserInfo userInfo) {
-//
-//        String userId = userInfo.getUserId();
-//
-//        User user = userRepository.findById(userId).orElseThrow();
-//
-//        List<Dog> dogList = user.getDogList();
-//
-//        return dogList;
-//    }
-
     // 1. 상품 전체 조회 중간처리
     public Map<String, Object> getTreatsList(String dogId, int pageNo, String sort) {
 
         Dog userDogInfo = dogRepository.findById(dogId).orElseThrow();
-
-        // 유저의 알레르지 리스트
+        Dog.DogSize dogSize = userDogInfo.getDogSize();
+        LocalDate birthday = userDogInfo.getBirthday();
         List<Dog.Allergy> dogInfoAllergies = userDogInfo != null ? userDogInfo.getAllergies() : null;
-
         List<Treats.Allergic> allergics = convertDogAllergiesToTreatsAllergies(dogInfoAllergies);
 
-        Pageable pageable = PageRequest.of(pageNo - 1, 100);
+        // TreatsType 결정
+        Treats.TreatsType treatsType = getTreatsTypeByPageNumber(pageNo - 1);
 
-        Page<Treats> treatsPage = treatsRepository.findTreats(allergics, pageable, sort);
+        // 페이저블 기본 사이즈
+        int defaultPageSize = 100;
+
+        // 각 타입에 따른 간식 리스트 조회
+        Page<Treats> initialTreatsPage = treatsRepository.findTreats(allergics, dogSize, PageRequest.of(0, defaultPageSize), sort, treatsType);
+
+        log.info("initialTreatsPage: {}", initialTreatsPage);
+
+        // 각 타입의 간식 리스트의 길이에 따라 페이지 사이즈 결정
+        int actualSize = initialTreatsPage.getContent().size();
+
+        // 최종 Pageable 설정
+        Pageable pageable = PageRequest.of(pageNo - 1, actualSize > 0 ? actualSize : defaultPageSize);
+
+        // 최종 간식 리스트 조회
+        Page<Treats> treatsPage = treatsRepository.findTreats(allergics, dogSize, pageable, sort, treatsType);
 
         List<Treats> treatsList = treatsPage.getContent();
 
@@ -76,12 +80,13 @@ public class TreatsService {
             treatsDtoList.add(treatsListDto);
         }
 
-        // 렌더링 될 개수
         long totalElements = treatsPage.getTotalElements();
 
         Map<String, Object> map = new HashMap<>();
         map.put("treatsList", treatsDtoList);
         map.put("totalCount", totalElements);
+
+        log.info("Fetching treats for page: {}, sort: {}, treatsType: {}", pageNo, sort, treatsType);
 
         return map;
     }
@@ -121,6 +126,14 @@ public class TreatsService {
         treatsRepository.save(foundTreats);
     }
 
+    // 강아지 나이 계산 메서드
+    private int calculateDogAge(LocalDate birthday) {
+        if (birthday == null) {
+            return 0; // 출생일이 없는 경우 기본값으로 0세를 반환
+        }
+        return LocalDate.now().getYear() - birthday.getYear();
+    }
+
     public List<Treats.Allergic> convertDogAllergiesToTreatsAllergies(List<Dog.Allergy> dogAllergies) {
         if (dogAllergies == null) {
             return Collections.emptyList();
@@ -153,9 +166,47 @@ public class TreatsService {
                 return Treats.Allergic.TURKEY;
             case WHEAT:
                 return Treats.Allergic.WHEAT;
+            case SOY:
+                return Treats.Allergic.SOY;
+            case RICE:
+                return Treats.Allergic.RICE;
+            case PEANUT:
+                return Treats.Allergic.PEANUT;
+            case BARLEY:
+                return Treats.Allergic.BARLEY;
+            case OAT:
+                return Treats.Allergic.OAT;
+            case POTATO:
+                return Treats.Allergic.POTATO;
+            case TOMATO:
+                return Treats.Allergic.TOMATO;
+            case SALMON:
+                return Treats.Allergic.SALMON;
+            case DUCK:
+                return Treats.Allergic.DUCK;
             default:
                 return null; // 매핑되지 않는 경우
         }
     }
 
+    // 페이지 번호에 따른 TreatsType 결정 메서드
+    private Treats.TreatsType getTreatsTypeByPageNumber(int pageNumber) {
+        switch (pageNumber) {
+            case 0:
+                return Treats.TreatsType.DRY;   // 1페이지
+            case 1:
+                return Treats.TreatsType.WET;   // 2페이지
+            case 2:
+                return Treats.TreatsType.GUM;   // 3페이지
+            case 3:
+                return Treats.TreatsType.KIBBLE; // 4페이지
+            case 4:
+                return Treats.TreatsType.SUPPS;  // 5페이지
+            default:
+                return null; // 원하는 타입이 없을 경우
+        }
+    }
+
 }
+
+

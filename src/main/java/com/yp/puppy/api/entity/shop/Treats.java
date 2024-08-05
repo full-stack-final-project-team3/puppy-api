@@ -50,6 +50,10 @@ public class Treats {
     private DogSize dogSize;
 
     @Setter
+    @Enumerated(EnumType.STRING)
+    private Age dogAge;
+
+    @Setter
     private int treatsStock;
 
     @Setter
@@ -92,6 +96,13 @@ public class Treats {
         TOMATO,
         SALMON,
         DUCK
+    }
+
+    public enum Age {
+        BABY,
+        AVERAGE,
+        OLD;
+
     }
 
     public void changeTreats(TreatsSaveDto dto) {
