@@ -7,10 +7,12 @@ import com.yp.puppy.api.dto.response.hotel.RoomDetailDto;
 import com.yp.puppy.api.dto.response.hotel.RoomOneDto;
 import com.yp.puppy.api.entity.hotel.Hotel;
 import com.yp.puppy.api.entity.hotel.HotelImage;
+import com.yp.puppy.api.entity.hotel.Reservation;
 import com.yp.puppy.api.entity.hotel.Room;
 import com.yp.puppy.api.entity.user.Role;
 import com.yp.puppy.api.entity.user.User;
 import com.yp.puppy.api.repository.hotel.HotelRepository;
+import com.yp.puppy.api.repository.hotel.ReservationRepository;
 import com.yp.puppy.api.repository.hotel.RoomRepository;
 import com.yp.puppy.api.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,30 +39,26 @@ public class RoomService {
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
     private final HotelRepository hotelRepository;
+    private final ReservationRepository reservationRepository;
 
 
-    // 전체조회 중간처리
-    public Map<String, Object> getRooms(int pageNo, String sort) {
+    // 예약 날짜 중복 체크 메서드
+    private boolean isReservationDateOverlap(String roomId, LocalDateTime reservationAt, LocalDateTime reservationEndAt) {
+        List<Reservation> existingReservations = reservationRepository.findByRoom_RoomIdAndReservationEndAtAfterAndReservationAtBefore(
+                roomId, reservationAt, reservationEndAt);
+        return !existingReservations.isEmpty();
+    }
 
-        Pageable pageable = PageRequest.of(pageNo - 1, 4);
-
-        Page<Room> roomPage = roomRepository.findRooms(pageable, sort);
-
-        List<Room> roomList = roomPage.getContent();
-
-        List<RoomDetailDto> roomDtoList = roomList.stream()
-                .map(RoomDetailDto::new)
-                .collect(Collectors.toList());
-
-        // 렌더링 될 개수
-        long totalElements = roomPage.getTotalElements();
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("hotels", roomDtoList);
-        map.put("totalCount", totalElements);
-
-        return map;
-
+    // 객실 조회 중간처리
+    public List<RoomOneDto> getAvailableRooms(String hotelId, LocalDateTime reservationAt, LocalDateTime reservationEndAt) {
+        List<Room> rooms = roomRepository.findByHotel_HotelId(hotelId);
+        List<RoomOneDto> availableRooms = new ArrayList<>();
+        for (Room room : rooms) {
+            if (!isReservationDateOverlap(room.getRoomId(), reservationAt, reservationEndAt)) {
+                availableRooms.add(new RoomOneDto(room));
+            }
+        }
+        return availableRooms;
     }
 
 

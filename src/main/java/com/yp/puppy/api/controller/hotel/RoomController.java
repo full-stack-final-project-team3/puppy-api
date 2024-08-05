@@ -6,11 +6,15 @@ import com.yp.puppy.api.dto.response.hotel.RoomOneDto;
 import com.yp.puppy.api.service.hotel.RoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -23,16 +27,17 @@ public class RoomController {
 
 
     // 1. 객실 전체 조회
-    @GetMapping
-    public ResponseEntity<?> getAllRooms(@RequestParam(required = false, defaultValue = "name") String sort,
-                                         @RequestParam(defaultValue = "1") int pageNo) {
-
-        Map<String, Object> rooms = roomService.getRooms(pageNo, sort);
-        if (rooms.isEmpty()){
-            return ResponseEntity.noContent().build();
+    @GetMapping("/available")
+    public ResponseEntity<?> getAvailableRooms(@RequestParam String hotelId,
+                                               @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime reservationAt,
+                                               @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime reservationEndAt) {
+        try {
+            List<RoomOneDto> availableRooms = roomService.getAvailableRooms(hotelId, reservationAt, reservationEndAt);
+            return ResponseEntity.ok().body(availableRooms);
+        } catch (Exception e) {
+            log.warn("예약 가능한 객실 조회 중 오류 발생 : {}", hotelId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("예약 가능한 객실 조회 중 오류가 발생했습니다.");
         }
-        return ResponseEntity.ok().body(rooms);
-
     }
 
     // 2. 객실 생성
