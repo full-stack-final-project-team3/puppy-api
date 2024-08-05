@@ -323,6 +323,7 @@ public class UserService {
         foundUser.setAddress(dto.getAddress());
         foundUser.setPhoneNumber(dto.getPhoneNumber());
         foundUser.setRealName(dto.getRealName());
+        foundUser.setProfileUrl(dto.getProfileUrl());
         for (Dog dog : foundList) {
             foundUser.addDog(dog);
         }

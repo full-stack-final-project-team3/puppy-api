@@ -82,6 +82,8 @@ public class DogService {
     public void modifyInMyPage(String dogId, DogModifyDto dto) {
         Dog foundDog = dogRepository.findById(dogId).orElseThrow();
         foundDog.setWeight(dto.getWeight());
+        foundDog.setDogProfileUrl(dto.getDogProfileUrl());
+        log.info("dto's profile url: {}", dto.getDogProfileUrl());
         dogRepository.save(foundDog);
     }
 

@@ -15,4 +15,5 @@ public class UserInfoModifyDto {
     private String address;
     private String phoneNumber;
     private String realName;
+    private String profileUrl;
 }

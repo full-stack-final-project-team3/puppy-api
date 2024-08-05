@@ -21,12 +21,14 @@ public class UserNoticeController {
     private final UserNoticeService noticeService;
 
 
+    // 알림 등록
     @PostMapping("/add")
     public ResponseEntity<?> addUserNotice(@RequestBody NoticeRequestDto dto) {
         UserNotice userNotice = noticeService.addNotice(dto);
         return ResponseEntity.ok().body(userNotice);
     }
 
+    // 알림 가져오기
     @GetMapping("/user/{userId}")
     public ResponseEntity<?> getUserNotice(@PathVariable String userId) {
         List<UserNoticeDto> userNotice = noticeService.findUserNotice(userId);
