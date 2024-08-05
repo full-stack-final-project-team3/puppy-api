@@ -1,7 +1,6 @@
 package com.yp.puppy.api.repository.shop;
 
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.yp.puppy.api.entity.shop.Treats;
 import com.yp.puppy.api.entity.user.Dog;
