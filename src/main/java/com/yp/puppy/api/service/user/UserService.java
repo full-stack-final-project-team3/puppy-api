@@ -421,4 +421,14 @@ public class UserService {
         User foundUser = userRepository.findById(userId).orElseThrow();
         return foundUser.getBoard();
     }
+
+    public boolean isDuplicatePassword(String password, String userId) {
+        User foundUser = userRepository.findById(userId).orElseThrow();
+        String originPassword = foundUser.getPassword();
+        if (!encoder.matches(password, originPassword)) { // 일치하지 않으면?
+            return false;
+        } else {
+            return true; // 일치할때 true
+        }
+    }
 }

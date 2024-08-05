@@ -33,6 +33,7 @@ public class DogSaveDto {
     private int age;
     private int month;
 
+
     public Dog toEntity(User user) {
         Dog dog = Dog.builder()
                 .dogName(this.dogName)
