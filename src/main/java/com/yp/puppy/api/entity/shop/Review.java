@@ -36,7 +36,6 @@ public class Review {
     private int rate; // 별점
 
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
     private List<ReviewPic> reviewPics = new ArrayList<>(); // 빈 리스트로 초기화
 
     @ManyToOne(fetch = FetchType.LAZY)
