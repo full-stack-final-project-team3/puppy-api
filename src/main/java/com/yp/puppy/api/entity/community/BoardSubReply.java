@@ -24,8 +24,9 @@ public class BoardSubReply {
     @Id
 //    @GenericGenerator(name = "uuid_generator", strategy = "uuid2") // uuid2 전략 적용!
 //    @GeneratedValue(generator = "uuid_generator") // uuid_generator 사용
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+//    @GeneratedValue(generator = "UUID")
+//    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // IDENTITY 전략 사용
     @Column(name = "sub_reply_id")
     private String id;  // UUID는 String 타입을 사용
 

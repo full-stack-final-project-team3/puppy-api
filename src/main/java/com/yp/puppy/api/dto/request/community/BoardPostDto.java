@@ -13,21 +13,20 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class BoardSaveDto {
-    private String boardTitle;
-    private String boardContent;
-    private String image;
+public class BoardPostDto {
+    private String title;
+    private String content;
+    private String imageUrl;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime boardCreatedAt;
-    private User user;
+    private LocalDateTime beginDate;
+    private String userId;
 
     //엔터티로 변경하는 유틸 메서드
     public Board toEntity(){
         return Board.builder()
-                .boardTitle(this.boardTitle)
-                .boardContent(boardContent)
-                .image(image)
-                .user(new User())
+                .boardTitle(this.title)
+                .boardContent(content)
+                .image(imageUrl)
                 .boardCreatedAt( LocalDateTime.now())
                 .build();
     }
