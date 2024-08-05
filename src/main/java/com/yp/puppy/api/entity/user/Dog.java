@@ -78,7 +78,13 @@ public class Dog {
     @Column(updatable = false) // 수정 불가
     private LocalDateTime createdAt; // 강아지 등록 일자
 
+    @Column
+    @Setter
+    @Enumerated(EnumType.STRING)
+    private DogAgeType dogAgeType;
+
     private int age; // 3년
+
     private int month; // 6개월
 
     @Setter
@@ -108,6 +114,10 @@ public class Dog {
 
     public enum DogSize {
         SMALL, MEDIUM, LARGE
+    }
+
+    public enum DogAgeType {
+        BABY, MIDDLE, OLD
     }
 
     public enum Sex {

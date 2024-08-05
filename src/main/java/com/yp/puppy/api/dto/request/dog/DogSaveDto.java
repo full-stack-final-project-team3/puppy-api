@@ -45,6 +45,7 @@ public class DogSaveDto {
                 .weight(this.weight)
                 .age(decideDogAge(this.birthday))
                 .month(decideDogMonth(this.birthday))
+                .dogAgeType(decideDogAgeType(this.birthday))
                 .user(user)
                 .allergies(this.allergies) // 빈 리스트로 초기화
                 .build();
@@ -63,6 +64,22 @@ public class DogSaveDto {
         Period period = Period.between(birthday, today);
         this.month = period.getMonths();
         return month;
+    }
+
+    private DogAgeType decideDogAgeType(LocalDate birthday) {
+
+        LocalDate today = LocalDate.now();
+        Period period = Period.between(birthday, today);
+        int age = period.getYears();
+
+        if (age < 1) {
+            return DogAgeType.BABY;
+        } else if (age > 7) {
+            return DogAgeType.OLD;
+        } else {
+            return DogAgeType.MIDDLE;
+        }
+
     }
 
     private DogSize findDogSize(double weight) {

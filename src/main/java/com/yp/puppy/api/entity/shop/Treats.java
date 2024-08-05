@@ -51,7 +51,8 @@ public class Treats {
 
     @Setter
     @Enumerated(EnumType.STRING)
-    private Age dogAge;
+    @Column
+    private TreatsAgeType treatsAgeType;
 
     @Setter
     private int treatsStock;
@@ -98,11 +99,10 @@ public class Treats {
         DUCK
     }
 
-    public enum Age {
+    public enum TreatsAgeType {
         BABY,
-        AVERAGE,
-        OLD;
-
+        OLD,
+        ALL;
     }
 
     public void changeTreats(TreatsSaveDto dto) {
