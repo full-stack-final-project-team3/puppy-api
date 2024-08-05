@@ -12,6 +12,6 @@ import lombok.*;
 public class DogModifyDto {
 
     private double weight;
-//    private String dogProfileUrl; // 추가 예정
+    private String dogProfileUrl; // 추가 예정
 
 }
