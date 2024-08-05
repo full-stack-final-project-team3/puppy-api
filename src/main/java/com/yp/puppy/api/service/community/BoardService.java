@@ -1,5 +1,6 @@
 package com.yp.puppy.api.service.community;
 
+import com.yp.puppy.api.dto.BoardResponseDto;
 import com.yp.puppy.api.dto.request.community.BoardSaveDto;
 import com.yp.puppy.api.entity.community.Board;
 import com.yp.puppy.api.entity.user.User;
@@ -14,6 +15,7 @@ import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,8 +25,27 @@ public class BoardService {
 private final BoardRepository boardRepository;
 private final UserRepository userRepository;
     //    전체 조회 서비스
-    public List<Board> getBoards(String sort){
-        return boardRepository.findBoards(sort);
+
+    public List<BoardResponseDto> getBoards(String sort) {
+        List<Board> boards = boardRepository.findBoards(sort);
+        return boards.stream()
+                .map(board -> new BoardResponseDto(
+                        board.getId(),
+                        board.getBoardTitle(),
+                        board.getBoardContent(),
+                        board.getImage(),
+                        board.getBoardCreatedAt(),
+                        board.getBoardUpdatedAt(),
+                        board.getViewCount(),
+                        board.getIsClean(),
+                        new BoardResponseDto.UserDTO(
+                                board.getUser().getId(),
+                                board.getUser().getNickname(),
+                                board.getUser().getProfileUrl(),
+                                board.getUser().getEmail()
+                        )
+                ))
+                .collect(Collectors.toList());
     }
     // 게시글 등록
     @Transactional
