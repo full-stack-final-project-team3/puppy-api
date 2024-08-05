@@ -131,12 +131,11 @@ public class ReviewService {
             review.setReviewContent(reviewSaveDto.getReviewContent());
             review.setRate(reviewSaveDto.getRate());
 
-            // 기존 이미지 삭제
-            reviewPicRepository.deleteAll(review.getReviewPics());
-            review.getReviewPics().clear();
-
             List<MultipartFile> reviewPics = reviewSaveDto.getReviewPics();
             if (reviewPics != null && !reviewPics.isEmpty()) {
+                // 기존 이미지 삭제
+                reviewPicRepository.deleteAll(review.getReviewPics());
+                review.getReviewPics().clear();
                 for (MultipartFile pic : reviewPics) {
                     String picName = saveImage(pic);
                     ReviewPic reviewPic = ReviewPic.builder()
