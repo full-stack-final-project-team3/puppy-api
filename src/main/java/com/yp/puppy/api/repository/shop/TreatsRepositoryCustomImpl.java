@@ -26,6 +26,7 @@ public class TreatsRepositoryCustomImpl implements TreatsRepositoryCustom {
     @Override
     public Page<Treats> findTreats(List<Treats.Allergic> userDogAllergiesInfo,
                                    Dog.DogSize dogSize,
+                                   Dog.DogAgeType dogAgeType,
                                    Pageable pageable,
                                    String sort // 타입 매개변수
     ) {
@@ -46,6 +47,24 @@ public class TreatsRepositoryCustomImpl implements TreatsRepositoryCustom {
         Treats.TreatsType type = getTreatsType(sort); // sort를 통해 타입 가져오기
         if (type != null) {
             builder.and(treats.treatsType.eq(type)); // 지정된 타입으로 필터링
+        }
+
+        // 연령층 조건 추가
+        if (dogAgeType != null) {
+            switch (dogAgeType) {
+                case BABY:
+                    builder.and(treats.treatsAgeType.in(Treats.TreatsAgeType.BABY, Treats.TreatsAgeType.ALL));
+                    break;
+                case OLD:
+                    builder.and(treats.treatsAgeType.in(Treats.TreatsAgeType.OLD, Treats.TreatsAgeType.ALL));
+                    break;
+                case MIDDLE:
+                    builder.and(treats.treatsAgeType.ne(Treats.TreatsAgeType.BABY)); // BABY 제외
+                    builder.and(treats.treatsAgeType.ne(Treats.TreatsAgeType.OLD)); // OLD 제외
+                    break;
+                default:
+                    break;
+            }
         }
 
         // 페이징을 통한 조회

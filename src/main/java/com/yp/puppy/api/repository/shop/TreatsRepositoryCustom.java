@@ -13,6 +13,7 @@ public interface TreatsRepositoryCustom {
 
     Page<Treats> findTreats(List<Treats.Allergic> userDogAllergiesInfo,
                             Dog.DogSize dogSize,
+                            Dog.DogAgeType dogAgeType,
                             Pageable pageable,
                             String sort);
 

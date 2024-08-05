@@ -48,6 +48,7 @@ public class TreatsService {
 
         Dog userDogInfo = dogRepository.findById(dogId).orElseThrow();
         Dog.DogSize dogSize = userDogInfo.getDogSize();
+        Dog.DogAgeType dogAgeType = userDogInfo.getDogAgeType();
         LocalDate birthday = userDogInfo.getBirthday();
         List<Dog.Allergy> dogInfoAllergies = userDogInfo != null ? userDogInfo.getAllergies() : null;
         List<Treats.Allergic> allergics = convertDogAllergiesToTreatsAllergies(dogInfoAllergies);
@@ -55,7 +56,7 @@ public class TreatsService {
         // 최종 Pageable 설정
         Pageable pageable = PageRequest.of(pageNo - 1, 10);
 
-        Page<Treats> treatsPage = treatsRepository.findTreats(allergics, dogSize, pageable, sort);
+        Page<Treats> treatsPage = treatsRepository.findTreats(allergics, dogSize, dogAgeType, pageable, sort);
 
         List<Treats> treatsList = treatsPage.getContent();
 
