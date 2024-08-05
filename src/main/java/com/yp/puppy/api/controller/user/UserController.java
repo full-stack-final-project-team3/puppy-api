@@ -145,4 +145,39 @@ public class UserController {
         return ResponseEntity.ok().body("success");
     }
 
+    // 회원가입 완료 후 자동로그인
+    @PostMapping("/register-and-login")
+    public ResponseEntity<?> registerAndLogin(@RequestBody LoginRequestDto dto, HttpServletResponse response) {
+        log.info("Register and login request - {}", dto);
+
+        try {
+            // 회원가입 처리
+            UserSaveDto userSaveDto = new UserSaveDto(dto.getEmail(), dto.getPassword());
+            userService.confirmSignUp(userSaveDto);
+
+            // 자동 로그인 처리
+            LoginResponseDto loginResponse = userService.authenticate(dto);
+
+            if (dto.isAutoLogin()) {
+                // 자동 로그인 요청이면 토큰을 쿠키에 저장
+                Cookie cookie = new Cookie("authToken", loginResponse.getToken());
+                cookie.setHttpOnly(true);
+                cookie.setPath("/");
+                cookie.setMaxAge(60 * 60 * 24 * 30); // 쿠키 유효기간 30일
+                response.addCookie(cookie);
+            }
+
+            return ResponseEntity.ok().body(loginResponse);
+
+        } catch (LoginFailException e) {
+            // 로그인 실패 시
+            String errorMessage = e.getMessage();
+            return ResponseEntity.status(422).body(errorMessage);
+        } catch (Exception e) {
+            // 회원가입 실패 시
+            return ResponseEntity.badRequest().body("회원가입 실패: " + e.getMessage());
+        }
+    }
+
+
 }

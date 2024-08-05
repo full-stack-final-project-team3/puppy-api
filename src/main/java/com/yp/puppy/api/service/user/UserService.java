@@ -264,6 +264,8 @@ public class UserService {
     // 회원가입 마무리 단계
     public void confirmSignUp(UserSaveDto dto) {
 
+//        log.debug("UserSaveDto - {}", dto);
+
         // 기존 회원 정보 조회
         User user = userRepository
                 .findByEmail(dto.getEmail())
@@ -276,7 +278,7 @@ public class UserService {
         String encodedPassword = encoder.encode(password);
 
 
-        user.confirm(encodedPassword, dto.getNickname());
+        user.confirm(encodedPassword, dto.getNickname(), dto.getPhoneNumber());
 //        user.setNickname(dto.getNickname());
         log.debug("saved user : {}", user);
         userRepository.save(user);
