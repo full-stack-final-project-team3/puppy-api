@@ -5,12 +5,18 @@ import com.yp.puppy.api.entity.shop.Review;
 import com.yp.puppy.api.service.shop.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
-
 
 @RestController
 @RequestMapping("/shop/reviews")
@@ -21,18 +27,17 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    /**
-     * 리뷰를 생성하는 메소드
-     *
-     * @param reviewSaveDto 리뷰 정보를 담고 있는 DTO 객체
-     * @return 생성된 리뷰 객체를 포함하는 HTTP 응답
-     */
+    @Value("${file.upload-dir}")
+    private String uploadDir;
+
     @PostMapping
-    public ResponseEntity<Review> createReview(@RequestBody ReviewSaveDto reviewSaveDto) {
+    public ResponseEntity<Review> createReview(
+            @RequestPart("reviewSaveDto") ReviewSaveDto reviewSaveDto,
+            @RequestPart(value = "reviewPics", required = false) List<MultipartFile> reviewPics) {
         log.info("Received ReviewSaveDto: {}", reviewSaveDto);
+        reviewSaveDto.setReviewPics(reviewPics);
 
         try {
-            // 리뷰를 저장하고 반환
             Review review = reviewService.saveReview(reviewSaveDto);
             return ResponseEntity.ok(review);
         } catch (IllegalArgumentException e) {
@@ -41,15 +46,26 @@ public class ReviewController {
         }
     }
 
-    /**
-     * 모든 리뷰를 조회하는 메소드
-     *
-     * @return 모든 리뷰를 포함하는 HTTP 응답
-     */
+    @PutMapping("/{id}")
+    public ResponseEntity<Review> updateReview(
+            @PathVariable String id,
+            @RequestPart("reviewSaveDto") ReviewSaveDto reviewSaveDto,
+            @RequestPart(value = "reviewPics", required = false) List<MultipartFile> reviewPics) {
+        log.info("Received ReviewSaveDto: {}", reviewSaveDto);
+        reviewSaveDto.setReviewPics(reviewPics);
+
+        try {
+            Review review = reviewService.updateReview(id, reviewSaveDto);
+            return ResponseEntity.ok(review);
+        } catch (Exception e) {
+            log.error("Error updating review: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @GetMapping
     public ResponseEntity<List<Review>> getAllReviews() {
         try {
-            // 모든 리뷰를 조회하고 반환합니다.
             List<Review> reviews = reviewService.findAllReviews();
             return ResponseEntity.ok(reviews);
         } catch (Exception e) {
@@ -58,12 +74,6 @@ public class ReviewController {
         }
     }
 
-    /**
-     * 특정 ID로 리뷰를 조회하는 메소드
-     *
-     * @param id 조회할 리뷰의 ID
-     * @return 조회된 리뷰를 포함하는 HTTP 응답
-     */
     @GetMapping("/{id}")
     public ResponseEntity<Review> getReviewById(@PathVariable String id) {
         try {
@@ -75,30 +85,6 @@ public class ReviewController {
         }
     }
 
-    /**
-     * 특정 ID의 리뷰를 업데이트하는 메소드
-     *
-     * @param id 리뷰의 ID
-     * @param reviewSaveDto 업데이트할 리뷰 정보를 담고 있는 DTO 객체
-     * @return 업데이트된 리뷰 객체를 포함하는 HTTP 응답
-     */
-    @PutMapping("/{id}")
-    public ResponseEntity<Review> updateReview(@PathVariable String id, @RequestBody ReviewSaveDto reviewSaveDto) {
-        try {
-            Review review = reviewService.updateReview(id, reviewSaveDto);
-            return ResponseEntity.ok(review);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
-    }
-
-    /**
-     * 아이디 리뷰 삭제
-     *
-     * @param id 삭제할 리뷰 아이디
-     * @return HTTP 응답 (삭제가 성공적으로 수행된 경우)
-     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReview(@PathVariable String id) {
         try {
@@ -107,6 +93,24 @@ public class ReviewController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/review-img/{filename:.+}")
+    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
+        try {
+            Path file = Paths.get(uploadDir).resolve(filename);
+            Resource resource = new UrlResource(file.toUri());
+
+            if (resource.exists() || resource.isReadable()) {
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                        .body(resource);
+            } else {
+                throw new RuntimeException("파일을 읽을 수 없습니다.");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("파일을 불러오는 데 실패했습니다.", e);
         }
     }
 }
