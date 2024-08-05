@@ -52,25 +52,10 @@ public class TreatsService {
         List<Dog.Allergy> dogInfoAllergies = userDogInfo != null ? userDogInfo.getAllergies() : null;
         List<Treats.Allergic> allergics = convertDogAllergiesToTreatsAllergies(dogInfoAllergies);
 
-        // TreatsType 결정
-        Treats.TreatsType treatsType = getTreatsTypeByPageNumber(pageNo - 1);
-
-        // 페이저블 기본 사이즈
-        int defaultPageSize = 100;
-
-        // 각 타입에 따른 간식 리스트 조회
-        Page<Treats> initialTreatsPage = treatsRepository.findTreats(allergics, dogSize, PageRequest.of(0, defaultPageSize), sort, treatsType);
-
-        log.info("initialTreatsPage: {}", initialTreatsPage);
-
-        // 각 타입의 간식 리스트의 길이에 따라 페이지 사이즈 결정
-        int actualSize = initialTreatsPage.getContent().size();
-
         // 최종 Pageable 설정
-        Pageable pageable = PageRequest.of(pageNo - 1, actualSize > 0 ? actualSize : defaultPageSize);
+        Pageable pageable = PageRequest.of(pageNo - 1, 10);
 
-        // 최종 간식 리스트 조회
-        Page<Treats> treatsPage = treatsRepository.findTreats(allergics, dogSize, pageable, sort, treatsType);
+        Page<Treats> treatsPage = treatsRepository.findTreats(allergics, dogSize, pageable, sort);
 
         List<Treats> treatsList = treatsPage.getContent();
 
@@ -85,8 +70,6 @@ public class TreatsService {
         Map<String, Object> map = new HashMap<>();
         map.put("treatsList", treatsDtoList);
         map.put("totalCount", totalElements);
-
-        log.info("Fetching treats for page: {}, sort: {}, treatsType: {}", pageNo, sort, treatsType);
 
         return map;
     }
@@ -186,24 +169,6 @@ public class TreatsService {
                 return Treats.Allergic.DUCK;
             default:
                 return null; // 매핑되지 않는 경우
-        }
-    }
-
-    // 페이지 번호에 따른 TreatsType 결정 메서드
-    private Treats.TreatsType getTreatsTypeByPageNumber(int pageNumber) {
-        switch (pageNumber) {
-            case 0:
-                return Treats.TreatsType.DRY;   // 1페이지
-            case 1:
-                return Treats.TreatsType.WET;   // 2페이지
-            case 2:
-                return Treats.TreatsType.GUM;   // 3페이지
-            case 3:
-                return Treats.TreatsType.KIBBLE; // 4페이지
-            case 4:
-                return Treats.TreatsType.SUPPS;  // 5페이지
-            default:
-                return null; // 원하는 타입이 없을 경우
         }
     }
 

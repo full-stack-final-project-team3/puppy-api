@@ -26,8 +26,9 @@ public class TreatsRepositoryCustomImpl implements TreatsRepositoryCustom {
     @Override
     public Page<Treats> findTreats(List<Treats.Allergic> userDogAllergiesInfo,
                                    Dog.DogSize dogSize,
-                                   Pageable pageable, String sort,
-                                   Treats.TreatsType treatsType) {
+                                   Pageable pageable,
+                                   String sort // 타입 매개변수
+    ) {
         // 조건 빌더 생성
         BooleanBuilder builder = new BooleanBuilder();
 
@@ -41,16 +42,16 @@ public class TreatsRepositoryCustomImpl implements TreatsRepositoryCustom {
             builder.and(treats.dogSize.eq(dogSize)); // 강아지 크기가 동일한 간식 필터링
         }
 
-        // TreatsType이 null이 아닐 경우에만 조건 추가
-        if (treatsType != null) {
-            builder.and(treats.treatsType.eq(treatsType)); // 특정 TreatsType 필터링
+        // 타입 조건 추가
+        Treats.TreatsType type = getTreatsType(sort); // sort를 통해 타입 가져오기
+        if (type != null) {
+            builder.and(treats.treatsType.eq(type)); // 지정된 타입으로 필터링
         }
 
         // 페이징을 통한 조회
         List<Treats> treatsLists = factory
                 .selectFrom(treats)
                 .where(builder) // 빌더를 사용하여 조건 추가
-                .orderBy(specifier(sort))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -65,15 +66,22 @@ public class TreatsRepositoryCustomImpl implements TreatsRepositoryCustom {
         return new PageImpl<>(treatsLists, pageable, count);
     }
 
-    // 정렬 조건을 처리하는 메서드
-    private OrderSpecifier<?> specifier(String sort) {
-        switch (sort) {
-            case "title":
-                return treats.treatsTitle.asc();
+    // 간식 타입을 반환하는 메서드
+    private Treats.TreatsType getTreatsType(String type) {
+        switch (type.toLowerCase()) { // 대소문자 구분 없이 처리
+            case "dry":
+                return Treats.TreatsType.DRY;
+            case "wet":
+                return Treats.TreatsType.WET;
+            case "gum":
+                return Treats.TreatsType.GUM;
+            case "kibble":
+                return Treats.TreatsType.KIBBLE;
+            case "supps":
+                return Treats.TreatsType.SUPPS;
             default:
-                return treats.treatsTitle.asc(); // 기본 정렬 옵션으로 변경
+                return Treats.TreatsType.DRY; // 유효하지 않은 타입
         }
     }
-
 
 }
