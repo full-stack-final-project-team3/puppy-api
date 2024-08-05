@@ -1,9 +1,11 @@
 package com.yp.puppy.api.controller.community;
 
 import com.yp.puppy.api.auth.TokenProvider;
+import com.yp.puppy.api.dto.BoardResponseDto;
 import com.yp.puppy.api.dto.request.community.BoardSaveDto;
 import com.yp.puppy.api.entity.community.Board;
 import com.yp.puppy.api.service.community.BoardService;
+import com.yp.puppy.api.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -21,11 +23,12 @@ import java.util.List;
 public class BoardController {
 
     private final BoardService boardService;
+    private final UserService userService;
 
     //    전체 조회 요청
     @GetMapping
     public ResponseEntity<?> getList(String sort) {
-        List<Board> boards = boardService.getBoards(sort);
+        List<BoardResponseDto> boards = boardService.getBoards(sort);
         return ResponseEntity.ok().body(boards);
     }
 
@@ -56,4 +59,14 @@ public class BoardController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/boardList/{userId}")
+    public ResponseEntity<?> getBoardByUserId(@PathVariable String userId) {
+        List<Board> foundList = userService.getMyBoardList(userId);
+        if (foundList.isEmpty()) {
+            return ResponseEntity.badRequest().body("작성하신 글이 없습니다.");
+        }
+        return ResponseEntity.ok().body(foundList);
+    }
+
 }

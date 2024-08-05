@@ -7,6 +7,7 @@ import com.yp.puppy.api.dto.request.user.UserInfoModifyDto;
 import com.yp.puppy.api.dto.request.user.UserSaveDto;
 import com.yp.puppy.api.dto.response.user.LoginResponseDto;
 import com.yp.puppy.api.dto.response.user.UserResponseDto;
+import com.yp.puppy.api.entity.community.Board;
 import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.entity.user.EmailVerification;
 import com.yp.puppy.api.entity.user.User;
@@ -414,5 +415,10 @@ public class UserService {
         log.info("Checking phoneNumber {} is duplicated : {}", phoneNumber, exists);
 
         return exists;
+    }
+
+    public List<Board> getMyBoardList(String userId) {
+        User foundUser = userRepository.findById(userId).orElseThrow();
+        return foundUser.getBoard();
     }
 }
