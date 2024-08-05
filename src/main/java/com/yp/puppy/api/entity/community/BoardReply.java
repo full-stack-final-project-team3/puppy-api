@@ -27,8 +27,9 @@ public class BoardReply {
     @Id
 //    @GenericGenerator(strategy = "uuid2", name = "uuid_generator") //uuid2 전략 적용!
 //    @GeneratedValue(generator = "uuid-generator")
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+//    @GeneratedValue(generator = "UUID")
+//    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // IDENTITY 전략 사용
     @Column(name = "reply_id")
     private String id;  // 댓글 번호. PK
 
