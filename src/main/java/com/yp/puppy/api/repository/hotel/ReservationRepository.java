@@ -10,4 +10,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, String
 
     // 예약 중복확인
     List<Reservation> findByRoom_RoomIdAndReservationEndAtAfterAndReservationAtBefore(String roomId, LocalDateTime reservationAt, LocalDateTime reservationEndAt);
+
+    // 예약된 객실 조회
+    List<Reservation> findByUserId(String userId);
 }
