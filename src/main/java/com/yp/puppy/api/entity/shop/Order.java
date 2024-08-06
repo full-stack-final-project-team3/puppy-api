@@ -52,4 +52,8 @@ public class Order {
     public enum OrderStatus {
         PAID, CANCELLED
     }
+
+    @Column(name = "delivery_request")
+    private String deliveryRequest; // 배송 요청 사항
+
 }
