@@ -46,9 +46,9 @@ public class CartController {
 
         try {
             Cart cart = cartService.getCart(userInfo.getUserId());
-//            if(cart.getBundles() == null) {
-//                ResponseEntity.ok().body("장바구니가 비어있습니다.");
-//            }
+            if(cart.getBundles() == null) {
+                ResponseEntity.ok().body("장바구니가 비어있습니다.");
+            }
             return ResponseEntity.ok().body(cart);
         } catch (IllegalStateException e) {
             log.warn(e.getMessage());
