@@ -56,6 +56,7 @@ public class CartService {
         if (cart == null) {
             cart = new Cart(); // 빈 장바구니 생성
             cart.setCartStatus(Cart.CartStatus.PENDING);
+            cart.setUser(user);
             user.setCart(cart); // 사용자에게 빈 장바구니 할당
             cartRepository.save(cart);
             userRepository.save(user); // 사용자 정보 저장
