@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/reservation")
 @Slf4j
@@ -47,6 +49,20 @@ public class ReservationController {
 
     }
 
+
+    // 내가 작성한 예약 조회
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<?> getReservationsByUserId(@PathVariable String userId) {
+        try {
+            log.info("API 호출: 사용자 {}의 예약 조회", userId);
+            List<ReservationOneDto> reservations = reservationService.getReservationsByUserId(userId);
+            log.info("API 응답: {}", reservations);
+            return ResponseEntity.ok().body(reservations);
+        } catch (Exception e) {
+            log.warn("사용자 ID로 예약 조회 중 오류 발생 : {}", userId);
+            return ResponseEntity.badRequest().body("잘못된 사용자 ID입니다.");
+        }
+    }
 
 
     // 예약 취소

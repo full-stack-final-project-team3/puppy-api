@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -79,6 +80,17 @@ public class ReservationService {
         return new ReservationOneDto(reservation);
     }
 
+
+    // 내가 예약한 객실 전체조회
+    public List<ReservationOneDto> getReservationsByUserId(String userId) {
+        log.info("Fetching reservations for userId: {}", userId);
+        List<Reservation> reservations = reservationRepository.findByUserId(userId);
+        log.info("Fetched reservations: {}", reservations);
+
+        return reservations.stream()
+                .map(ReservationOneDto::new)
+                .collect(Collectors.toList());
+    }
 
     // 예약 취소 중간처리
     public void deleteReservation(String reservationId) {
