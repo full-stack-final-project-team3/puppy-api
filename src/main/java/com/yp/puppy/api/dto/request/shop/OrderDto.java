@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 public class OrderDto {
 
     private String cartId;
+    private String userId;  // 사용자 ID 추가
     private int postNum;
     private String address;
     private String addressDetail;
