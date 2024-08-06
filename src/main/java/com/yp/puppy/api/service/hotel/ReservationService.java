@@ -81,13 +81,14 @@ public class ReservationService {
     }
 
 
-    // 내가 예약한 객실 전체조회
+    // 내가 예약한 객실 전체조회 - 취소되지 않은 예약만 조회
     public List<ReservationOneDto> getReservationsByUserId(String userId) {
         log.info("Fetching reservations for userId: {}", userId);
         List<Reservation> reservations = reservationRepository.findByUserId(userId);
         log.info("Fetched reservations: {}", reservations);
 
         return reservations.stream()
+                .filter(reservation -> reservation.getCancelled() != CancellationStatus.CANCELLED)
                 .map(ReservationOneDto::new)
                 .collect(Collectors.toList());
     }
