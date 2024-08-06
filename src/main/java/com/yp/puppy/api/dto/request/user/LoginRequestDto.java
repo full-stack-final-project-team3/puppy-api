@@ -13,11 +13,15 @@ public class LoginRequestDto {
 
     private String email;
     private String password;
+    private String nickname;
+    private String phoneNumber;
     private boolean autoLogin;
 
-    public LoginRequestDto(String email, String s) {
+    public LoginRequestDto(String email, String s, String nickname, String phoneNumber) {
         this.email = email;
         this.password = s;
+        this.nickname = nickname;
+        this.phoneNumber = phoneNumber;
     }
     // 등등.. 추가
 }

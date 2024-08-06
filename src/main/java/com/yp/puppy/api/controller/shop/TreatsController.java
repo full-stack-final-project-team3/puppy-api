@@ -1,12 +1,8 @@
 package com.yp.puppy.api.controller.shop;
 
-import com.yp.puppy.api.controller.hotel.HotelController;
-import com.yp.puppy.api.dto.request.shop.TreatsDetailPicDto;
-import com.yp.puppy.api.dto.request.shop.TreatsPicDto;
 import com.yp.puppy.api.dto.request.shop.TreatsSaveDto;
 import com.yp.puppy.api.dto.response.shop.TreatsDetailDto;
 import com.yp.puppy.api.entity.shop.Treats;
-import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.service.shop.TreatsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

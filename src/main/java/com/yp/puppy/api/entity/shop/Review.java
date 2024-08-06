@@ -7,6 +7,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -35,8 +36,7 @@ public class Review {
     private int rate; // 별점
 
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<ReviewPic> reviewPics;
+    private List<ReviewPic> reviewPics = new ArrayList<>(); // 빈 리스트로 초기화
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
