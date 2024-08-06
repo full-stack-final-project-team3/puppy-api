@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.web.filter.CorsFilter;
 
 @RequiredArgsConstructor
@@ -33,9 +34,11 @@ public class SecurityConfig {
                 .httpBasic().disable()
                 .formLogin().disable()
                 .authorizeRequests()
-                .antMatchers("/mypage/**").authenticated() // /mypage 경로에 대한 인증 필요
+                .antMatchers("/mypage").authenticated() // /mypage 경로에 대한 인증 필요
                 .antMatchers("/**").permitAll() // 나머지 경로에 대한 접근 허용
-        ;
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(new Http403ForbiddenEntryPoint()); // 미인증 사용자가 접근할 경우 403 응답
 
         http.addFilterAfter(jwtAuthFilter, CorsFilter.class);
 

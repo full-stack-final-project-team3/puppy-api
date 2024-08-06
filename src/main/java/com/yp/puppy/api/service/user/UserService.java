@@ -431,4 +431,10 @@ public class UserService {
             return true; // 일치할때 true
         }
     }
+
+    public void deleteUser(String userId) {
+        User foundUser = userRepository.findById(userId).orElseThrow();
+        log.info("delete user info - {}", foundUser);
+        userRepository.delete(foundUser);
+    }
 }

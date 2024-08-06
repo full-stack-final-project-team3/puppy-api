@@ -27,7 +27,7 @@ import java.util.List;
 @ToString(exclude =
                 {"profileUrl", "cart", "orders",
                 "hotelReviews", "board", "likes", "reservation",
-                "wishHotelList", "createdBundles", "boardReplies",
+                "wishHotelList", "createdBundles",
                 "boardSubReplies", "dogList"})
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
