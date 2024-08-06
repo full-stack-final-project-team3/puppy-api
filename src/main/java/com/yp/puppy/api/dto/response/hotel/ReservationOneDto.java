@@ -26,8 +26,8 @@ public class ReservationOneDto {
 
     public ReservationOneDto(Reservation reservation) {
         this.reservationId = reservation.getReservationId();
-        this.reservationAt = LocalDateTime.now();
-        this.reservationEndAt = LocalDateTime.now();
+        this.reservationAt = reservation.getReservationAt();
+        this.reservationEndAt = reservation.getReservationEndAt();
         this.price = reservation.getPrice();
         this.cancelled = reservation.getCancelled();
         this.roomId = reservation.getRoom().getRoomId();
