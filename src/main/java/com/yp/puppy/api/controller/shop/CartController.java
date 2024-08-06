@@ -46,9 +46,9 @@ public class CartController {
 
         try {
             Cart cart = cartService.getCart(userInfo.getUserId());
-//            if(cart.getBundles() == null) {
-//                ResponseEntity.ok().body("장바구니가 비어있습니다.");
-//            }
+            if(cart.getBundles() == null) {
+                ResponseEntity.ok().body("장바구니가 비어있습니다.");
+            }
             return ResponseEntity.ok().body(cart);
         } catch (IllegalStateException e) {
             log.warn(e.getMessage());
@@ -111,7 +111,7 @@ public class CartController {
             log.error("장바구니 삭제 중 오류 발생: {}", e.getMessage());
             return ResponseEntity.status(500).body("서버 오류가 발생했습니다.");
         }
-
+        
     }
 
     // 6. 장바구니에서 번들의 구성 수정

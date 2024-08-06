@@ -27,7 +27,7 @@ public class Cart {
     private String id;
 
     @Column(nullable = false)
-    private Long totalPrice;
+    private Long totalPrice = 0L;
 
     private CartStatus cartStatus;
 

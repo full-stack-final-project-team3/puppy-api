@@ -48,13 +48,22 @@ public class CartService {
 
     // 2. 장바구니 조회
     public Cart getCart(String userId) {
-
         User user = userRepository.findById(userId)
-                .orElseThrow();
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         Cart cart = user.getCart();
 
-        log.info("Retrieved Cart: {}", cart.getBundles());
+        if (cart == null) {
+            cart = new Cart(); // 빈 장바구니 생성
+            cart.setCartStatus(Cart.CartStatus.PENDING);
+            cart.setUser(user);
+            user.setCart(cart); // 사용자에게 빈 장바구니 할당
+            cartRepository.save(cart);
+            userRepository.save(user); // 사용자 정보 저장
+            log.info("새로운 빈 장바구니 생성");
+        } else {
+            log.info("Retrieved Cart: {}", cart.getBundles());
+        }
 
         return cart;
     }
