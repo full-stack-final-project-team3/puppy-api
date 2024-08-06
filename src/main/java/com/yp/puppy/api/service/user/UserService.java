@@ -265,7 +265,7 @@ public class UserService {
     // 회원가입 마무리 단계
     public void confirmSignUp(UserSaveDto dto) {
 
-//        log.debug("UserSaveDto - {}", dto);
+        log.debug("UserSaveDto - {}", dto);
 
         // 기존 회원 정보 조회
         User user = userRepository
@@ -273,11 +273,10 @@ public class UserService {
                 .orElseThrow(
                         () -> new RuntimeException("회원 정보가 존재하지 않습니다.")
                 );
-
+//        log.info("user - {}", user);
         // DB 저장
         String password = dto.getPassword();
         String encodedPassword = encoder.encode(password);
-
 
         user.confirm(encodedPassword, dto.getNickname(), dto.getPhoneNumber());
 //        user.setNickname(dto.getNickname());
