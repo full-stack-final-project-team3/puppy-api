@@ -1,19 +1,15 @@
 package com.yp.puppy.api.service.shop;
 
-import com.yp.puppy.api.auth.TokenProvider;
 import com.yp.puppy.api.dto.request.shop.TreatsSaveDto;
 import com.yp.puppy.api.dto.response.shop.TreatsDetailDto;
 import com.yp.puppy.api.dto.response.shop.TreatsListDto;
 import com.yp.puppy.api.entity.shop.Treats;
-import com.yp.puppy.api.entity.shop.TreatsDetailPic;
-import com.yp.puppy.api.entity.shop.TreatsPic;
 import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.entity.user.Role;
 import com.yp.puppy.api.entity.user.User;
 import com.yp.puppy.api.repository.shop.TreatsRepository;
 import com.yp.puppy.api.repository.user.DogRepository;
 import com.yp.puppy.api.repository.user.UserRepository;
-import com.yp.puppy.api.util.FileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,7 +18,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -48,29 +43,15 @@ public class TreatsService {
 
         Dog userDogInfo = dogRepository.findById(dogId).orElseThrow();
         Dog.DogSize dogSize = userDogInfo.getDogSize();
+        Dog.DogAgeType dogAgeType = userDogInfo.getDogAgeType();
         LocalDate birthday = userDogInfo.getBirthday();
         List<Dog.Allergy> dogInfoAllergies = userDogInfo != null ? userDogInfo.getAllergies() : null;
         List<Treats.Allergic> allergics = convertDogAllergiesToTreatsAllergies(dogInfoAllergies);
 
-        // TreatsType 결정
-        Treats.TreatsType treatsType = getTreatsTypeByPageNumber(pageNo - 1);
-
-        // 페이저블 기본 사이즈
-        int defaultPageSize = 100;
-
-        // 각 타입에 따른 간식 리스트 조회
-        Page<Treats> initialTreatsPage = treatsRepository.findTreats(allergics, dogSize, PageRequest.of(0, defaultPageSize), sort, treatsType);
-
-        log.info("initialTreatsPage: {}", initialTreatsPage);
-
-        // 각 타입의 간식 리스트의 길이에 따라 페이지 사이즈 결정
-        int actualSize = initialTreatsPage.getContent().size();
-
         // 최종 Pageable 설정
-        Pageable pageable = PageRequest.of(pageNo - 1, actualSize > 0 ? actualSize : defaultPageSize);
+        Pageable pageable = PageRequest.of(pageNo - 1, 10);
 
-        // 최종 간식 리스트 조회
-        Page<Treats> treatsPage = treatsRepository.findTreats(allergics, dogSize, pageable, sort, treatsType);
+        Page<Treats> treatsPage = treatsRepository.findTreats(allergics, dogSize, dogAgeType, pageable, sort);
 
         List<Treats> treatsList = treatsPage.getContent();
 
@@ -85,8 +66,6 @@ public class TreatsService {
         Map<String, Object> map = new HashMap<>();
         map.put("treatsList", treatsDtoList);
         map.put("totalCount", totalElements);
-
-        log.info("Fetching treats for page: {}, sort: {}, treatsType: {}", pageNo, sort, treatsType);
 
         return map;
     }
@@ -186,24 +165,6 @@ public class TreatsService {
                 return Treats.Allergic.DUCK;
             default:
                 return null; // 매핑되지 않는 경우
-        }
-    }
-
-    // 페이지 번호에 따른 TreatsType 결정 메서드
-    private Treats.TreatsType getTreatsTypeByPageNumber(int pageNumber) {
-        switch (pageNumber) {
-            case 0:
-                return Treats.TreatsType.DRY;   // 1페이지
-            case 1:
-                return Treats.TreatsType.WET;   // 2페이지
-            case 2:
-                return Treats.TreatsType.GUM;   // 3페이지
-            case 3:
-                return Treats.TreatsType.KIBBLE; // 4페이지
-            case 4:
-                return Treats.TreatsType.SUPPS;  // 5페이지
-            default:
-                return null; // 원하는 타입이 없을 경우
         }
     }
 

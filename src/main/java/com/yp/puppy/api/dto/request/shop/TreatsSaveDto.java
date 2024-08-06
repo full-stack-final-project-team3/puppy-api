@@ -37,6 +37,9 @@ public class TreatsSaveDto {
     @JsonProperty("dog-size")
     private DogSize dogSize; // 강아지 크기
 
+    @JsonProperty("treats-age-type")
+    private TreatsAgeType treatsAgeType;
+
     @JsonProperty("treats-allergy")
     private List<Allergic> allergieList; // 알러지 유발 항목
 
@@ -46,9 +49,6 @@ public class TreatsSaveDto {
     @JsonProperty("treats-detail-pics")
     private List<TreatsDetailPicDto> treatsDetailPics; // 제품 상세 이미지 목록
 
-//    @JsonProperty("file-path") // JSON에서의 키 이름
-//    private String filePath; // 파일 경로 추가
-
     public Treats toEntity(String rootPath) {
 
         Treats treats = new Treats();
@@ -56,6 +56,7 @@ public class TreatsSaveDto {
         treats.setTreatsType(this.treatsType);
         treats.setTreatsWeight(this.treatsWeight);
         treats.setDogSize(this.dogSize);
+        treats.setTreatsAgeType(this.treatsAgeType);
         treats.setAllergieList(this.allergieList);
 
         // 이미지 처리
