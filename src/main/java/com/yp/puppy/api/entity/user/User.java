@@ -79,6 +79,7 @@ public class User {
     @Setter
     private String phoneNumber;
 
+    @Setter
     private Integer point;
 
     @Column(length = 500000)

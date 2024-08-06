@@ -325,6 +325,7 @@ public class UserService {
         foundUser.setPhoneNumber(dto.getPhoneNumber());
         foundUser.setRealName(dto.getRealName());
         foundUser.setProfileUrl(dto.getProfileUrl());
+        foundUser.setPoint(dto.getPoint());
         for (Dog dog : foundList) {
             foundUser.addDog(dog);
         }

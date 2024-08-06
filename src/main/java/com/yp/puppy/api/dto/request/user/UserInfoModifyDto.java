@@ -16,4 +16,5 @@ public class UserInfoModifyDto {
     private String phoneNumber;
     private String realName;
     private String profileUrl;
+    private Integer point;
 }
