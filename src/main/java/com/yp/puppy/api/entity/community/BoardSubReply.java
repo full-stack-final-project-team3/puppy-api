@@ -28,8 +28,8 @@ public class BoardSubReply {
 //    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @GeneratedValue(strategy = GenerationType.IDENTITY) // IDENTITY 전략 사용
     @Column(name = "sub_reply_id")
-    private String id;  // UUID는 String 타입을 사용
-
+//    private String id; // UUID는 String 타입을 사용
+    private Long id;
 
     private String content;  // 대댓글 내용
     @CreationTimestamp

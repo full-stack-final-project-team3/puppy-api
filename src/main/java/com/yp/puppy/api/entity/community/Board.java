@@ -16,7 +16,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@ToString(exclude = { "replies"})
+@ToString(exclude = { "replies", "user", "likes"})
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -55,6 +55,7 @@ public class Board {
 //    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;  // 유저 FK. ⇒ 유저ID, 닉네임, 프로필
 
     @JsonIgnore

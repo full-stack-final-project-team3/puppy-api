@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
@@ -140,9 +141,30 @@ public class UserController {
 
     @PatchMapping("/password")
     public ResponseEntity<?> changePassword(@RequestParam String password, @RequestParam String email) {
-        log.info("파라미터로 받은 패스워드!! - {}", password);
+
         userService.changePassword(email, password);
         return ResponseEntity.ok().body("success");
+    }
+
+
+    @GetMapping("/check-password/{userId}")
+    public ResponseEntity<?> checkPassword(@RequestParam String password, @PathVariable String userId) {
+        log.info("파라미터로 받은 패스워드!! - {}", password);
+        boolean flag = userService.isDuplicatePassword(password, userId);
+        if (flag) { // 일치하면
+            log.info("true flag : {}", flag);
+            return ResponseEntity.ok().body(true);
+        } else {
+            log.info("false flag : {}", flag);
+            return ResponseEntity.badRequest().body(false);
+        }
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<?> deleteUser(@PathVariable String userId) {
+        log.info("delete user : {}", userId);
+        userService.deleteUser(userId);
+        return ResponseEntity.ok().body("delete success");
     }
 
     // 회원가입 완료 후 자동로그인
@@ -178,6 +200,7 @@ public class UserController {
             return ResponseEntity.badRequest().body("회원가입 실패: " + e.getMessage());
         }
     }
+
 
 
 }

@@ -31,7 +31,7 @@ public class BoardReply {
 //    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @GeneratedValue(strategy = GenerationType.IDENTITY) // IDENTITY 전략 사용
     @Column(name = "reply_id")
-    private String id;  // 댓글 번호. PK
+    private Long id;  // 댓글 번호. PK
 
     //    @Column(name = "reply_content")
     private String replyContent;  // 댓글 내용

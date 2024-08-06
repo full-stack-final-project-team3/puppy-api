@@ -327,6 +327,7 @@ public class UserService {
         foundUser.setPhoneNumber(dto.getPhoneNumber());
         foundUser.setRealName(dto.getRealName());
         foundUser.setProfileUrl(dto.getProfileUrl());
+        foundUser.setPoint(dto.getPoint());
         for (Dog dog : foundList) {
             foundUser.addDog(dog);
         }
@@ -422,5 +423,21 @@ public class UserService {
     public List<Board> getMyBoardList(String userId) {
         User foundUser = userRepository.findById(userId).orElseThrow();
         return foundUser.getBoard();
+    }
+
+    public boolean isDuplicatePassword(String password, String userId) {
+        User foundUser = userRepository.findById(userId).orElseThrow();
+        String originPassword = foundUser.getPassword();
+        if (!encoder.matches(password, originPassword)) { // 일치하지 않으면?
+            return false;
+        } else {
+            return true; // 일치할때 true
+        }
+    }
+
+    public void deleteUser(String userId) {
+        User foundUser = userRepository.findById(userId).orElseThrow();
+        log.info("delete user info - {}", foundUser);
+        userRepository.delete(foundUser);
     }
 }
