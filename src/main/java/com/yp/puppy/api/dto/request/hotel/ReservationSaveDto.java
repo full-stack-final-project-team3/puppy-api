@@ -12,4 +12,5 @@ public class ReservationSaveDto {
     private LocalDateTime reservationAt;
     private LocalDateTime reservationEndAt;
     private CancellationStatus cancelled;
+    private long price;
 }
