@@ -55,7 +55,8 @@ public class SnsLoginService {
             UserSaveDto kakaoUser = UserSaveDto.builder()
                     .email(email)
                     .nickname(nickname)
-                    .password("abcd1234!") // 패스워드 설정 (안전한 방식으로 변경 고려)
+                    .password("0000") // 패스워드 설정 (안전한 방식으로 변경 고려)
+                    .provider("KAKAO")
                     .build();
 
             foundUser = userService.confirmSignUpKakao(kakaoUser);
