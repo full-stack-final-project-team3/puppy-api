@@ -52,7 +52,7 @@ public class Board {
         @Column(name = "is_clean")
     private int isClean;  // 클린 여부 : (1) / 신고글 : (0)/검토중: (2)
 
-//    @JsonIgnore
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @JsonIgnore
