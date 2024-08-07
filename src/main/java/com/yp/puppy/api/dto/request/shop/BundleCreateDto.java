@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 public class BundleCreateDto {
 
-//    private String dogId;
     private List<String> treatIds;
+    private String dogName;
 
 }
