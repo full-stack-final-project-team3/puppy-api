@@ -22,13 +22,8 @@ import java.util.List;
 @Table(name = "BoardSubReply")
 public class BoardSubReply {
     @Id
-//    @GenericGenerator(name = "uuid_generator", strategy = "uuid2") // uuid2 전략 적용!
-//    @GeneratedValue(generator = "uuid_generator") // uuid_generator 사용
-//    @GeneratedValue(generator = "UUID")
-//    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // IDENTITY 전략 사용
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "sub_reply_id")
-//    private String id; // UUID는 String 타입을 사용
     private Long id;
 
     private String content;  // 대댓글 내용
@@ -46,7 +41,9 @@ public class BoardSubReply {
     @JoinColumn(name = "user_id")
     private User user;  // 유저 FK. ⇒ 유저ID, 닉네임, 프로필
 
+    private String imageUrl;  // 이미지 URL
+
     @OneToMany(mappedBy = "boardSubReply", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @Builder.Default // 에러나면 그냥 추가
+    @Builder.Default
     private List<Like> likes = new ArrayList<>();
 }

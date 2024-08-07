@@ -3,6 +3,7 @@ package com.yp.puppy.api.controller.community;
 import com.yp.puppy.api.auth.TokenProvider;
 import com.yp.puppy.api.dto.BoardResponseDto;
 import com.yp.puppy.api.dto.request.community.BoardSaveDto;
+import com.yp.puppy.api.dto.response.community.BoardDetailResponseDto;
 import com.yp.puppy.api.entity.community.Board;
 import com.yp.puppy.api.service.community.BoardService;
 import com.yp.puppy.api.service.user.UserService;
@@ -16,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController //무조건 ㅇㅣ걸로
-@RequestMapping("/boards")
+@RequestMapping("/board")
 @RequiredArgsConstructor
 @Slf4j
 @CrossOrigin  //
@@ -50,11 +51,20 @@ public class BoardController {
     }
 
     // 특정 ID의 게시글 조회 요청
+//    @GetMapping("/{id}")
+//    public ResponseEntity<?> getBoard(@PathVariable long id) {
+//        try {
+//            BoardResponseDto board = boardService.getBoardById(id);
+//            return ResponseEntity.ok().body(board);
+//        } catch (RuntimeException e) {
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
     @GetMapping("/{id}")
     public ResponseEntity<?> getBoard(@PathVariable long id) {
         try {
-            Board board = boardService.getBoardById(id);
-            return ResponseEntity.ok().body(board);
+            BoardDetailResponseDto boardDetail = boardService.getBoardDetailById(id);
+            return ResponseEntity.ok().body(boardDetail);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
