@@ -76,8 +76,8 @@ public class Reservation {
     }
 
     public void changeReservation(ReservationSaveDto dto) {
-        this.reservationAt = dto.getReservationAt();
-        this.reservationEndAt = dto.getReservationEndAt();
+        this.reservationAt = dto.getReservationAt().toLocalDateTime();
+        this.reservationEndAt = dto.getReservationEndAt().toLocalDateTime();
         this.cancelled = dto.getCancelled();
     }
 }
