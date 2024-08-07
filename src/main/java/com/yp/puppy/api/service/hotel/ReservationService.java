@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,7 +40,10 @@ public class ReservationService {
         User foundUser = userRepository.findById(dto.getUserId()).orElseThrow();
 
         // 날짜 중복 체크
-        if (isReservationDateOverlap(dto.getRoomId(), dto.getReservationAt(), dto.getReservationEndAt())) {
+        LocalDateTime startLocalDateTime = dto.getReservationAt().atZoneSameInstant(ZoneId.of("Asia/Seoul")).toLocalDateTime().with(LocalTime.of(14, 0));
+        LocalDateTime endLocalDateTime = dto.getReservationEndAt().atZoneSameInstant(ZoneId.of("Asia/Seoul")).toLocalDateTime().with(LocalTime.of(11, 0));
+
+        if (isReservationDateOverlap(dto.getRoomId(), startLocalDateTime, endLocalDateTime)) {
             throw new IllegalArgumentException("예약 날짜가 중복됩니다.");
         }
 
@@ -52,8 +57,8 @@ public class ReservationService {
         log.info("포인트 저장 후: {}", userRepository.findById(foundUser.getId()).orElseThrow().getPoint());
 
         Reservation reservation = Reservation.builder()
-                .reservationAt(dto.getReservationAt())
-                .reservationEndAt(dto.getReservationEndAt())
+                .reservationAt(startLocalDateTime)
+                .reservationEndAt(endLocalDateTime)
                 .cancelled(CancellationStatus.SUCCESS)
                 .price(dto.getPrice())
                 .room(foundRoom)
@@ -61,9 +66,7 @@ public class ReservationService {
                 .user(foundUser)
                 .build();
 
-
         return reservationRepository.save(reservation);
-
     }
 
     // 중복날자 체크 메서드
@@ -79,7 +82,6 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(reservationId).orElseThrow();
         return new ReservationOneDto(reservation);
     }
-
 
     // 내가 예약한 객실 전체조회 - 취소되지 않은 예약만 조회
     public List<ReservationOneDto> getReservationsByUserId(String userId) {
@@ -107,8 +109,6 @@ public class ReservationService {
         reservationRepository.save(reservation);
     }
 
-
-
     // 예약 수정 중간처리
     public void modify(String reservationId, ReservationSaveDto dto) {
         Reservation reservation = reservationRepository.findById(reservationId).orElseThrow();
@@ -119,7 +119,10 @@ public class ReservationService {
         log.info("기존 예약 취소 후 포인트 반환: {}", user.getPoint());
 
         // 날짜 중복 체크
-        if (isReservationDateOverlap(dto.getRoomId(), dto.getReservationAt(), dto.getReservationEndAt())) {
+        LocalDateTime startLocalDateTime = dto.getReservationAt().atZoneSameInstant(ZoneId.of("Asia/Seoul")).toLocalDateTime();
+        LocalDateTime endLocalDateTime = dto.getReservationEndAt().atZoneSameInstant(ZoneId.of("Asia/Seoul")).toLocalDateTime();
+
+        if (isReservationDateOverlap(dto.getRoomId(), startLocalDateTime, endLocalDateTime)) {
             throw new IllegalArgumentException("예약 날짜가 중복됩니다.");
         }
 
