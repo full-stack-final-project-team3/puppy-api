@@ -46,7 +46,7 @@ public class RoomOneDto {
         this.roomImages = room.getImages()
                 .stream()
                 .map(ImageDto::new)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList())
         ;
     }
 
