@@ -55,7 +55,7 @@ public class ReservationService {
                 .reservationAt(dto.getReservationAt())
                 .reservationEndAt(dto.getReservationEndAt())
                 .cancelled(CancellationStatus.SUCCESS)
-                .price(roomPrice)
+                .price(dto.getPrice())
                 .room(foundRoom)
                 .hotel(foundHotel)
                 .user(foundUser)
