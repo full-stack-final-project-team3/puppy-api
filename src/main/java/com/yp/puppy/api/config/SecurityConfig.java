@@ -3,6 +3,7 @@ package com.yp.puppy.api.config;
 import com.yp.puppy.api.auth.filter.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -35,6 +36,10 @@ public class SecurityConfig {
                 .formLogin().disable()
                 .authorizeRequests()
                 .antMatchers("/mypage").authenticated() // /mypage 경로에 대한 인증 필요
+                // 리뷰 및 예약 생성, 수정, 삭제는 인증된 사용자만
+                .antMatchers(HttpMethod.POST, "/api/reviews/**", "/api/reservation/**").authenticated()
+                .antMatchers(HttpMethod.PATCH, "/api/reviews/**", "/api/reservation/**").authenticated()
+                .antMatchers(HttpMethod.DELETE, "/api/reviews/**", "/api/reservation/**").authenticated()
                 .antMatchers("/**").permitAll() // 나머지 경로에 대한 접근 허용
                 .and()
                 .exceptionHandling()

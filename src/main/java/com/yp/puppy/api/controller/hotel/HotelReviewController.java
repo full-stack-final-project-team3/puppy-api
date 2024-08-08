@@ -7,6 +7,7 @@ import com.yp.puppy.api.service.hotel.HotelReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -23,6 +24,7 @@ public class HotelReviewController {
 
     // 1. 리뷰 작성
     @PostMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> createReview(@RequestBody ReviewSaveDto dto) {
         log.info("리뷰 작성 중: {}", dto);
         try {
@@ -36,9 +38,10 @@ public class HotelReviewController {
 
     // 2. 리뷰 삭제
     @DeleteMapping("/{reviewId}")
-    public ResponseEntity<?> deleteReview(@PathVariable String reviewId) {
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> deleteReview(@PathVariable String reviewId, @RequestParam String userId) {
         try {
-            hotelReviewService.deleteReview(reviewId);
+            hotelReviewService.deleteReview(reviewId, userId);
             return ResponseEntity.ok().body(Collections.singletonMap("message", "리뷰가 성공적으로 삭제되었습니다"));
         } catch (IllegalArgumentException e) {
             log.warn(e.getMessage());
@@ -58,6 +61,7 @@ public class HotelReviewController {
 
     // 4. 리뷰 수정
     @PatchMapping("/{reviewId}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> updateReview(@PathVariable String reviewId, @RequestBody ReviewSaveDto dto) {
         try {
             Review updatedReview = hotelReviewService.updateReview(reviewId, dto);
