@@ -175,7 +175,7 @@ public class UserController {
 
         try {
             // 회원가입 처리
-            UserSaveDto userSaveDto = new UserSaveDto(dto.getEmail(), dto.getPassword(), dto.getNickname(), dto.getPhoneNumber());
+            UserSaveDto userSaveDto = new UserSaveDto(dto.getEmail(), dto.getPassword(), dto.getNickname(), dto.getAddress(), dto.getPhoneNumber());
 //            log.info("dto 변환 - {}", userSaveDto);
             userService.confirmSignUp(userSaveDto);
 //            log.info("confirmSignup - {}", userSaveDto);

@@ -278,7 +278,7 @@ public class UserService {
         String password = dto.getPassword();
         String encodedPassword = encoder.encode(password);
 
-        user.confirm(encodedPassword, dto.getNickname(), dto.getPhoneNumber());
+        user.confirm(encodedPassword, dto.getNickname(), dto.getAddress(), dto.getPhoneNumber());
 //        user.setNickname(dto.getNickname());
         log.debug("saved user : {}", user);
         userRepository.save(user);
