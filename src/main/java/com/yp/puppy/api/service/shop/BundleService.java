@@ -1,9 +1,7 @@
 package com.yp.puppy.api.service.shop;
 
 import com.yp.puppy.api.dto.request.shop.BundleCreateDto;
-import com.yp.puppy.api.dto.request.shop.UpdateBundleDto;
 import com.yp.puppy.api.entity.shop.Bundle;
-import com.yp.puppy.api.entity.shop.Cart;
 import com.yp.puppy.api.entity.shop.Treats;
 import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.entity.user.User;
@@ -17,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 

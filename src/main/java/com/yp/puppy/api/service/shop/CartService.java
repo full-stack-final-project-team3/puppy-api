@@ -1,6 +1,6 @@
 package com.yp.puppy.api.service.shop;
 
-import com.yp.puppy.api.dto.request.shop.UpdateBundleDto;
+import com.yp.puppy.api.dto.request.shop.UpdateBundlesDto;
 import com.yp.puppy.api.entity.shop.Bundle;
 import com.yp.puppy.api.entity.shop.Cart;
 import com.yp.puppy.api.entity.user.Dog;
@@ -69,23 +69,23 @@ public class CartService {
     }
 
     // 3. 번들 구독 상태 변경 중간 처리 (유저가 옵션을 수정하면)
-    public Cart updateSubsInfoCart(String userId, UpdateBundleDto dto) {
+    public Cart updateSubsInfoCart(String userId, UpdateBundlesDto dto) {
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다.: " + userId));
 
         Cart cart = user.getCart();
 
-        String bundleId = dto.getBundleId();
-
-        // 장바구니에서 번들 목록 가져오기
         List<Bundle> bundles = cart.getBundles();
 
-        // 일치하는 번들 찾기 및 상태 변경
-        for (Bundle bundle : bundles) {
-            if (bundle.getId().equals(bundleId)) {
-                bundle.setSubsType(dto.getSubsType()); // 원하는 상태로 변경
-                break; // 일치하는 번들을 찾았으므로 반복 종료
+        for (UpdateBundlesDto.BundleUpdateDto bundleUpdate : dto.getBundles()) {
+            String bundleId = bundleUpdate.getBundleId();
+            // 일치하는 번들 찾기
+            for (Bundle bundle : bundles) {
+                if (bundle.getId().equals(bundleId)) {
+                    bundle.setSubsType(bundleUpdate.getSubsType()); // 구독 타입 변경
+                    break; // 일치하는 번들을 찾았으므로 반복 종료
+                }
             }
         }
 
@@ -93,6 +93,7 @@ public class CartService {
 
         return user.getCart();
     }
+
 
     // 4. 번들 삭제 중간 처리
     public Cart deleteBundle(String userId, String bundleId) {
