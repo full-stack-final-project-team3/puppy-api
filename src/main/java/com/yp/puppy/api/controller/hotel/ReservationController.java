@@ -7,6 +7,7 @@ import com.yp.puppy.api.service.hotel.ReservationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class ReservationController {
     // 예약 생성
     // 호텔 id 룸 id 시작날짜 종료날짜 선택
     @PostMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> createReservation(@RequestBody ReservationSaveDto dto) {
         try {
             Reservation reservation = reservationService.createReservation(dto);
@@ -38,6 +40,7 @@ public class ReservationController {
 
     // 예약 조회
     @GetMapping("/{reservationId}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getReservation(@PathVariable String reservationId) {
         try {
             ReservationOneDto detailReservation = reservationService.getDetailReservation(reservationId);
@@ -52,6 +55,7 @@ public class ReservationController {
 
     // 내가 작성한 예약 조회
     @GetMapping("/user/{userId}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getReservationsByUserId(@PathVariable String userId) {
         try {
             log.info("API 호출: 사용자 {}의 예약 조회", userId);
@@ -67,6 +71,7 @@ public class ReservationController {
 
     // 예약 취소
     @DeleteMapping("/{reservationId}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> deleteReservation(@PathVariable String reservationId) {
         try {
             reservationService.deleteReservation(reservationId);
@@ -80,6 +85,7 @@ public class ReservationController {
 
     // 예약 수정
     @PatchMapping("/{reservationId}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> updateReservation(@PathVariable String reservationId, @RequestBody ReservationSaveDto dto) {
         try {
             reservationService.modify(reservationId, dto);

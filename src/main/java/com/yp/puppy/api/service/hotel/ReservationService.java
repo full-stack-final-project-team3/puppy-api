@@ -105,6 +105,11 @@ public class ReservationService {
 
         log.info("예약 취소 후 포인트 반환: {}", user.getPoint());
 
+        // 예약 작성자가 본인인지 확인
+        if (!reservation.getUser().getId().equals(user.getId())) {
+            throw new IllegalArgumentException("예약 삭제 권한이 없습니다.");
+        }
+
         reservation.setCancelled(CancellationStatus.CANCELLED);
         reservationRepository.save(reservation);
     }
@@ -124,6 +129,10 @@ public class ReservationService {
 
         if (isReservationDateOverlap(dto.getRoomId(), startLocalDateTime, endLocalDateTime)) {
             throw new IllegalArgumentException("예약 날짜가 중복됩니다.");
+        }
+
+        if (!reservation.getUser().getId().equals(user.getId())) {
+            throw new IllegalArgumentException("예약 수정 권한이 없습니다.");
         }
 
         // 새로운 포인트 차감
