@@ -20,15 +20,9 @@ import java.util.UUID;
 @Table(name = "Likes")
 public class Like {
     @Id
-//    @GenericGenerator(name = "uuid_generator", strategy = "uuid2") // uuid2 전략 적용!
-//    @GeneratedValue(generator = "uuid_generator") // uuid_generator 사용
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // IDENTITY 전략 사용
     @Column(name = "like_id")
-    private String id;  // Like ID (PK)
-
-//    @Column(name = "likable_id", nullable = false)
-    private String likableId;  // 좋아요가 달린 대상의 ID (게시글, 댓글, 대댓글의 UUID)
+    private Long id;  // Like ID (PK)
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -39,12 +33,11 @@ public class Like {
     private Board board;  // 게시글 번호  FK
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name ="boardReplyId",nullable = false)
-    private BoardSubReply boardReply;
+    @JoinColumn(name ="board_reply_id")
+    private BoardReply boardReply;  // 댓글 번호 FK
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name ="boardSubReplyId",nullable = false)
-    private BoardSubReply boardSubReply;
-
+    @JoinColumn(name ="board_sub_reply_id")
+    private BoardSubReply boardSubReply;  // 대댓글 번호 FK
 
 }

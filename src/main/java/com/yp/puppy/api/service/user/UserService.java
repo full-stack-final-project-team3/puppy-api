@@ -299,12 +299,14 @@ public class UserService {
                 .point(foundUser.getPoint())
                 .phoneNumber(foundUser.getPhoneNumber())
                 .profileUrl(foundUser.getProfileUrl())
+                .password(foundUser.getPassword())
                 .hasDogInfo(foundUser.isHasDogInfo())
                 .noticeCount(foundUser.getNoticeCount())
                 .realName(foundUser.getRealName())
                 .address(foundUser.getAddress())
                 .warningCount(foundUser.getWarningCount())
                 .dogList(foundUser.getDogList())
+                .provider(foundUser.getProvider())
                 .build();
         return dto;
     }
@@ -315,11 +317,20 @@ public class UserService {
         List<Dog> foundList = dogRepository.findByUser(foundUser);
 
 
-        String encodedPassword = encoder.encode(dto.getPassword());
+//        String encodedPassword = null;
+//        if (dto.getPassword().length() > 20) {
+//            encodedPassword = encoder.encode(dto.getPassword());
+//        } else {
+//            encodedPassword = dto.getPassword();
+//        }
+        String encodedPassword = null;
+        if (dto.getPassword().length() > 1) { // 수정된 경우
+            encodedPassword = encoder.encode(dto.getPassword());
+            foundUser.setPassword(encodedPassword);
+        }
 
         foundUser.setEmail(dto.getEmail());
         foundUser.setNickname(dto.getNickname());
-        foundUser.setPassword(encodedPassword);
         foundUser.setAddress(dto.getAddress());
         foundUser.setPhoneNumber(dto.getPhoneNumber());
         foundUser.setRealName(dto.getRealName());

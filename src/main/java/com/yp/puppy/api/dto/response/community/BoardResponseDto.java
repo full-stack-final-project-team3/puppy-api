@@ -32,4 +32,8 @@ public class BoardResponseDto {
         private String profileUrl;
         private String email;
     }
+
+
+
+
 }

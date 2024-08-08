@@ -55,10 +55,11 @@ public class BundleService {
                 .bundlePrice(29900L)
                 .bundleTitle("강아지 맞춤 간식 패키지")
                 .dog(dog)
+                .dogName(dog.getDogName())
                 .treats(treatsList)
                 .bundleStatus(Bundle.BundleStatus.PENDING)
                 .build();
-
+        
         log.info("Bundle before saving: {}", newBundle);
 
         // Bundle 저장

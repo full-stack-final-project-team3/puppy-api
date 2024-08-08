@@ -33,7 +33,7 @@ public class UserController {
     }
 
     // 인증 코드 검증 API
-    @GetMapping("/code")            // 너 누구야,   코드는 뭐야
+    @GetMapping("/code")
     public ResponseEntity<?> verifyCode(String email, String code) {
         log.info("{}'s verify code is [  {}  ]", email, code);
         boolean isMatch = userService.isMatchCode(email, code);
@@ -99,6 +99,7 @@ public class UserController {
             userService.modifyUserInfo(dto, email);
             return ResponseEntity.ok().body("success");
         } catch (Exception e) {
+            log.error("Error modifying user info", e);
             return ResponseEntity.badRequest().body("실패..");
         }
     }

@@ -25,6 +25,7 @@ public class UserResponseDto {
     private LocalDate birthday;
     private String phoneNumber;
     private Integer point;
+    private String password; // - 0807 추가
     private String address;
     private String realName;
     private String profileUrl;
@@ -32,6 +33,9 @@ public class UserResponseDto {
     private int warningCount;
     private List<Dog> dogList;
     private int noticeCount;
+
+    // 회원가입 제공자
+    private String provider;
 
 
 }
