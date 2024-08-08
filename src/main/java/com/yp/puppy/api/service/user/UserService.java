@@ -273,13 +273,11 @@ public class UserService {
                 .orElseThrow(
                         () -> new RuntimeException("회원 정보가 존재하지 않습니다.")
                 );
-//        log.info("user - {}", user);
         // DB 저장
         String password = dto.getPassword();
         String encodedPassword = encoder.encode(password);
 
-        user.confirm(encodedPassword, dto.getNickname(), dto.getPhoneNumber());
-//        user.setNickname(dto.getNickname());
+        user.confirm(encodedPassword, dto.getNickname(), dto.getPhoneNumber(), dto.getAddress());
         log.debug("saved user : {}", user);
         userRepository.save(user);
     }

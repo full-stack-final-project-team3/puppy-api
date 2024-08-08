@@ -170,28 +170,23 @@ public class UserController {
     // 회원가입 완료 후 자동로그인
     @PostMapping("/register-and-login")
     public ResponseEntity<?> registerAndLogin(@RequestBody LoginRequestDto dto) {
-        log.info("Register and    login request - {}", dto);
+        log.info("Register and login request - {}", dto);
 
         try {
             // 회원가입 처리
-            UserSaveDto userSaveDto = new UserSaveDto(dto.getEmail(), dto.getPassword(), dto.getNickname(), dto.getPhoneNumber());
-//            log.info("dto 변환 - {}", userSaveDto);
+            UserSaveDto userSaveDto = new UserSaveDto(dto.getEmail(), dto.getPassword(), dto.getNickname(), dto.getAddress(), dto.getPhoneNumber());
             userService.confirmSignUp(userSaveDto);
-//            log.info("confirmSignup - {}", userSaveDto);
             // 자동 로그인 처리
             LoginResponseDto loginResponse = userService.authenticate(dto);
-//            log.info("자동 로그인 처리 완료");
 
             return ResponseEntity.ok().body(loginResponse);
 
         } catch (LoginFailException e) {
             // 로그인 실패 시
             String errorMessage = e.getMessage();
-//            log.info("왜안됨?");
             return ResponseEntity.status(422).body(errorMessage);
         } catch (Exception e) {
             // 회원가입 실패 시
-//            log.info("실패");
             return ResponseEntity.badRequest().body("회원가입 실패: " + e.getMessage());
         }
     }
