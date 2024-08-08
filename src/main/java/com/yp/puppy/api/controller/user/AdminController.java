@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/admin")
 @Slf4j
@@ -16,19 +18,17 @@ public class AdminController {
     private final AdminService adminService;
 
     @GetMapping("/users/count/today")
-    public long getUsersCountToday() {
+    public List<Long> getUsersCountToday() {
         return adminService.countUsersToday();
     }
 
     @GetMapping("/users/count/week")
-    public long getUsersCountThisWeek() {
+    public List<Long> getUsersCountThisWeek() {
         return adminService.countUsersThisWeek();
     }
 
     @GetMapping("/users/count/month")
-    public long getUsersCountThisMonth() {
+    public List<Long> getUsersCountThisMonth() {
         return adminService.countUsersThisMonth();
     }
-
-
 }
