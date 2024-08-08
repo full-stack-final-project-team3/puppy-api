@@ -77,6 +77,21 @@ public class BoardService {
                 .orElseThrow(() -> new EntityNotFoundException("Board not found with id: " + id));
     }
 
+    // 게시글 삭제
+    @Transactional
+    public void deleteBoard(Long boardId, String userId) {
+        log.info("Attempting to delete board with id: {} by user: {}", boardId, userId);
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new EntityNotFoundException("Board not found with id: " + boardId));
+
+        if (!board.getUser().getId().equals(userId)) {
+            throw new IllegalStateException("You don't have permission to delete this board");
+        }
+
+        boardRepository.delete(board);
+        log.info("Board with id: {} deleted successfully", boardId);
+    }
+
     // 게시글 DTO 변환 유틸리티 메서드
     private BoardResponseDto convertToBoardResponseDto(Board board) {
         return new BoardResponseDto(
