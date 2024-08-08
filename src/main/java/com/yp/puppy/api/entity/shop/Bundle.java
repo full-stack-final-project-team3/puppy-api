@@ -57,6 +57,8 @@ public class Bundle {
     @JsonIgnore
     private Dog dog;
 
+    private String dogName;
+
     private SubsType subsType;
 
     private BundleStatus bundleStatus;

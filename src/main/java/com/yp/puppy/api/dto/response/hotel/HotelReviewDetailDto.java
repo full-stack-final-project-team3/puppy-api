@@ -19,6 +19,8 @@ public class HotelReviewDetailDto {
     private int rate;
     private LocalDateTime reviewDate;
     private String nickName;
+    private String userId;
+    private String hotelId;
 
 
     public HotelReviewDetailDto(Review review) {
@@ -27,5 +29,7 @@ public class HotelReviewDetailDto {
         this.rate = review.getRate();
         this.reviewDate = review.getReviewDate();
         this.nickName = review.getUser().getNickname();
+        this.userId = review.getUser().getId();
+        this.hotelId = review.getHotel().getHotelId();
     }
 }
