@@ -38,22 +38,30 @@ public class TreatsService {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
-    // 1. 상품 전체 조회 중간처리
-    public Map<String, Object> getTreatsList(String dogId, int pageNo, String sort) {
-
+    // 1. 맞춤 상품 전체 조회 중간처리
+    public Map<String, Object> getTreatsList(String dogId, Integer pageNo, String sort) {
+        // 사용자 개 정보 조회
         Dog userDogInfo = dogRepository.findById(dogId).orElseThrow();
         Dog.DogSize dogSize = userDogInfo.getDogSize();
         Dog.DogAgeType dogAgeType = userDogInfo.getDogAgeType();
-        LocalDate birthday = userDogInfo.getBirthday();
         List<Dog.Allergy> dogInfoAllergies = userDogInfo != null ? userDogInfo.getAllergies() : null;
         List<Treats.Allergic> allergics = convertDogAllergiesToTreatsAllergies(dogInfoAllergies);
 
-        // 최종 Pageable 설정
-        Pageable pageable = PageRequest.of(pageNo - 1, 10);
+        List<Treats> treatsList;
+        long totalElements;
 
-        Page<Treats> treatsPage = treatsRepository.findTreats(allergics, dogSize, dogAgeType, pageable, sort);
-
-        List<Treats> treatsList = treatsPage.getContent();
+        // 페이징 여부에 따라 처리
+        if (pageNo != null && pageNo > 0) {
+            // 페이징 처리
+            Pageable pageable = PageRequest.of(pageNo - 1, 10);
+            Page<Treats> treatsPage = treatsRepository.findTreats(allergics, dogSize, dogAgeType, pageable, sort);
+            treatsList = treatsPage.getContent();
+            totalElements = treatsPage.getTotalElements();
+        } else {
+            // 전체 리스트 조회
+            treatsList = treatsRepository.findAllTreats(allergics, dogSize, dogAgeType, sort);
+            totalElements = treatsList.size();
+        }
 
         List<TreatsListDto> treatsDtoList = new ArrayList<>();
         for (Treats treats : treatsList) {
@@ -61,14 +69,13 @@ public class TreatsService {
             treatsDtoList.add(treatsListDto);
         }
 
-        long totalElements = treatsPage.getTotalElements();
-
         Map<String, Object> map = new HashMap<>();
         map.put("treatsList", treatsDtoList);
         map.put("totalCount", totalElements);
 
         return map;
     }
+
 
     // 2. 상품 상세 조회 중간처리
     public TreatsDetailDto getTreatsDetail(String treatsId) {

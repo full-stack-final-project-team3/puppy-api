@@ -84,6 +84,55 @@ public class TreatsRepositoryCustomImpl implements TreatsRepositoryCustom {
         return new PageImpl<>(treatsLists, pageable, count);
     }
 
+    @Override
+    public List<Treats> findAllTreats(List<Treats.Allergic> userDogAllergiesInfo,
+                                      Dog.DogSize dogSize,
+                                      Dog.DogAgeType dogAgeType,
+                                      String sort) {
+        // 조건 빌더 생성
+        BooleanBuilder builder = new BooleanBuilder();
+
+        // 알레르지 조건 추가
+        if (userDogAllergiesInfo != null && !userDogAllergiesInfo.isEmpty()) {
+            builder.and(treats.allergieList.any().in(userDogAllergiesInfo).not());
+        }
+
+        // 강아지 크기 조건 추가
+        if (dogSize != null) {
+            builder.and(treats.dogSize.eq(dogSize));
+        }
+
+        // 타입 조건 추가
+        Treats.TreatsType type = getTreatsType(sort);
+        if (type != null) {
+            builder.and(treats.treatsType.eq(type));
+        }
+
+        // 연령층 조건 추가
+        if (dogAgeType != null) {
+            switch (dogAgeType) {
+                case BABY:
+                    builder.and(treats.treatsAgeType.in(Treats.TreatsAgeType.BABY, Treats.TreatsAgeType.ALL));
+                    break;
+                case OLD:
+                    builder.and(treats.treatsAgeType.in(Treats.TreatsAgeType.OLD, Treats.TreatsAgeType.ALL));
+                    break;
+                case MIDDLE:
+                    builder.and(treats.treatsAgeType.ne(Treats.TreatsAgeType.BABY));
+                    builder.and(treats.treatsAgeType.ne(Treats.TreatsAgeType.OLD));
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        // 조건에 맞는 모든 간식 조회
+        return factory
+                .selectFrom(treats)
+                .where(builder)
+                .fetch();
+    }
+
     // 간식 타입을 반환하는 메서드
     private Treats.TreatsType getTreatsType(String type) {
         switch (type.toLowerCase()) { // 대소문자 구분 없이 처리
