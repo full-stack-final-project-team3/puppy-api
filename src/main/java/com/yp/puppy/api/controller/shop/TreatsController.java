@@ -28,7 +28,6 @@ import static com.yp.puppy.api.auth.TokenProvider.*;
 
 @RestController
 @RequestMapping("/treats")
-@CrossOrigin(origins = "http://localhost:3000")
 @Slf4j
 @RequiredArgsConstructor
 public class TreatsController {
