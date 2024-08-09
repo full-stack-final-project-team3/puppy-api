@@ -23,8 +23,6 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.yp.puppy.api.auth.TokenProvider.*;
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -37,6 +35,23 @@ public class TreatsService {
 
     @Value("${file.upload-dir}")
     private String uploadDir;
+
+    public List<TreatsListDto> getAllTreatsList(String userId) {
+
+        User user = userRepository.findById(userId).orElseThrow();
+
+        if (user.getRole() != Role.ADMIN) throw new IllegalStateException("관리자만 할 수 있습니다.");
+
+        List<Treats> all = treatsRepository.findAll();
+
+        List<TreatsListDto> treatsDtoList = new ArrayList<>();
+        for (Treats treats : all) {
+            TreatsListDto treatsListDto = new TreatsListDto(treats);
+            treatsDtoList.add(treatsListDto);
+        }
+
+        return treatsDtoList;
+    }
 
     // 1. 맞춤 상품 전체 조회 중간처리
     public Map<String, Object> getTreatsList(String dogId, Integer pageNo, String sort) {
@@ -174,6 +189,7 @@ public class TreatsService {
                 return null; // 매핑되지 않는 경우
         }
     }
+
 
 }
 
