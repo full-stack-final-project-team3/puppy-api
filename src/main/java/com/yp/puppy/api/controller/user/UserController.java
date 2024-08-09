@@ -148,10 +148,10 @@ public class UserController {
     }
 
 
-    @GetMapping("/check-password/{userId}")
-    public ResponseEntity<?> checkPassword(@RequestParam String password, @PathVariable String userId) {
+    @GetMapping("/check-password/{email}")
+    public ResponseEntity<?> checkPassword(@RequestParam String password, @PathVariable String email) {
         log.info("파라미터로 받은 패스워드!! - {}", password);
-        boolean flag = userService.isDuplicatePassword(password, userId);
+        boolean flag = userService.isDuplicatePassword(password, email);
         if (flag) { // 일치하면
             log.info("true flag : {}", flag);
             return ResponseEntity.ok().body(true);
