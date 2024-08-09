@@ -1,6 +1,6 @@
 package com.yp.puppy.api.controller.shop;
 
-import com.yp.puppy.api.dto.request.shop.UpdateBundleDto;
+import com.yp.puppy.api.dto.request.shop.UpdateBundlesDto;
 import com.yp.puppy.api.entity.shop.Cart;
 import com.yp.puppy.api.service.shop.BundleService;
 import com.yp.puppy.api.service.shop.CartService;
@@ -46,7 +46,7 @@ public class CartController {
 
         try {
             Cart cart = cartService.getCart(userInfo.getUserId());
-            if(cart.getBundles() == null) {
+            if (cart.getBundles() == null) {
                 ResponseEntity.ok().body("장바구니가 비어있습니다.");
             }
             return ResponseEntity.ok().body(cart);
@@ -61,10 +61,9 @@ public class CartController {
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
     @PutMapping
     public ResponseEntity<?> checkOutCart(@AuthenticationPrincipal TokenUserInfo userInfo,
-                                          UpdateBundleDto dto) {
+                                          @RequestBody UpdateBundlesDto dto) {
         try {
             Cart cart = cartService.updateSubsInfoCart(userInfo.getUserId(), dto);
-//            Cart cart = cartService.getCart(userInfo.getUserId());
             return ResponseEntity.ok().body(cart);
         } catch (IllegalStateException e) {
             log.warn(e.getMessage());
@@ -111,12 +110,12 @@ public class CartController {
             log.error("장바구니 삭제 중 오류 발생: {}", e.getMessage());
             return ResponseEntity.status(500).body("서버 오류가 발생했습니다.");
         }
-        
+
     }
 
     // 6. 장바구니에서 번들의 구성 수정
     @PutMapping("/{bundleId}")
-    public ResponseEntity<?> updateBundleInCart(@PathVariable String bundleId, @RequestBody UpdateBundleDto dto) {
+    public ResponseEntity<?> updateBundleInCart(@PathVariable String bundleId, @RequestBody UpdateBundlesDto dto) {
         if (bundleId == null || bundleId.isEmpty()) {
             return ResponseEntity.badRequest().body("유효하지 않은 번들 ID입니다.");
         }
