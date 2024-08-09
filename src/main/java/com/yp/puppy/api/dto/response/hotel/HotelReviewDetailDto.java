@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class HotelReviewDetailDto {
+public class HotelReviewDetailDto {p
 
     private String id;
     private String reviewContent;
@@ -20,6 +20,7 @@ public class HotelReviewDetailDto {
     private LocalDateTime reviewDate;
     private String nickName;
     private String userId;
+    private String hotelName;
     private String hotelId;
 
 
@@ -31,5 +32,6 @@ public class HotelReviewDetailDto {
         this.nickName = review.getUser().getNickname();
         this.userId = review.getUser().getId();
         this.hotelId = review.getHotel().getHotelId();
+        this.hotelName = review.getHotel().getName();
     }
 }
