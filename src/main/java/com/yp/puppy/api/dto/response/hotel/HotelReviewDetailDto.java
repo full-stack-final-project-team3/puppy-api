@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class HotelReviewDetailDto {p
+public class HotelReviewDetailDto {
 
     private String id;
     private String reviewContent;
