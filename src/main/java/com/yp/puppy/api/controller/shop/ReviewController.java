@@ -41,6 +41,7 @@ public class ReviewController {
 
         try {
             Review review = reviewService.saveReview(reviewSaveDto);
+            log.info("Saved Review: {}", review);
             return ResponseEntity.ok(review);
         } catch (IllegalArgumentException e) {
             log.error("Error creating review: {}", e.getMessage());

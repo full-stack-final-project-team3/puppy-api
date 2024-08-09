@@ -408,14 +408,20 @@ public class UserService {
     }
 
     public void changePassword(String email, String password) {
+
+        User foundUser = userRepository.findByEmail(email).orElseThrow();
+
+//        // 기존 비밀번호와 동일한지 검증
+//        if (encoder.matches(password, foundUser.getPassword())) {
+//            return false;
+//        }
+
         // 패스워드 인코딩
         String encodedPassword = encoder.encode(password);
         log.info("인코딩된 패스워드! - {}", encodedPassword);
-        User foundUser = userRepository.findByEmail(email).orElseThrow();
         foundUser.setPassword(encodedPassword);
 
         userRepository.save(foundUser);
-
     }
 
     // 휴대폰 번호 중복 검증
@@ -435,8 +441,8 @@ public class UserService {
         return foundUser.getBoard();
     }
 
-    public boolean isDuplicatePassword(String password, String userId) {
-        User foundUser = userRepository.findById(userId).orElseThrow();
+    public boolean isDuplicatePassword(String password, String email) {
+        User foundUser = userRepository.findByEmail(email).orElseThrow();
         String originPassword = foundUser.getPassword();
         if (!encoder.matches(password, originPassword)) { // 일치하지 않으면?
             return false;
