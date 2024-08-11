@@ -20,6 +20,7 @@ public class ReviewSaveDto {
     private String hotelId;
     private String reservationId;
 
+
     public Review toEntity() {
         return Review.builder()
                 .reviewContent(this.reviewContent)
