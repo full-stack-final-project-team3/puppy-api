@@ -57,6 +57,7 @@ public class HotelReviewService {
     // 리뷰 조회 중간처리
     public List<Review> getReviewsByHotelId(String reservationId) {
         return hotelReviewRepository.findByReservationReservationId(reservationId);
+
     }
 
     // 리뷰 수정 중간처리
