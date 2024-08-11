@@ -57,6 +57,7 @@ public class HotelReviewController {
                 .map(HotelReviewDetailDto::new)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(reviews);
+
     }
 
     // 4. 리뷰 수정
