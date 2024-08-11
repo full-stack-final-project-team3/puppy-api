@@ -51,8 +51,8 @@ public class HotelReviewController {
 
     // 3. 리뷰 조회
     @GetMapping
-    public ResponseEntity<List<HotelReviewDetailDto>> getReviewsByHotelId(@RequestParam String hotelId) {
-        List<HotelReviewDetailDto> reviews = hotelReviewService.getReviewsByHotelId(hotelId)
+    public ResponseEntity<List<HotelReviewDetailDto>> getReviewsByHotelId(@RequestParam String reservationId) {
+        List<HotelReviewDetailDto> reviews = hotelReviewService.getReviewsByHotelId(reservationId)
                 .stream()
                 .map(HotelReviewDetailDto::new)
                 .collect(Collectors.toList());

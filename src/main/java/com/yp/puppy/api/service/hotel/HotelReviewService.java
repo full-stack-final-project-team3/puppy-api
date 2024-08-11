@@ -31,40 +31,22 @@ public class HotelReviewService {
 
     // 리뷰 생성 중간처리
     public Review createReview(ReviewSaveDto dto) {
-        log.info("리뷰 저장 중: {}", dto);
-
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + dto.getUserId()));
         Hotel hotel = hotelRepository.findById(dto.getHotelId())
                 .orElseThrow(() -> new IllegalArgumentException("호텔을 찾을 수 없습니다: " + dto.getHotelId()));
-
-        // 이미 리뷰가 존재하는지 확인
-        boolean reviewExists = hotelReviewRepository.findByUserIdAndHotelHotelId(user.getId(), hotel.getHotelId()).isPresent();
-        if (reviewExists) {
-            throw new IllegalArgumentException("이미 이 호텔에 대한 리뷰를 작성했습니다: " + dto.getHotelId());
-        }
+        Reservation reservation = reservationRepository.findById(dto.getReservationId())
+                .orElseThrow(() -> new IllegalArgumentException("예약을 찾을 수 없습니다: " + dto.getReservationId()));
 
         Review newReview = dto.toEntity();
         newReview.setUser(user);
         newReview.setHotel(hotel);
+        newReview.setReservation(reservation); // 예약 정보 설정
         newReview.setReviewDate(LocalDateTime.now());
 
-        // 사용자의 예약내역 조회
-        List<Reservation> reservationsByUser = reservationRepository.findByUserId(user.getId());
-
-        // 해당 호텔에 대한 예약이 있는지 확인
-        boolean hasReservationAtHotel = reservationsByUser.stream()
-                .anyMatch(reservation -> reservation.getHotel().getHotelId().equals(dto.getHotelId()));
-
-        if (!hasReservationAtHotel) {
-            throw new IllegalArgumentException("해당 호텔에 대한 예약이 존재하지 않습니다: " + dto.getHotelId());
-        }
-
-
-
-        Review saveReview = hotelReviewRepository.save(newReview);
-        log.info("리뷰가 저장되었습니다: {}", saveReview);
-        return saveReview;
+        Review savedReview = hotelReviewRepository.save(newReview);
+        log.info("리뷰가 저장되었습니다: {}", savedReview);
+        return savedReview;
     }
 
     // 리뷰 전체조회 중간처리 아마안쓸듯?
@@ -73,8 +55,8 @@ public class HotelReviewService {
     }
 
     // 리뷰 조회 중간처리
-    public List<Review> getReviewsByHotelId(String hotelId) {
-        return hotelReviewRepository.findByHotelHotelId(hotelId);
+    public List<Review> getReviewsByHotelId(String reservationId) {
+        return hotelReviewRepository.findByReservationReservationId(reservationId);
     }
 
     // 리뷰 수정 중간처리

@@ -18,6 +18,7 @@ public class ReviewSaveDto {
     private int rate;
     private String userId;
     private String hotelId;
+    private String reservationId;
 
     public Review toEntity() {
         return Review.builder()

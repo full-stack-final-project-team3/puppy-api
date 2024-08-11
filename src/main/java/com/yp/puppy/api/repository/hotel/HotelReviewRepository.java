@@ -9,5 +9,7 @@ import java.util.Optional;
 public interface HotelReviewRepository extends JpaRepository<Review, String> {
     List<Review> findByHotelHotelId(String hotelId);
 
+    List<Review> findByReservationReservationId(String reservationId);
+
     Optional<Review> findByUserIdAndHotelHotelId(String userId, String hotelId);
 }
