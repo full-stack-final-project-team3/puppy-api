@@ -123,8 +123,8 @@ public class TreatsController {
     // 5. 제품 수정
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PatchMapping("/{treatsId}")
-    public ResponseEntity<?> modifyTreats(@RequestBody TreatsSaveDto dto,
+    @PatchMapping(value = "/{treatsId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> modifyTreats(@ModelAttribute TreatsSaveDto dto,
                                           @PathVariable String treatsId) {
         try {
             treatsService.updateTreat(dto, treatsId);
