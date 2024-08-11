@@ -59,6 +59,8 @@ public class Bundle {
 
     private String dogName;
 
+    private String bundleDogId;
+
     private SubsType subsType;
 
     private BundleStatus bundleStatus;

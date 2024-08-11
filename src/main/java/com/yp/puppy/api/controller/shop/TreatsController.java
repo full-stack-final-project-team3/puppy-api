@@ -2,6 +2,7 @@ package com.yp.puppy.api.controller.shop;
 
 import com.yp.puppy.api.dto.request.shop.TreatsSaveDto;
 import com.yp.puppy.api.dto.response.shop.TreatsDetailDto;
+import com.yp.puppy.api.dto.response.shop.TreatsListDto;
 import com.yp.puppy.api.entity.shop.Treats;
 import com.yp.puppy.api.service.shop.TreatsService;
 import lombok.RequiredArgsConstructor;
@@ -20,13 +21,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
 
 import static com.yp.puppy.api.auth.TokenProvider.*;
 
 @RestController
 @RequestMapping("/treats")
-@CrossOrigin(origins = "http://localhost:3000")
 @Slf4j
 @RequiredArgsConstructor
 public class TreatsController {
@@ -39,6 +40,18 @@ public class TreatsController {
     private String uploadDir;
 
     // 0. 관리자 모든 상품 조회
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllTreatsList(@AuthenticationPrincipal TokenUserInfo userInfo) {
+
+        List<TreatsListDto> allTreatsList =
+                treatsService.getAllTreatsList(userInfo.getUserId());
+        if (allTreatsList.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok().body(allTreatsList);
+
+    }
 
     // 1. 상품 전체 맞춤 조회
 

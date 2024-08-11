@@ -15,4 +15,8 @@ public interface TreatsRepositoryCustom {
                             Pageable pageable,
                             String sort);
 
+    List<Treats> findAllTreats(List<Treats.Allergic> userDogAllergiesInfo,
+                               Dog.DogSize dogSize,
+                               Dog.DogAgeType dogAgeType,
+                               String sort);
 }

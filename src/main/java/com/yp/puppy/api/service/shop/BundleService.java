@@ -53,6 +53,7 @@ public class BundleService {
                 .bundleTitle("강아지 맞춤 간식 패키지")
                 .dog(dog)
                 .dogName(dog.getDogName())
+                .bundleDogId(dogId)
                 .treats(treatsList)
                 .bundleStatus(Bundle.BundleStatus.PENDING)
                 .build();
