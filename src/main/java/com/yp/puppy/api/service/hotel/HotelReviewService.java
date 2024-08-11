@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -54,10 +53,14 @@ public class HotelReviewService {
         return hotelReviewRepository.findAll();
     }
 
-    // 리뷰 조회 중간처리
-    public List<Review> getReviewsByHotelId(String reservationId) {
+    // 유저 리뷰 조회 중간처리
+    public List<Review> getReviewsByReservationId(String reservationId) {
         return hotelReviewRepository.findByReservationReservationId(reservationId);
 
+    }
+    // 호텔 리뷰 조회 중간처리
+    public List<Review> getReviewsByHotelId(String hotelId) {
+        return hotelReviewRepository.findByHotelHotelId(hotelId);
     }
 
     // 리뷰 수정 중간처리

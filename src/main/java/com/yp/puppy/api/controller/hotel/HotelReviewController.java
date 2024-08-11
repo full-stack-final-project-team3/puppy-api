@@ -51,13 +51,23 @@ public class HotelReviewController {
 
     // 3. 리뷰 조회
     @GetMapping
-    public ResponseEntity<List<HotelReviewDetailDto>> getReviewsByHotelId(@RequestParam String reservationId) {
-        List<HotelReviewDetailDto> reviews = hotelReviewService.getReviewsByHotelId(reservationId)
+    public ResponseEntity<List<HotelReviewDetailDto>> getReviewsByReservationId(@RequestParam String reservationId) {
+        List<HotelReviewDetailDto> reviews = hotelReviewService.getReviewsByReservationId(reservationId)
                 .stream()
                 .map(HotelReviewDetailDto::new)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(reviews);
 
+    }
+
+    // 3-2. 호텔 리뷰 조회
+    @GetMapping("/hotel")
+    public ResponseEntity<List<HotelReviewDetailDto>> getReviewsByHotelId(@RequestParam String hotelId) {
+        List<HotelReviewDetailDto> reviews = hotelReviewService.getReviewsByHotelId(hotelId)
+                .stream()
+                .map(HotelReviewDetailDto::new)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(reviews);
     }
 
     // 4. 리뷰 수정
