@@ -20,7 +20,7 @@ public class TreatsDetailDto {
     private String id;
     private String title; // 제품 이름
     private Treats.TreatsType treatsType;
-    private Treats.Allergic allergieList;
+    private List<Treats.Allergic> allergieList;
     private Dog.DogSize dogSize;
     private Treats.TreatsAgeType treatsAgeType;
     private int weight; // 제품 무게
@@ -38,6 +38,7 @@ public class TreatsDetailDto {
         this.treatsType = treats.getTreatsType();
         this.treatsAgeType = treats.getTreatsAgeType();
         this.dogSize = treats.getDogSize();
+        this.allergieList = treats.getAllergieList();
         this.treatsPics = treats.getTreatsPics();
         this.treatsDetailPics = treats.getTreatsDetailPics();
     }
