@@ -24,35 +24,25 @@ import java.util.Map;
 @Slf4j
 @CrossOrigin
 public class BoardController {
-
     private final BoardService boardService;
     private final UserService userService;
-    private final TokenProvider tokenProvider; // Add this line
+    private final TokenProvider tokenProvider;
 
-    // 전체 조회 요청
     @GetMapping
-    public ResponseEntity<?> getList(String sort) {
+    public ResponseEntity<?> getList(@RequestParam(required = false) String sort) {
         List<BoardResponseDto> boards = boardService.getBoards(sort);
         return ResponseEntity.ok().body(boards);
     }
 
-    // 등록 요청 (파일 업로드 포함)
     @PostMapping(consumes = "multipart/form-data")
     public ResponseEntity<?> register(
             @RequestPart("dto") BoardSaveDto dto,
-            @RequestPart(value = "file", required = false) MultipartFile file) {
-        log.info("🌟dto:{}", dto);
-        // 파일 처리 로직 추가 (예: 파일 저장, DTO에 파일 정보 추가 등)
-        if (file != null && !file.isEmpty()) {
-            // 파일 저장 로직
-            log.info("파일 이름: {}", file.getOriginalFilename());
-        }
-        // 게시글 저장 로직
-        Board board = boardService.saveBoard(dto);
-        return ResponseEntity.ok().body(board);
+            @RequestPart(value = "files", required = false) List<MultipartFile> files) {
+        log.info("🌟 dto:{}", dto);
+        BoardResponseDto savedBoard = boardService.saveBoard(dto, files);
+        return ResponseEntity.ok().body(savedBoard);
     }
 
-    // 특정 ID의 게시글 조회 요청
     @GetMapping("/{id}")
     public ResponseEntity<?> getBoard(@PathVariable long id) {
         try {

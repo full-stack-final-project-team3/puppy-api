@@ -15,7 +15,7 @@ public class BoardDetailResponseDto {
     private long id;
     private String boardTitle;
     private String boardContent;
-    private String image;
+    private List<String> images;
     private LocalDateTime boardCreatedAt;
     private LocalDateTime boardUpdatedAt;
     private int viewCount;
@@ -43,18 +43,4 @@ public class BoardDetailResponseDto {
         private UserDTO user;
         private String imageUrl;
     }
-
-//    @Getter
-//    @Setter
-//    @NoArgsConstructor
-//    @AllArgsConstructor
-//    public static class SubReplyDTO {
-//        private Long id;
-//        private String replyContent;
-//        private LocalDateTime replyCreatedAt;
-//        private LocalDateTime replyUpdatedAt;
-//        private int isClean;
-//        private UserDTO user;
-//    }
 }
-

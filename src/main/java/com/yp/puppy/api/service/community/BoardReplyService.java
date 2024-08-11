@@ -1,10 +1,13 @@
 package com.yp.puppy.api.service.community;
 
 import com.yp.puppy.api.entity.community.Board;
+import com.yp.puppy.api.entity.community.BoardImg;
 import com.yp.puppy.api.entity.community.BoardReply;
+import com.yp.puppy.api.entity.community.BoardSubReply;
 import com.yp.puppy.api.entity.user.User;
 import com.yp.puppy.api.repository.community.BoardReplyRepository;
 import com.yp.puppy.api.repository.community.BoardRepository;
+import com.yp.puppy.api.repository.community.BoardSubReplyRepository;
 import com.yp.puppy.api.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +23,7 @@ public class BoardReplyService {
     private final BoardReplyRepository boardReplyRepository;
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
+    private final BoardSubReplyRepository boardSubReplyRepository;
 
     @Transactional
     public BoardReply saveReply(Long boardId, String content, User user, MultipartFile image) throws IOException {
@@ -28,16 +32,17 @@ public class BoardReplyService {
         User foundUser = userRepository.findById(user.getId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        String imageUrl = null;
+        BoardImg boardImg = null;
         if (image != null && !image.isEmpty()) {
-            imageUrl = uploadImage(image);
+            String imageUrl = uploadImage(image);
+            boardImg = new BoardImg(imageUrl, board, null, null);
         }
 
         BoardReply reply = BoardReply.builder()
                 .replyContent(content)
                 .board(board)
                 .user(foundUser)
-                .imageUrl(imageUrl)
+                .image(boardImg)
                 .isClean(1)
                 .build();
 
