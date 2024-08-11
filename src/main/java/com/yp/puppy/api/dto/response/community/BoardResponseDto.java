@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -15,7 +16,7 @@ public class BoardResponseDto {
     private long id;
     private String boardTitle;
     private String boardContent;
-    private String image;
+    private List<String> images;
     private LocalDateTime boardCreatedAt;
     private LocalDateTime boardUpdatedAt;
     private int viewCount;
@@ -32,8 +33,4 @@ public class BoardResponseDto {
         private String profileUrl;
         private String email;
     }
-
-
-
-
 }

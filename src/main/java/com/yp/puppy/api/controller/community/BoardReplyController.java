@@ -1,6 +1,7 @@
 package com.yp.puppy.api.controller.community;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yp.puppy.api.dto.response.community.BoardDetailResponseDto;
 import com.yp.puppy.api.entity.community.Board;
 import com.yp.puppy.api.entity.community.BoardReply;
 import com.yp.puppy.api.entity.user.User;
@@ -40,7 +41,7 @@ public class BoardReplyController {
             log.info("🌈newReply: {}", newReply);
 
             // 댓글이 성공적으로 저장된 후, 전체 게시글 정보를 다시 조회합니다.
-            Board updatedBoard = boardService.findBoard(boardId);
+            BoardDetailResponseDto updatedBoard = boardService.getBoardDetailById(boardId);
             log.info("🧤Reply created successfully for board ID: {}", boardId);
 
             // 업데이트된 전체 게시글 정보를 반환합니다.

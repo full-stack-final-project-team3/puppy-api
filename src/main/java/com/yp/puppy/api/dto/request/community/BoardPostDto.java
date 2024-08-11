@@ -2,11 +2,11 @@ package com.yp.puppy.api.dto.request.community;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.yp.puppy.api.entity.community.Board;
-import com.yp.puppy.api.entity.user.User;
+import com.yp.puppy.api.entity.community.BoardImg;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter @Setter @ToString
 @EqualsAndHashCode
@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class BoardPostDto {
     private String title;
     private String content;
-    private String imageUrl;
+    private List<BoardImg> imageUrl;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime beginDate;
     private String userId;
@@ -26,7 +26,7 @@ public class BoardPostDto {
         return Board.builder()
                 .boardTitle(this.title)
                 .boardContent(content)
-                .image(imageUrl)
+                .images(imageUrl)
                 .boardCreatedAt( LocalDateTime.now())
                 .build();
     }
