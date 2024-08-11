@@ -36,6 +36,10 @@ public class Review {
     private LocalDateTime reviewDate; // 리뷰 작성 시간
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reservation_id", nullable = false)
+    private Reservation reservation; // 예약 정보
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @JsonBackReference("user-reviews")
     private User user; // 리뷰 작성자
