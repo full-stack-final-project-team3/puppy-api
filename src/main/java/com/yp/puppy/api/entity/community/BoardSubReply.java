@@ -3,7 +3,6 @@ package com.yp.puppy.api.entity.community;
 import com.yp.puppy.api.entity.user.User;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
@@ -11,39 +10,40 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter @Setter
-@ToString(exclude = {"user", "likes"})
+@Getter
+@Setter
+@ToString(exclude = {"boardReply", "subReplies", "likes"})
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 
 @Entity
-@Table(name = "BoardSubReply")
+@Table(name = "board_sub_reply")
 public class BoardSubReply {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "sub_reply_id")
     private Long id;
 
-    private String content;  // 대댓글 내용
+    private String subReplyContent;
     @CreationTimestamp
-    private LocalDateTime createdAt = LocalDateTime.now();  // 작성 시간
+    private LocalDateTime subReplyCreatedAt = LocalDateTime.now();
     @UpdateTimestamp
-    private LocalDateTime updatedAt;  // 수정시간
-    private int isClean;  // 클린 여부 : (1) / 신고글 : (0)/검토중: (2)
+    private LocalDateTime subReplyUpdatedAt;
+    private int isClean;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reply_id")
-    private BoardReply boardReply;  // 댓글 번호  FK
+    private BoardReply boardReply;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;  // 유저 FK. ⇒ 유저ID, 닉네임, 프로필
+    private User user;
 
-    private String imageUrl;  // 이미지 URL
+    @OneToOne(mappedBy = "boardSubReply", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private BoardImg image;
 
     @OneToMany(mappedBy = "boardSubReply", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @Builder.Default
     private List<Like> likes = new ArrayList<>();
 }

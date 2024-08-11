@@ -39,9 +39,7 @@ public class Board {
         @Column(name = "board_content")
     private String boardContent;  // 게시판 내용
 
-    @Column(name = "board_image_path")
-    private String image; // 이벤트 메인 이미지 경로
-        @Column(name = "board_created_at")
+    @Column(name = "board_created_at")
     @CreationTimestamp
     private LocalDateTime boardCreatedAt = LocalDateTime.now();  // 게시글 작성일
     @Column(name = "board_updated_at")
@@ -66,4 +64,6 @@ public class Board {
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Like> likes = new ArrayList<>();
 
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<BoardImg> images = new ArrayList<>();  // 여러 장의 이미지
 }
