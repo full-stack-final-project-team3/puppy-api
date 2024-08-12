@@ -87,4 +87,32 @@ public class BoardController {
                     .body(Map.of("error", "게시글 삭제 중 오류가 발생했습니다: " + e.getMessage()));
         }
     }
+    //
+    @PutMapping(value = "/{id}", consumes = "multipart/form-data")
+    public ResponseEntity<?> updateBoard(
+            @PathVariable Long id,
+            @RequestPart("dto") BoardSaveDto dto,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files,
+            @RequestHeader("Authorization") String token) {
+        try {
+            String userId = tokenProvider.validateAndGetTokenInfo(token.replace("Bearer ", "")).getUserId();
+            if (!userId.equals(dto.getUser().getId())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("error", "You don't have permission to update this board"));
+            }
+
+            BoardResponseDto updatedBoard = boardService.updateBoard(id, dto, files);
+            return ResponseEntity.ok().body(updatedBoard);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "게시글을 찾을 수 없습니다."));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "게시글 수정 중 오류가 발생했습니다: " + e.getMessage()));
+        }
+    }
+    //
 }

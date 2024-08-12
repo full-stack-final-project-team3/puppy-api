@@ -123,6 +123,34 @@ public class BoardService {
         log.info("Board with id: {} deleted successfully", boardId);
     }
 
+    @Transactional
+    public BoardResponseDto updateBoard(Long boardId, BoardSaveDto dto, List<MultipartFile> files) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new EntityNotFoundException("Board not found with id: " + boardId));
+
+        if (!board.getUser().getId().equals(dto.getUser().getId())) {
+            throw new IllegalStateException("You don't have permission to update this board");
+        }
+
+        board.setBoardTitle(dto.getBoardTitle());
+        board.setBoardContent(dto.getBoardContent());
+        board.setBoardUpdatedAt(LocalDateTime.now());
+
+        if (files != null && !files.isEmpty()) {
+            // 기존 이미지 삭제
+            board.getImages().clear();
+            // 새 이미지 추가
+            for (MultipartFile file : files) {
+                BoardImg image = saveImage(file, board);
+                board.getImages().add(image);
+            }
+        }
+
+        Board updatedBoard = boardRepository.save(board);
+        return convertToBoardResponseDto(updatedBoard);
+    }
+
+
     public BoardResponseDto convertToBoardResponseDto(Board board) {
         List<String> imageUrls = new ArrayList<>();
         if (board.getImages() != null) {
