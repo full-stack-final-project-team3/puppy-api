@@ -122,17 +122,9 @@ public class TreatsService {
     public void updateTreat(TreatsSaveDto dto, String treatsId) {
         Treats foundTreats = treatsRepository.findById(treatsId).orElseThrow();
 
-        foundTreats.changeTreats(dto);
+        foundTreats.changeTreats(dto, uploadDir);
 
         treatsRepository.save(foundTreats);
-    }
-
-    // 강아지 나이 계산 메서드
-    private int calculateDogAge(LocalDate birthday) {
-        if (birthday == null) {
-            return 0; // 출생일이 없는 경우 기본값으로 0세를 반환
-        }
-        return LocalDate.now().getYear() - birthday.getYear();
     }
 
     public List<Treats.Allergic> convertDogAllergiesToTreatsAllergies(List<Dog.Allergy> dogAllergies) {
