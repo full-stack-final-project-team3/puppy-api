@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Builder
 @Entity(name = "HotelReview")
 @Table(name = "hotel_review")
-@ToString(exclude = {"user", "hotel"}) // 순환 참조를 피하기 위해 추가
+@ToString(exclude = {"user", "hotel", "reservation"}) // 순환 참조를 피하기 위해 추가
 public class Review {
 
     @Id
