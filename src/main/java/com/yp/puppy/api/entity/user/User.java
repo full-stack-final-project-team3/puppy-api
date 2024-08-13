@@ -123,6 +123,7 @@ public class User {
     @JsonIgnore
     private Cart cart;
 
+    @JsonIgnore //yj : StackOverflowError 때문에 추가
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> orders;
 
