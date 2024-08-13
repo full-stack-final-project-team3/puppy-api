@@ -4,9 +4,11 @@ import com.yp.puppy.api.dto.response.community.BoardDetailResponseDto;
 import com.yp.puppy.api.entity.community.Board;
 import com.yp.puppy.api.entity.community.BoardImg;
 import com.yp.puppy.api.entity.community.BoardReply;
+import com.yp.puppy.api.entity.community.BoardSubReply;
 import com.yp.puppy.api.entity.user.User;
 import com.yp.puppy.api.repository.community.BoardReplyRepository;
 import com.yp.puppy.api.repository.community.BoardRepository;
+import com.yp.puppy.api.repository.community.BoardSubReplyRepository;
 import com.yp.puppy.api.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -33,35 +36,44 @@ public class BoardReplyService {
     private final BoardReplyRepository boardReplyRepository;
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
+    private final BoardSubReplyRepository boardSubReplyRepository;
 
     @Value("${file.upload-dir}")
     private String uploadDir;
 
     public BoardDetailResponseDto.ReplyDTO saveReply(Long boardId, String content, User user, MultipartFile image) {
         try {
+            // Board 엔티티 조회
             Board board = boardRepository.findById(boardId)
                     .orElseThrow(() -> new EntityNotFoundException("Board not found"));
+
+            // User 엔티티 조회
             User foundUser = userRepository.findById(user.getId())
                     .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
+            // 이미지 저장
             String imageUrl = null;
             if (image != null && !image.isEmpty()) {
                 imageUrl = saveImage(image);
             }
 
+            // BoardReply 엔티티 생성
             BoardReply reply = BoardReply.builder()
                     .replyContent(content)
                     .board(board)
                     .user(foundUser)
                     .isClean(1)
                     .replyCreatedAt(LocalDateTime.now())
+                    .subReplies(new ArrayList<>())
                     .build();
 
+            // 이미지가 있는 경우 BoardImg 엔티티 생성
             if (imageUrl != null) {
                 BoardImg boardImg = new BoardImg(imageUrl, null, reply, null);
                 reply.setImage(boardImg);
             }
 
+            // 댓글 저장
             BoardReply savedReply = boardReplyRepository.save(reply);
             return convertToReplyDTO(savedReply);
         } catch (Exception e) {
@@ -84,10 +96,7 @@ public class BoardReplyService {
         UUID requestUserUUID = UUID.fromString(userId);
         log.debug("Request user UUID: {}", requestUserUUID);
 
-        // 추가된 로그: UUID의 문자열 변환 비교
-        log.debug("Reply user ID as String: {}, Request user UUID as String: {}", replyUser.getId().toString(), requestUserUUID.toString());
-
-        // UUID 비교를 명시적으로 String으로 변환하여 비교
+        // UUID 비교
         if (!replyUser.getId().toString().equals(requestUserUUID.toString())) {
             log.error("Authorization failed. Reply user ID: {}, Request user ID: {}", replyUser.getId(), requestUserUUID);
             throw new IllegalArgumentException("You are not authorized to update this reply");
@@ -108,10 +117,8 @@ public class BoardReplyService {
         BoardReply reply = boardReplyRepository.findById(replyId)
                 .orElseThrow(() -> new EntityNotFoundException("Reply not found"));
 
-        // UUID 문자열을 UUID 객체로 변환
         UUID userUUID = UUID.fromString(userId);
 
-        // toString()을 사용하여 UUID 비교
         if (!reply.getUser().getId().toString().equals(userUUID.toString())) {
             throw new IllegalArgumentException("You are not authorized to delete this reply");
         }
@@ -128,15 +135,94 @@ public class BoardReplyService {
 
     private BoardDetailResponseDto.ReplyDTO convertToReplyDTO(BoardReply reply) {
         log.debug("Converting reply to DTO: {}", reply);
+
+        // 서브 리플들을 DTO로 변환
+        List<BoardDetailResponseDto.SubReplyDTO> subReplyDTOs = reply.getSubReplies().stream()
+                .map(subReply -> new BoardDetailResponseDto.SubReplyDTO(
+                        subReply.getId(),
+                        subReply.getSubReplyContent(),
+                        subReply.getSubReplyCreatedAt(),
+                        convertToUserDTO(subReply.getUser()),
+                        subReply.getImage() != null ? subReply.getImage().getImgUrl() : null
+                ))
+                .collect(Collectors.toList());
+
+        // ReplyDTO 생성
         BoardDetailResponseDto.ReplyDTO dto = new BoardDetailResponseDto.ReplyDTO(
                 reply.getId(),
                 reply.getReplyContent(),
                 reply.getReplyCreatedAt(),
                 convertToUserDTO(reply.getUser()),
-                reply.getImage() != null ? reply.getImage().getImgUrl() : null
+                reply.getImage() != null ? reply.getImage().getImgUrl() : null,
+                subReplyDTOs
         );
+
         log.debug("Converted DTO: {}", dto);
         return dto;
+    }
+
+    @Transactional
+    public BoardDetailResponseDto.SubReplyDTO saveSubReply(Long replyId, String content, User user, MultipartFile image) {
+        BoardReply reply = boardReplyRepository.findById(replyId)
+                .orElseThrow(() -> new EntityNotFoundException("Reply not found"));
+
+        BoardSubReply subReply = BoardSubReply.builder()
+                .subReplyContent(content)
+                .boardReply(reply)
+                .user(user)
+                .isClean(1)
+                .build();
+
+        if (image != null && !image.isEmpty()) {
+            // 이미지 저장
+            String imageUrl = null;
+            try {
+                imageUrl = saveImage(image);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            BoardImg boardImg = new BoardImg(imageUrl, null, null, subReply);
+            subReply.setImage(boardImg);
+        }
+
+        BoardSubReply savedSubReply = boardSubReplyRepository.save(subReply);
+        return convertToSubReplyDTO(savedSubReply);
+    }
+
+    @Transactional
+    public BoardDetailResponseDto.SubReplyDTO updateSubReply(Long subReplyId, String content, String userId) {
+        BoardSubReply subReply = boardSubReplyRepository.findById(subReplyId)
+                .orElseThrow(() -> new EntityNotFoundException("SubReply not found"));
+
+        if (!subReply.getUser().getId().toString().equals(userId)) {
+            throw new IllegalArgumentException("You are not authorized to update this sub-reply");
+        }
+
+        subReply.setSubReplyContent(content);
+        BoardSubReply updatedSubReply = boardSubReplyRepository.save(subReply);
+        return convertToSubReplyDTO(updatedSubReply);
+    }
+
+    @Transactional
+    public void deleteSubReply(Long subReplyId, String userId) {
+        BoardSubReply subReply = boardSubReplyRepository.findById(subReplyId)
+                .orElseThrow(() -> new EntityNotFoundException("SubReply not found"));
+
+        if (!subReply.getUser().getId().toString().equals(userId)) {
+            throw new IllegalArgumentException("You are not authorized to delete this sub-reply");
+        }
+
+        boardSubReplyRepository.delete(subReply);
+    }
+
+    private BoardDetailResponseDto.SubReplyDTO convertToSubReplyDTO(BoardSubReply subReply) {
+        return new BoardDetailResponseDto.SubReplyDTO(
+                subReply.getId(),
+                subReply.getSubReplyContent(),
+                subReply.getSubReplyCreatedAt(),
+                convertToUserDTO(subReply.getUser()),
+                subReply.getImage() != null ? subReply.getImage().getImgUrl() : null
+        );
     }
 
     private BoardDetailResponseDto.UserDTO convertToUserDTO(User user) {
