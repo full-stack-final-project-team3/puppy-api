@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
@@ -101,6 +102,58 @@ public class BoardReplyController {
         } catch (Exception e) {
             log.error("Error deleting reply: ", e);
             return ResponseEntity.status(500).body("Failed to delete reply");
+        }
+    }
+
+    //Sub Reply 작성
+    @PostMapping("/{boardId}/comments/{replyId}/subReplies")
+    public ResponseEntity<?> createSubReply(
+            @PathVariable Long boardId,
+            @PathVariable Long replyId,
+            @RequestParam("subReplyContent") String content, // 수정된 부분
+            @RequestParam("user") String userJson,
+            @RequestParam(value = "image", required = false) MultipartFile image) {
+        try {
+            User user = objectMapper.readValue(userJson, User.class);
+            BoardDetailResponseDto.SubReplyDTO newSubReply = boardReplyService.saveSubReply(replyId, content, user, image);
+
+            // 생성 시간을 ISO 8601 형식의 문자열로 변환
+            newSubReply.setSubReplyCreatedAt(LocalDateTime.now());
+
+            return ResponseEntity.ok(newSubReply);
+        } catch (Exception e) {
+            log.error("서브 댓글 생성 중 오류 발생: ", e);
+            return ResponseEntity.status(500).body("서브 댓글 생성에 실패했습니다.");
+        }
+    }
+
+    @PutMapping("/{boardId}/comments/{replyId}/subReplies/{subReplyId}")
+    public ResponseEntity<?> updateSubReply(
+            @PathVariable Long boardId,
+            @PathVariable Long replyId,
+            @PathVariable Long subReplyId,
+            @RequestBody Map<String, Object> payload) {
+        try {
+            String content = (String) payload.get("content");
+            String userId = (String) payload.get("userId");
+            BoardDetailResponseDto.SubReplyDTO updatedSubReply = boardReplyService.updateSubReply(subReplyId, content, userId);
+            return ResponseEntity.ok(updatedSubReply);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Failed to update sub-reply");
+        }
+    }
+
+    @DeleteMapping("/{boardId}/comments/{replyId}/subReplies/{subReplyId}")
+    public ResponseEntity<?> deleteSubReply(
+            @PathVariable Long boardId,
+            @PathVariable Long replyId,
+            @PathVariable Long subReplyId,
+            @RequestParam("userId") String userId) {
+        try {
+            boardReplyService.deleteSubReply(subReplyId, userId);
+            return ResponseEntity.ok().body("Sub-reply deleted successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Failed to delete sub-reply");
         }
     }
 }

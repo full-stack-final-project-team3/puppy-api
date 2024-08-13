@@ -177,7 +177,7 @@ public class BoardService {
         );
     }
 
-    private BoardDetailResponseDto convertToBoardDetailResponseDto(Board board) {
+    public BoardDetailResponseDto convertToBoardDetailResponseDto(Board board) {
         List<String> imageUrls = new ArrayList<>();
         if (board.getImages() != null) {
             imageUrls = board.getImages().stream()
@@ -211,9 +211,24 @@ public class BoardService {
                                         reply.getUser().getProfileUrl(),
                                         reply.getUser().getEmail()
                                 ),
-                                reply.getImage() != null ? reply.getImage().getImgUrl() : null
+                                reply.getImage() != null ? reply.getImage().getImgUrl() : null,
+                                reply.getSubReplies().stream() // 서브 리플 추가 부분
+                                        .<BoardDetailResponseDto.SubReplyDTO>map(subReply -> new BoardDetailResponseDto.SubReplyDTO(
+                                                subReply.getId(),
+                                                subReply.getSubReplyContent(),
+                                                subReply.getSubReplyCreatedAt(),
+                                                new BoardDetailResponseDto.UserDTO(
+                                                        subReply.getUser().getId(),
+                                                        subReply.getUser().getNickname(),
+                                                        subReply.getUser().getProfileUrl(),
+                                                        subReply.getUser().getEmail()
+                                                ),
+                                                subReply.getImage() != null ? subReply.getImage().getImgUrl() : null
+                                        ))
+                                        .collect(Collectors.toList())
                         ))
                         .collect(Collectors.toList())
         );
     }
+
 }
