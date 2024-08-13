@@ -68,7 +68,7 @@ public class TreatsService {
         // 페이징 여부에 따라 처리
         if (pageNo != null && pageNo > 0) {
             // 페이징 처리
-            Pageable pageable = PageRequest.of(pageNo - 1, 6);
+            Pageable pageable = PageRequest.of(pageNo - 1, 4);
             Page<Treats> treatsPage = treatsRepository.findTreats(allergics, dogSize, dogAgeType, pageable, sort);
             treatsList = treatsPage.getContent();
             totalElements = treatsPage.getTotalElements();
