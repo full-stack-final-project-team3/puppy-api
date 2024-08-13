@@ -42,5 +42,18 @@ public class BoardDetailResponseDto {
         private LocalDateTime replyCreatedAt;
         private UserDTO user;
         private String imageUrl;
+        private List<SubReplyDTO> subReplies; // 추가된 부분
     }
+
+    @Getter @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SubReplyDTO {
+        private Long id;
+        private String subReplyContent;
+        private LocalDateTime subReplyCreatedAt;
+        private UserDTO user;
+        private String imageUrl;
+    }
+
 }
