@@ -44,9 +44,10 @@ public class BoardController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getBoard(@PathVariable long id) {
+    public ResponseEntity<?> getBoard(@PathVariable long id, @RequestHeader("Authorization") String token) {
         try {
-            BoardDetailResponseDto boardDetail = boardService.getBoardDetailById(id);
+            String userId = tokenProvider.validateAndGetTokenInfo(token.replace("Bearer ", "")).getUserId();
+            BoardDetailResponseDto boardDetail = boardService.getBoardDetailWithViewCount(id, userId);
             return ResponseEntity.ok().body(boardDetail);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
@@ -92,7 +93,8 @@ public class BoardController {
     public ResponseEntity<?> updateBoard(
             @PathVariable Long id,
             @RequestPart("dto") BoardSaveDto dto,
-            @RequestPart(value = "files", required = false) List<MultipartFile> files,
+            @RequestPart(value = "newFiles", required = false) List<MultipartFile> newFiles,
+            @RequestPart(value = "imagesToDelete", required = false) List<String> imagesToDelete,
             @RequestHeader("Authorization") String token) {
         try {
             String userId = tokenProvider.validateAndGetTokenInfo(token.replace("Bearer ", "")).getUserId();
@@ -101,7 +103,7 @@ public class BoardController {
                         .body(Map.of("error", "You don't have permission to update this board"));
             }
 
-            BoardResponseDto updatedBoard = boardService.updateBoard(id, dto, files);
+            BoardResponseDto updatedBoard = boardService.updateBoard(id, dto, newFiles, imagesToDelete);
             return ResponseEntity.ok().body(updatedBoard);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
