@@ -1,5 +1,6 @@
 package com.yp.puppy.api.entity.shop;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yp.puppy.api.entity.user.User;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -13,14 +14,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
+@Setter
 @Entity
 @Table(name = "subscriptions")
 public class Subscriptions {
 
     @Id
-//    @GenericGenerator(strategy = "uuid2", name = "uuid-generator")
-//    @GeneratedValue(generator = "uuid-generator")
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "subscriptions_id")
@@ -33,11 +32,12 @@ public class Subscriptions {
     private LocalDateTime subscriptionsEndDate;
 
     @OneToOne
-    @JoinColumn(name = "order_id", referencedColumnName = "order_id")
-    private Order order;
+    @JoinColumn(name = "bundle_id", referencedColumnName = "bundle_id")
+    private Bundle bundle;
 
-    @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
-    private User user;
+//    @OneToOne
+//    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+//    @JsonIgnore
+//    private User user;
 
 }

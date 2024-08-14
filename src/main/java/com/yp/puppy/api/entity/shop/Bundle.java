@@ -70,6 +70,12 @@ public class Bundle {
     @JsonIgnore
     private Cart cart;
 
+    @OneToOne
+    @JoinColumn(name = "subscriptions_id")
+    @Setter
+    @JsonIgnore
+    private Subscriptions subscriptions;
+
     public enum SubsType {
         ONE, MONTH3, MONTH6
     }
