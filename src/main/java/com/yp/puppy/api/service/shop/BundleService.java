@@ -28,8 +28,6 @@ public class BundleService {
     private final UserRepository userRepository;
     private final TreatsRepository treatsRepository;
     private final DogRepository dogRepository;
-    private final CartRepository cartRepository;
-    private final CartService cartService;
 
     public void createBundle(String userEmail, String dogId, BundleCreateDto dto) {
 
@@ -50,7 +48,7 @@ public class BundleService {
         Bundle newBundle = Bundle.builder()
                 .user(user)
                 .bundlePrice(29900L)
-                .bundleTitle("강아지 맞춤 간식 패키지")
+                .bundleTitle("강아지 맞춤 펫 푸드 패키지")
                 .dog(dog)
                 .dogName(dog.getDogName())
                 .bundleDogId(dogId)
