@@ -36,6 +36,8 @@ public class Cart {
     @JsonIgnore
     private User user;
 
+    private String purchasedUserId;
+
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Bundle> bundles;
 

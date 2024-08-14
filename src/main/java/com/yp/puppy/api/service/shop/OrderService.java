@@ -46,7 +46,11 @@ public class OrderService {
                 throw new RuntimeException("해당 유저의 장바구니를 찾을 수 없습니다.");
             } else {
                 cart.setCartStatus(CartStatus.ORDERED);
+                cart.setPurchasedUserId(user.getId());
+                cart.setUser(null);
+                user.setCart(null);
                 cartRepository.save(cart);
+                userRepository.save(user);
             }
 
             // 장바구니에서 번들 가져오기
