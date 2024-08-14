@@ -113,24 +113,4 @@ public class CartController {
 
     }
 
-    // 6. 장바구니에서 번들의 구성 수정
-    @PutMapping("/{bundleId}")
-    public ResponseEntity<?> updateBundleInCart(@PathVariable String bundleId, @RequestBody UpdateBundlesDto dto) {
-        if (bundleId == null || bundleId.isEmpty()) {
-            return ResponseEntity.badRequest().body("유효하지 않은 번들 ID입니다.");
-        }
-
-//        try {
-//            cartService.updateBundleInCart(bundleId, dto);
-//            return ResponseEntity.ok().body("번들 구성 수정 성공");
-//        } catch (EntityNotFoundException e) {
-//            log.warn("번들을 찾지 못했습니다.: {}", e.getMessage());
-//            return ResponseEntity.status(404).body("번들을 찾지 못했습니다.");
-//        } catch (Exception e) {
-//            log.error("번들 수정 중 오류 발생: {}", e.getMessage());
-//            return ResponseEntity.status(500).body("서버 오류가 발생했습니다.");
-//        }
-        return null;
-    }
-
 }
