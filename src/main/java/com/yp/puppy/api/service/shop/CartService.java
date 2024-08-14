@@ -120,6 +120,7 @@ public class CartService {
 
         if (dog != null) {
             dog.setBundle(null);
+            dog.setHasBundle(false);
             dogRepository.save(dog);
         }
 
@@ -140,6 +141,7 @@ public class CartService {
         for (Bundle bundle : bundles) {
             bundle.setCart(null);
             bundle.getDog().setBundle(null);
+            bundle.getDog().setHasBundle(false);
         }
 
         User user = cart.getUser();
