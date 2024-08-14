@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -26,34 +25,26 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final CartRepository cartRepository;
     private final UserRepository userRepository;
-    private final BundleRepository bundleRepository;
 
     public Order createOrder(OrderDto orderDto) {
         try {
             // 사용자 가져오기
-            User user = userRepository.findById(orderDto.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
+            User user = userRepository.findById(orderDto.getUserId())
+                    .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없다"));
 
-            // 더미 번들 생성
-            Bundle dummyBundle = Bundle.builder()
-                    .bundleTitle("세상에 나쁜 개는 없다 패키지")
-                    .bundlePrice(887711L)
-                    .user(user)
-                    .build();
-            // 반들 저장
-            Bundle savedBundle = bundleRepository.save(dummyBundle);
+            // 사용자의 장바구니 가져오기
+            Cart cart = user.getCart();
+            if (cart == null) {
+                throw new RuntimeException("해당 유저의 장바구니를 찾을 수 없습니다.");
+            }
 
-            // 더미 장바구니 가져오는거 만약 업스면 더미 데이터를 사용해라
-            Cart cart = cartRepository.findById(orderDto.getCartId()).orElseGet(() -> {
-                Cart dummyCart = new Cart();
-                dummyCart.setId(orderDto.getCartId());
-                dummyCart.setTotalPrice(savedBundle.getBundlePrice());
-                dummyCart.setBundles(Collections.singletonList(savedBundle));
-                dummyCart.setCartStatus(Cart.CartStatus.PENDING);
-                dummyCart.setUser(user);
-                return dummyCart;
-            });
-            // 카트 저장
-            Cart savedCart = cartRepository.save(cart);
+
+            // 장바구니에서 번들 가져오기
+            if (cart.getBundles().isEmpty()) {
+                throw new RuntimeException("장바구니에 번들이 없습니다.");
+            }
+
+            Bundle bundle = cart.getBundles().get(0); // 첫 번째 번들 가져오기
 
             // 주문 객체 생성
             Order order = Order.builder()
@@ -64,16 +55,16 @@ public class OrderService {
                     .addressDetail(orderDto.getAddressDetail())
                     .orderStatus(Order.OrderStatus.PAID)
                     .user(user)
-                    .cart(savedCart)
+                    .cart(cart)
                     .build();
+
             // 주문 저장
             orderRepository.save(order);
 
-            // 주문 객체와 함께 번들 정보 반환
             return order;
         } catch (Exception e) {
-            log.error("Order creation failed", e);
-            throw new RuntimeException("Order creation failed", e);
+            log.error("주문 실패", e);
+            throw new RuntimeException("주문 실패 : " + e.getMessage(), e);
         }
     }
 }
