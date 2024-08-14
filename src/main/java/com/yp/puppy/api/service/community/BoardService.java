@@ -5,8 +5,10 @@ import com.yp.puppy.api.dto.request.community.BoardSaveDto;
 import com.yp.puppy.api.dto.response.community.BoardDetailResponseDto;
 import com.yp.puppy.api.entity.community.Board;
 import com.yp.puppy.api.entity.community.BoardImg;
+import com.yp.puppy.api.entity.community.BoardView;
 import com.yp.puppy.api.entity.user.User;
 import com.yp.puppy.api.repository.community.BoardRepository;
+import com.yp.puppy.api.repository.community.BoardViewRepository;
 import com.yp.puppy.api.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +34,7 @@ import java.util.stream.Collectors;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
+    private final BoardViewRepository boardViewRepository;
 
     @Value("${file.upload-dir}")
     private String uploadDir;
@@ -124,7 +127,7 @@ public class BoardService {
     }
 
     @Transactional
-    public BoardResponseDto updateBoard(Long boardId, BoardSaveDto dto, List<MultipartFile> files) {
+    public BoardResponseDto updateBoard(Long boardId, BoardSaveDto dto, List<MultipartFile> files, List<String> imagesToDelete) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new EntityNotFoundException("Board not found with id: " + boardId));
 
@@ -136,9 +139,12 @@ public class BoardService {
         board.setBoardContent(dto.getBoardContent());
         board.setBoardUpdatedAt(LocalDateTime.now());
 
+        // 이미지 삭제 로직 추가
+        if (imagesToDelete != null && !imagesToDelete.isEmpty()) {
+            board.getImages().removeIf(img -> imagesToDelete.contains(img.getImgUrl()));
+        }
+
         if (files != null && !files.isEmpty()) {
-            // 기존 이미지 삭제
-            board.getImages().clear();
             // 새 이미지 추가
             for (MultipartFile file : files) {
                 BoardImg image = saveImage(file, board);
@@ -231,4 +237,38 @@ public class BoardService {
         );
     }
 
+    //조회수
+    public BoardDetailResponseDto getBoardDetailWithViewCount(long id, String userId) {
+        Board board = boardRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Board not found with id: " + id));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
+
+        // 자신의 글인지 확인
+        boolean isOwnPost = board.getUser().getId().equals(userId);
+
+        if (!isOwnPost) {  // 자신의 글이 아닐 경우에만 조회수 로직 실행
+            LocalDateTime oneDayAgo = LocalDateTime.now().minusDays(1);
+
+            BoardView boardView = boardViewRepository.findByUserAndBoard(user, board)
+                    .orElse(null);
+
+            if (boardView == null || boardView.getLastViewedAt().isBefore(oneDayAgo)) {
+                board.setViewCount(board.getViewCount() + 1);
+                boardRepository.save(board);
+
+                if (boardView == null) {
+                    boardView = new BoardView();
+                    boardView.setUser(user);
+                    boardView.setBoard(board);
+                }
+                boardView.setLastViewedAt(LocalDateTime.now());
+                boardViewRepository.save(boardView);
+            }
+        }
+
+        return convertToBoardDetailResponseDto(board);
+    }
+    //
 }
