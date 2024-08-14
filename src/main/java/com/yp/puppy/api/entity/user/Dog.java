@@ -105,6 +105,11 @@ public class Dog {
     @JsonIgnore
     private Bundle bundle;
 
+    @Setter
+    private boolean hasBundle;
+
+    @Setter
+    private boolean hasSubs;
 //    @PrePersist
 //    private void prePersist() {
 //        if (this.age == 0) {

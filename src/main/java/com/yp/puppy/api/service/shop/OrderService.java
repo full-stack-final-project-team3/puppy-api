@@ -6,11 +6,13 @@ import com.yp.puppy.api.entity.shop.Cart.CartStatus;
 import com.yp.puppy.api.entity.shop.Order;
 import com.yp.puppy.api.entity.shop.Bundle;
 import com.yp.puppy.api.entity.shop.Subscriptions;
+import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.entity.user.User;
 import com.yp.puppy.api.repository.shop.CartRepository;
 import com.yp.puppy.api.repository.shop.OrderRepository;
 import com.yp.puppy.api.repository.shop.BundleRepository;
 import com.yp.puppy.api.repository.shop.SubscriptionsRepository;
+import com.yp.puppy.api.repository.user.DogRepository;
 import com.yp.puppy.api.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +35,7 @@ public class OrderService {
     private final UserRepository userRepository;
     private final BundleRepository bundleRepository;
     private final SubscriptionsRepository subscriptionsRepository;
+    private final DogRepository dogRepository;
 
     public Order createOrder(OrderDto orderDto) {
         try {
@@ -59,8 +62,11 @@ public class OrderService {
             } else {
                 List<Bundle> bundles = cart.getBundles();
                 for (Bundle bundle : bundles) {
+                    Dog dog = bundle.getDog();
+                    dog.setHasSubs(true);
                     bundle.setBundleStatus(BundleStatus.ORDERED);
                     Subscriptions subs = setSubsDateBundle(bundle);
+                    dogRepository.save(dog);
                     subscriptionsRepository.save(subs);
                     bundleRepository.save(bundle);
                 }

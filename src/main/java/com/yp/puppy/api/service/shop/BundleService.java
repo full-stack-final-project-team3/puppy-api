@@ -63,6 +63,7 @@ public class BundleService {
 
         log.info("@@@@@@@@@@@@@@@@@@@@savedBundle = \n\n\n {}", savedBundle);
 
+        dog.setHasBundle(true);
         dog.setBundle(savedBundle);
 
         dogRepository.save(dog);
