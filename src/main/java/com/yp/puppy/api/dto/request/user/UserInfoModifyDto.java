@@ -13,6 +13,7 @@ public class UserInfoModifyDto {
     private String nickname;
     private String password;
     private String address;
+    private String detailAddress;
     private String phoneNumber;
     private String realName;
     private String profileUrl;
