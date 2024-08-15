@@ -34,7 +34,10 @@ public class DogService {
 
         User foundUser = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("유저 낫 파운드!"));
         Dog dog = dto.toEntity(foundUser);
+        log.debug("foundUser -> {}", foundUser);
+        log.debug("savedog -> {}", dog);
         dogRepository.save(dog);
+        log.debug("저장 완료");
         return dog;
     }
 
