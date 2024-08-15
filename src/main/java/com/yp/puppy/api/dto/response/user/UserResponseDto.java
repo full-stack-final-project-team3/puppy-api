@@ -27,6 +27,7 @@ public class UserResponseDto {
     private Integer point;
     private String password; // - 0807 추가
     private String address;
+    private String detailAddress;
     private String realName;
     private String profileUrl;
     private boolean hasDogInfo;

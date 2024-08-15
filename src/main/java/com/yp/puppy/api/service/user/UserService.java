@@ -278,7 +278,7 @@ public class UserService {
         String password = dto.getPassword();
         String encodedPassword = encoder.encode(password);
 
-        user.confirm(encodedPassword, dto.getNickname(), dto.getAddress(), dto.getPhoneNumber());
+        user.confirm(encodedPassword, dto.getNickname(), dto.getAddress(), dto.getPhoneNumber(), dto.getDetailAddress());
 //        user.setNickname(dto.getNickname());
         log.debug("saved user : {}", user);
         userRepository.save(user);
@@ -306,6 +306,7 @@ public class UserService {
                 .noticeCount(foundUser.getNoticeCount())
                 .realName(foundUser.getRealName())
                 .address(foundUser.getAddress())
+                .detailAddress(foundUser.getDetailAddress())
                 .warningCount(foundUser.getWarningCount())
                 .dogList(foundUser.getDogList())
                 .provider(foundUser.getProvider())
@@ -338,6 +339,7 @@ public class UserService {
         foundUser.setRealName(dto.getRealName());
         foundUser.setProfileUrl(dto.getProfileUrl());
         foundUser.setPoint(dto.getPoint());
+        foundUser.setDetailAddress(dto.getDetailAddress());
         for (Dog dog : foundList) {
             foundUser.addDog(dog);
         }
