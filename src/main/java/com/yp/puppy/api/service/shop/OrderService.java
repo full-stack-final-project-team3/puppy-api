@@ -110,33 +110,21 @@ public class OrderService {
     }
 
 
-    // 주문 취소 메서드 추가
-//    public void cancelOrder(String orderId) {
-//        // 주문 조회
-//        Order order = orderRepository.findById(orderId)
-//                .orElseThrow(() -> new RuntimeException("주문을 찾을 없다"));
-//
-//        // 주문 상태를 취소로 변경
-//        order.setOrderStatus(Order.OrderStatus.CANCELLED);
-//
-//        // 변경된 주문 저장
-//        orderRepository.save(order);
-//    }
+    // 주문 취소 메서드 추가}
+    public void cancelOrder(String orderId) {
+        // 로그 추가: 주문 아이디 확인
+        log.info("해당 아이디로 주문을 취소하려고 한다!!아오!! : {}", orderId);
 
-//    public void cancelOrder(String orderId) {
-//        // 로그 추가: 주문 아이디 확인
-//        log.info("해당 아이디로 주문을 취소하려고 한다!!아오!! : {}", orderId);
-//
-//        // 주문 조회
-//        Order order = orderRepository.findById(orderId)
-//                .orElseThrow(() -> new RuntimeException("왜!!!!주문을 못찾는데 아오진짜ㅓ"));
-//
-//        // 주문 상태를 취소로 변경
-//        order.setOrderStatus(Order.OrderStatus.CANCELLED);
-//
-//        // 변경된 주문 저장
-//        orderRepository.save(order);
-//    }
+        // 주문 조회
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("왜!!!!주문을 못찾는데 아오진짜ㅓ"));
+
+        // 주문 상태를 취소로 변경
+        order.setOrderStatus(Order.OrderStatus.CANCELLED);
+
+        // 변경된 주문 저장
+        orderRepository.save(order);
+    }
 
 
     public OrderDetailResponse getOrderDetail(String orderId) {

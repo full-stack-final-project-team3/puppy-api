@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class OrderResponse {
     private String orderId;
+    private Order.OrderStatus orderStatus;
     private LocalDateTime orderDateTime;
     private Long totalPrice;  // 롱타입으로 변경함
     //private BundleResponse bundle;
@@ -27,6 +28,7 @@ public class OrderResponse {
     // 오다  객체로부터 오더리스폰스 객체를 생성하는 생송자
     public OrderResponse(Order order) {
         this.orderId = order.getId();  // Order 객체에서 주문 ID 가져오기
+        this.orderStatus = order.getOrderStatus();
         this.orderDateTime = order.getOrderDateTime();  // 오더 객체에서 주문 날짜랑 시간 가져옴
         this.totalPrice = order.getCart().getTotalPrice();  // Cart 객체에서 총 가격 가죠옴
         // Cart 객체에 포함된 모든 번들을 BundleResponse 리스트로 변환
@@ -62,7 +64,6 @@ public class OrderResponse {
                     .collect(Collectors.toList());  // 변환된 TreatResponse 객체들을 리스트로 수집함
         }
 
-        // 내부 스태틳 클래스 트릿리스폰스
         @Getter
         @Setter
         @NoArgsConstructor
@@ -71,9 +72,8 @@ public class OrderResponse {
             private String treatId;
             private String treatTitle;
 
-            // 트릿 객체로부터 트릿리스폰스 객체를 생성하는 생성자~~~~~~~
             public TreatResponse(Treats treats) {
-                this.treatId = treats.getId();  // 트릿 객체에서 간식 아이디 가져오
+                this.treatId = treats.getId();
                 this.treatTitle = treats.getTreatsTitle();
             }
         }

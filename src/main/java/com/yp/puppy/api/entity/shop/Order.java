@@ -7,6 +7,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@Setter
 @Getter
 @ToString(exclude = {"user", "cart"})
 @EqualsAndHashCode(of = "id")
@@ -70,8 +71,5 @@ public class Order {
 
 
 
-//    public void setOrderStatus(OrderStatus orderStatus) {
-//        this.orderStatus = orderStatus;
-//    }
 
 }

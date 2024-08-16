@@ -56,15 +56,15 @@ public class OrderController {
         }
     }
 
-    //주뭉 취소
-//    @PostMapping("/cancel/{orderId}")
-//    public String cancelOrder(@PathVariable String orderId) {
-//        try {
-//            orderService.cancelOrder(orderId);
-//            return "주문이 취소됨";
-//        } catch (Exception e) {
-//            log.error("주문 취소 실패함", e);
-//            throw new RuntimeException("주문 취소 실패함");
-//        }
-//    }
+    //주문 취소
+    @PostMapping("/cancel/{orderId}")
+    public String cancelOrder(@PathVariable String orderId) {
+        try {
+            orderService.cancelOrder(orderId);
+            return "주문이 취소됨";
+        } catch (Exception e) {
+            log.error("주문 취소 실패함", e);
+            throw new RuntimeException("주문 취소 실패함");
+        }
+    }
 }

@@ -25,17 +25,17 @@ public class OrderDetailResponse {
 
     // 오다  객체로부터 오더리스폰스 객체를 생성하는 생송자
     public OrderDetailResponse(Order order) {
-        this.orderId = order.getId();  // Order 객체에서 주문 ID 가져오기
-        this.orderDateTime = order.getOrderDateTime();  // 오더 객체에서 주문 날짜랑 시간 가져옴
-        this.address = order.getAddress();  // Cart 객체에서 총 가격 가죠옴
-        this.addressDetail = order.getAddressDetail(); // 여기서 값 설정
-        this.receiverAddress = order.getAddress() +" "+ order.getAddressDetail();  // Cart 객체에서 총 가격 가죠옴
-        this.orderStatus = order.getOrderStatus(); // 여기서 값 설정
-        this.deliveryRequest = order.getDeliveryRequest(); // 여기서 값 설정
-        this.customRequest = order.getCustomRequest(); // 여기서 값 설정
-        this.receiverName = order.getReceiverName(); // 여기서 값 설정
-        this.receiverPhone = order.getReceiverPhone(); // 여기서 값 설정
-        this.point = order.getPoint(); // 여기서 값 설정
-        this.totalPrice = order.getTotalPrice(); // 여기서 값 설정
+        this.orderId = order.getId();
+        this.orderDateTime = order.getOrderDateTime();
+        this.address = order.getAddress();
+        this.addressDetail = order.getAddressDetail();
+        this.receiverAddress = order.getAddress() +" "+ order.getAddressDetail();
+        this.orderStatus = order.getOrderStatus();
+        this.deliveryRequest = order.getDeliveryRequest();
+        this.customRequest = order.getCustomRequest();
+        this.receiverName = order.getReceiverName();
+        this.receiverPhone = order.getReceiverPhone();
+        this.point = order.getPoint();
+        this.totalPrice = order.getTotalPrice();
     }
 }
