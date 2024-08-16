@@ -1,6 +1,7 @@
 package com.yp.puppy.api.service.shop;
 
 import com.yp.puppy.api.dto.request.shop.OrderDto;
+import com.yp.puppy.api.dto.response.shop.OrderDetailResponse;
 import com.yp.puppy.api.dto.response.shop.OrderResponse; // 기존 OrderResponse DTO 사용
 import com.yp.puppy.api.entity.shop.Cart;
 import com.yp.puppy.api.entity.shop.Cart.CartStatus;
@@ -83,6 +84,8 @@ public class OrderService {
                     .id(null)
                     .orderDateTime(LocalDateTime.now())
                     .postNum(orderDto.getPostNum())
+                    .receiverName(orderDto.getReceiverName())
+                    .receiverPhone(orderDto.getReceiverPhone())
                     .address(orderDto.getAddress())
                     .addressDetail(orderDto.getAddressDetail())
                     .orderStatus(Order.OrderStatus.PAID)  // 주문 상태를 PAID 로 설정
@@ -90,6 +93,8 @@ public class OrderService {
                     .cart(cart)
                     .deliveryRequest(orderDto.getDeliveryRequest()) // 배송 요청 사항 설정
                     .customRequest(orderDto.getCustomRequest())     // 기타 요청 사항 설정
+                    .point(orderDto.getPointUsage())
+                    .totalPrice(orderDto.getTotalPrice())
                     .build();
 //            log.info("Saving Order: DeliveryRequest = {}, CustomRequest = {}",
 //                    order.getDeliveryRequest(), order.getCustomRequest()); // 저장 직전 데이터 확인
@@ -132,6 +137,14 @@ public class OrderService {
 //        // 변경된 주문 저장
 //        orderRepository.save(order);
 //    }
+
+
+    public OrderDetailResponse getOrderDetail(String orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없디."));
+
+        return new OrderDetailResponse(order);
+    }
 
     public List<OrderResponse> getOrderHistory(String userId) {
         return orderRepository.findByUser(userRepository.findById(userId)

@@ -1,6 +1,7 @@
 package com.yp.puppy.api.controller.shop;
 
 import com.yp.puppy.api.dto.request.shop.OrderDto;
+import com.yp.puppy.api.dto.response.shop.OrderDetailResponse;
 import com.yp.puppy.api.dto.response.shop.OrderResponse;
 import com.yp.puppy.api.entity.shop.Order;
 import com.yp.puppy.api.entity.shop.Bundle;
@@ -31,6 +32,17 @@ public class OrderController {
         } catch (Exception e) {
             log.error("주문 생성 실패", e);
             throw new RuntimeException("주문 생성 실패~");
+        }
+    }
+
+    @GetMapping("/{orderId}")
+    public OrderDetailResponse orderDetail(@PathVariable(value = "orderId") String orderId) {
+        try {
+            log.info("orderDetail: {}", orderId); // 전달된 DTO 확인 로그
+            return orderService.getOrderDetail(orderId);
+        } catch (Exception e) {
+            log.error("주문 내역을 찾지 못함", e);
+            throw new RuntimeException("주문 내역을 찾지 못함");
         }
     }
 

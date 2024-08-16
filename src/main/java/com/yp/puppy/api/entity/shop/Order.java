@@ -59,6 +59,17 @@ public class Order {
     private String customRequest; // 기타 요청 사항
 
 
+    @Column(nullable = false)
+    private String receiverName; //받는 사람 이름
+
+    @Column(nullable = false)
+    private String receiverPhone; //받는 사람 연락처
+
+    private Long point; //포인트 사용
+    private Long totalPrice; //총금액
+
+
+
 //    public void setOrderStatus(OrderStatus orderStatus) {
 //        this.orderStatus = orderStatus;
 //    }
