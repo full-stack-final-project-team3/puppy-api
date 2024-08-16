@@ -61,7 +61,6 @@ public class HotelOneDto {
         this.location = hotel.getLocation();
         this.rulesPolicy = hotel.getRulesPolicy();
         this.cancelPolicy = hotel.getCancelPolicy();
-        this.price = hotel.getPrice();
         this.phoneNumber = hotel.getPhoneNumber();
         this.hotelImages = hotel.getImages().stream()
                 .map(ImageDto::new)

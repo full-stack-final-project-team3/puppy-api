@@ -53,7 +53,6 @@ public class HotelSaveDto {
                 .location(this.location)
                 .rulesPolicy(this.rulesPolicy)
                 .cancelPolicy(this.cancelPolicy)
-                .price(this.price)
                 .phoneNumber(this.phoneNumber)
                 .build();
 

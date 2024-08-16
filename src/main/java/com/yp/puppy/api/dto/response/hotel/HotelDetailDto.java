@@ -34,7 +34,6 @@ public class HotelDetailDto {
         this.name = hotel.getName();
         this.description = hotel.getDescription();
         this.location = hotel.getLocation();
-        this.price = hotel.getPrice();
         this.phoneNumber = hotel.getPhoneNumber();
         this.hotelImages = hotel.getImages();
         this.businessOwner = hotel.getBusinessOwner();

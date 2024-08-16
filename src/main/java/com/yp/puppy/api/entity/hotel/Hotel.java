@@ -48,9 +48,6 @@ public class Hotel {
     private String cancelPolicy; // 취소 규정
 
     @Column(nullable = false)
-    private long price; // 호텔 가격
-
-    @Column(nullable = false)
     private String phoneNumber; // 호텔 전화번호
 
     @Setter
@@ -85,7 +82,6 @@ public class Hotel {
         this.location = dto.getLocation();
         this.rulesPolicy = dto.getRulesPolicy();
         this.cancelPolicy = dto.getCancelPolicy();
-        this.price = dto.getPrice();
         this.phoneNumber = dto.getPhoneNumber();
         updateImages(dto.getHotelImages());
     }
