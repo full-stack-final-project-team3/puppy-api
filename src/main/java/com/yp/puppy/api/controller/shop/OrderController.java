@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/shop/orders")
 @CrossOrigin(origins = "http://localhost:8888")
@@ -21,41 +23,36 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<?> createOrder(@RequestBody OrderDto orderDto) {
+    public OrderResponse createOrder(@RequestBody OrderDto orderDto) {
         try {
+            log.info("Received OrderDto: {}", orderDto); // 전달된 DTO 확인 로그
             Order order = orderService.createOrder(orderDto);
-            Bundle bundle = order.getCart().getBundles().get(0); // 첫 번째 번들 가져오기
-            return new ResponseEntity<>(new OrderResponse(order, bundle), HttpStatus.CREATED);
+            return new OrderResponse(order);
         } catch (Exception e) {
-            log.error("Order creation failed", e);
-            return new ResponseEntity<>("Order creation failed", HttpStatus.INTERNAL_SERVER_ERROR);
+            log.error("주문 생성 실패", e);
+            throw new RuntimeException("주문 생성 실패~");
         }
     }
 
-//    private static class OrderResponse {
-//        private Order order;
-//        private Bundle bundle;
-//
-//        public OrderResponse(Order order, Bundle bundle) {
-//            this.order = order;
-//            this.bundle = bundle;
-//        }
-//
-//        // Getters and setters
-//        public Order getOrder() {
-//            return order;
-//        }
-//
-//        public void setOrder(Order order) {
-//            this.order = order;
-//        }
-//
-//        public Bundle getBundle() {
-//            return bundle;
-//        }
-//
-//        public void setBundle(Bundle bundle) {
-//            this.bundle = bundle;
+    @GetMapping("/user/{userId}")
+    public List<OrderResponse> getOrderHistory(@PathVariable String userId) {
+        try {
+            return orderService.getOrderHistory(userId);
+        } catch (Exception e) {
+            log.error("주문 내역을 찾지 못함", e);
+            throw new RuntimeException("주문 내역을 찾지 못함");
+        }
+    }
+
+    //주뭉 취소
+//    @PostMapping("/cancel/{orderId}")
+//    public String cancelOrder(@PathVariable String orderId) {
+//        try {
+//            orderService.cancelOrder(orderId);
+//            return "주문이 취소됨";
+//        } catch (Exception e) {
+//            log.error("주문 취소 실패함", e);
+//            throw new RuntimeException("주문 취소 실패함");
 //        }
 //    }
 }

@@ -20,5 +20,7 @@ public class OrderDto {
     private String address;
     private String addressDetail;
     private String phoneNumber;
+    private String deliveryRequest; // 배송 요청 사항 추가
+    private String customRequest;    // 기타 요청 사항 추가
 
 }

@@ -19,8 +19,6 @@ import java.time.LocalDateTime;
 public class Order {
 
     @Id
-//    @GenericGenerator(strategy = "uuid2", name = "uuid-generator")
-//    @GeneratedValue(generator = "uuid-generator")
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "order_id")
@@ -38,6 +36,7 @@ public class Order {
     @Column(nullable = false)
     private String addressDetail;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OrderStatus orderStatus;
 
@@ -55,5 +54,13 @@ public class Order {
 
     @Column(name = "delivery_request")
     private String deliveryRequest; // 배송 요청 사항
+
+    @Column(name = "custom_request")
+    private String customRequest; // 기타 요청 사항
+
+
+//    public void setOrderStatus(OrderStatus orderStatus) {
+//        this.orderStatus = orderStatus;
+//    }
 
 }
