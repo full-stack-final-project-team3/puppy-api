@@ -22,6 +22,7 @@ public class BoardResponseDto {
     private int viewCount;
     private int isClean;
     private UserDTO user;
+    private int replyCount; //
 
     @Getter
     @Setter

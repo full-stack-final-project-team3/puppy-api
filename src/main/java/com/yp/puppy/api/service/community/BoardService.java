@@ -179,7 +179,8 @@ public class BoardService {
                         board.getUser().getNickname(),
                         board.getUser().getProfileUrl(),
                         board.getUser().getEmail()
-                )
+                ),
+                board.getReplies().size()  // 댓글 수 추가
         );
     }
 
@@ -296,33 +297,42 @@ public class BoardService {
 
 
     //조회수
-    public BoardDetailResponseDto getBoardDetailWithViewCount(long id, String userId) {
+    public BoardDetailResponseDto getBoardDetailWithViewCount(Long id, String userId) {
+        // ID가 null이거나 0보다 작으면 그냥 조회만 하고 넘어갑니다.
+        if (id == null || id <= 0) {
+            // ID가 유효하지 않은 경우에도 게시글 조회
+            throw new IllegalArgumentException("ID must not be null or less than or equal to zero");
+        }
+
         Board board = boardRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Board not found with id: " + id));
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
+        // 비회원인 경우 userId는 null이므로, 조회수 증가 로직은 실행하지 않음
+        if (userId != null) {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
 
-        // 자신의 글인지 확인
-        boolean isOwnPost = board.getUser().getId().equals(userId);
+            // 자신의 글인지 확인
+            boolean isOwnPost = board.getUser().getId().equals(userId);
 
-        if (!isOwnPost) {  // 자신의 글이 아닐 경우에만 조회수 로직 실행
-            LocalDateTime oneDayAgo = LocalDateTime.now().minusDays(1);
+            if (!isOwnPost) {  // 자신의 글이 아닐 경우에만 조회수 로직 실행
+                LocalDateTime oneDayAgo = LocalDateTime.now().minusDays(1);
 
-            BoardView boardView = boardViewRepository.findByUserAndBoard(user, board)
-                    .orElse(null);
+                BoardView boardView = boardViewRepository.findByUserAndBoard(user, board)
+                        .orElse(null);
 
-            if (boardView == null || boardView.getLastViewedAt().isBefore(oneDayAgo)) {
-                board.setViewCount(board.getViewCount() + 1);
-                boardRepository.save(board);
+                if (boardView == null || boardView.getLastViewedAt().isBefore(oneDayAgo)) {
+                    board.setViewCount(board.getViewCount() + 1);
+                    boardRepository.save(board);
 
-                if (boardView == null) {
-                    boardView = new BoardView();
-                    boardView.setUser(user);
-                    boardView.setBoard(board);
+                    if (boardView == null) {
+                        boardView = new BoardView();
+                        boardView.setUser(user);
+                        boardView.setBoard(board);
+                    }
+                    boardView.setLastViewedAt(LocalDateTime.now());
+                    boardViewRepository.save(boardView);
                 }
-                boardView.setLastViewedAt(LocalDateTime.now());
-                boardViewRepository.save(boardView);
             }
         }
 
