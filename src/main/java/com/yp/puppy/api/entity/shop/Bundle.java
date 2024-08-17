@@ -43,7 +43,6 @@ public class Bundle {
             joinColumns = @JoinColumn(name = "bundle_id"),
             inverseJoinColumns = @JoinColumn(name = "treats_id")
     )
-//    @JsonManagedReference
     private List<Treats> treats = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -68,7 +67,7 @@ public class Bundle {
 
     private LocalDateTime subscriptionsEndDate;
 
-    private int subscriptionsCycle = 1;
+    private int subscriptionsCycle;
 
     private BundleStatus bundleStatus;
 
