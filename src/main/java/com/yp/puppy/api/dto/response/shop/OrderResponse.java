@@ -3,6 +3,7 @@ package com.yp.puppy.api.dto.response.shop;
 import com.yp.puppy.api.entity.shop.Order;
 import com.yp.puppy.api.entity.shop.Bundle;
 import com.yp.puppy.api.entity.shop.Treats;
+import com.yp.puppy.api.entity.shop.TreatsPic;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -71,10 +72,16 @@ public class OrderResponse {
         public static class TreatResponse {
             private String treatId;
             private String treatTitle;
+            private String treatUrl;
 
             public TreatResponse(Treats treats) {
+                TreatsPic picture = treats.getTreatsPics().get(0);
+                //app 에 cartContent.js 간식 이미지 경로 때문에 리
+                String url = picture.getTreatsPic().replace("/local", "/treats/images");
+
                 this.treatId = treats.getId();
                 this.treatTitle = treats.getTreatsTitle();
+                this.treatUrl = url;
             }
         }
     }

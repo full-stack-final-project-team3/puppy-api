@@ -156,6 +156,10 @@ public class ReviewService {
         return reviewRepository.findAll();
     }
 
+    public List<Review> findAllTreatReviews(String treatId) {
+        return reviewRepository.findByTreatsId(treatId);
+    }
+
     public Review findReviewById(String id) {
         return reviewRepository.findById(id).orElse(null);
     }
