@@ -44,13 +44,20 @@ public class BoardController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getBoard(@PathVariable long id, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<?> getBoard(@PathVariable long id, @RequestHeader(value = "Authorization", required = false) String token) {
         try {
-            String userId = tokenProvider.validateAndGetTokenInfo(token.replace("Bearer ", "")).getUserId();
-            BoardDetailResponseDto boardDetail = boardService.getBoardDetailWithViewCount(id, userId);
+            BoardDetailResponseDto boardDetail;
+            if (token != null && !token.isEmpty()) {
+                String userId = tokenProvider.validateAndGetTokenInfo(token.replace("Bearer ", "")).getUserId();
+                boardDetail = boardService.getBoardDetailWithViewCount(id, userId);
+            } else {
+                boardDetail = boardService.getBoardDetailWithViewCount(id, null);
+            }
             return ResponseEntity.ok().body(boardDetail);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            log.error("Error fetching board details: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "게시물 정보를 가져오는 중 오류가 발생했습니다: " + e.getMessage()));
         }
     }
 
