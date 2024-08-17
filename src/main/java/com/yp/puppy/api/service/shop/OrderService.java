@@ -3,7 +3,7 @@ package com.yp.puppy.api.service.shop;
 import com.yp.puppy.api.dto.request.shop.OrderDto;
 import com.yp.puppy.api.dto.response.shop.OrderDetailResponse;
 import com.yp.puppy.api.dto.response.shop.OrderResponse; // 기존 OrderResponse DTO 사용
-import com.yp.puppy.api.entity.shop.Cart;
+import com.yp.puppy.api.entity.shop.*;
 import com.yp.puppy.api.entity.shop.Cart.CartStatus;
 import com.yp.puppy.api.entity.shop.Order;
 import com.yp.puppy.api.entity.shop.Bundle;
@@ -12,6 +12,7 @@ import com.yp.puppy.api.entity.user.User;
 import com.yp.puppy.api.repository.shop.CartRepository;
 import com.yp.puppy.api.repository.shop.OrderRepository;
 import com.yp.puppy.api.repository.shop.BundleRepository;
+import com.yp.puppy.api.repository.shop.*;
 import com.yp.puppy.api.repository.user.DogRepository;
 import com.yp.puppy.api.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +22,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors; // Stream API 사용을 위한 import
 
 import static com.yp.puppy.api.entity.shop.Bundle.*;
+import static com.yp.puppy.api.entity.shop.QOrder.order;
 
 @Service
 @Slf4j
@@ -37,6 +40,7 @@ public class OrderService {
     private final UserRepository userRepository;
     private final BundleRepository bundleRepository;
     private final DogRepository dogRepository;
+    private final ReviewRepository reviewRepository;
 
     public List<Order> getAllOrders() {
         return orderRepository.findAll(); // 모든 번들 가져오기
@@ -61,7 +65,7 @@ public class OrderService {
                         // 사이클 증가
                         bundle.setSubscriptionsCycle(bundle.getSubscriptionsCycle() + 1);
                     }
-                    
+
                     // 업데이트된 번들 저장
                     bundleRepository.save(bundle);
 
@@ -84,15 +88,19 @@ public class OrderService {
                     .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없다"));
 
             // 사용자의 장바구니 가져오기
-            Cart cart = cartRepository.findById(orderDto.getCartId()).orElseThrow();
+            Cart cart = user.getCart();
+            //Cart cart = cartRepository.findById(orderDto.getCartId()).orElseThrow();
 
             if (cart == null) {
                 throw new RuntimeException("해당 유저의 장바구니를 찾을 수 없습니다.");
             } else {
+                Integer point = user.getPoint() - orderDto.getTotalPrice().intValue();
+
                 cart.setCartStatus(CartStatus.ORDERED);
                 cart.setPurchasedUserId(user.getId());
                 cart.setUser(null);
                 user.setCart(null);
+                user.setPoint(point);
                 cartRepository.save(cart);
                 userRepository.save(user);
             }
@@ -129,6 +137,8 @@ public class OrderService {
                     .point(orderDto.getPointUsage())
                     .totalPrice(orderDto.getTotalPrice())
                     .build();
+//            log.info("Saving Order: DeliveryRequest = {}, CustomRequest = {}",
+//                    order.getDeliveryRequest(), order.getCustomRequest()); // 저장 직전 데이터 확인
 
             // 주문 저장
             orderRepository.save(order);
@@ -166,12 +176,40 @@ public class OrderService {
     }
 
     public List<OrderResponse> getOrderHistory(String userId) {
-
+        /*
         return orderRepository.findByUser(userRepository.findById(userId)
                         .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없디.")))
                 .stream()
                 .map(OrderResponse::new)
                 .collect(Collectors.toList());
+        */
+
+        List<Order> orders = orderRepository.findByUserIdOrderByOrderDateTimeDesc(userId);
+
+        List<OrderResponse> orderList = orders.stream().map(order -> {
+            String orderId = order.getId();
+            List<Bundle> bundleList = order.getCart().getBundles();
+
+            List<String> dogIdList = new ArrayList<>();
+            List<String> treatIdList = new ArrayList<>();
+
+            for(Bundle bundle : bundleList) {
+                String dogId = bundle.getBundleDogId();
+                List<Treats> treatList = bundle.getTreats();
+
+                for(Treats treat : treatList) {
+                    treatIdList.add(treat.getId());
+                }
+
+                dogIdList.add(dogId);
+            }
+
+            List<Review> reviewList = reviewRepository.findByOrderIdAndDogIdInAndTreatsIdIn(orderId, dogIdList, treatIdList);
+
+            return new OrderResponse(order, reviewList);
+        }).collect(Collectors.toList());
+
+        return orderList;
     }
 
     // 각 번들의 구독 정보 업데이트

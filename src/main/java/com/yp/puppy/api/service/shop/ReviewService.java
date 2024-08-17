@@ -71,6 +71,8 @@ public class ReviewService {
                     .rate(reviewSaveDto.getRate())
                     .user(user)
                     .treats(treats)
+                    .orderId(reviewSaveDto.getOrderId())
+                    .dogId(reviewSaveDto.getDogId())
                     .createdAt(LocalDateTime.now())
                     .build();
 
@@ -154,6 +156,10 @@ public class ReviewService {
 
     public List<Review> findAllReviews() {
         return reviewRepository.findAll();
+    }
+
+    public List<Review> findAllTreatReviews(String treatId) {
+        return reviewRepository.findByTreatsId(treatId);
     }
 
     public Review findReviewById(String id) {

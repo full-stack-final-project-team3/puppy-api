@@ -22,6 +22,8 @@ public class ReviewSaveDto {
     private int rate;
     private String userId;
     private String treatsId;
+    private String orderId;
+    private String dogId;
 
     // ReviewSaveDto 클래스 내에 추가
     @JsonIgnore
