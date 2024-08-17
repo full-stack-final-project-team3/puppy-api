@@ -9,5 +9,5 @@ import java.util.List;
 public interface OrderRepository extends JpaRepository<Order, String> {
     List<Order> findByUser(User user);
     // 아이디로 주문 내역 조회
-    //List<Order> findByUserId(String userId);
+    List<Order> findByUserIdOrderByOrderDateTimeDesc(String userId);
 }

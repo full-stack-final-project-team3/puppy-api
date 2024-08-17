@@ -66,10 +66,24 @@ public class ReviewController {
         }
     }
 
-    @GetMapping
-    public ResponseEntity<List<ReviewResponseDto>> getAllReviews() {
+//    @GetMapping
+//    public ResponseEntity<List<ReviewResponseDto>> getAllReviews() {
+//        try {
+//            List<Review> reviews = reviewService.findAllReviews();
+//            List<ReviewResponseDto> reviewResponseDtos = reviews.stream()
+//                    .map(this::convertToDto)
+//                    .collect(Collectors.toList());
+//            return ResponseEntity.ok(reviewResponseDtos);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+//        }
+//    }
+
+    @GetMapping("/treats/{treatId}")
+    public ResponseEntity<List<ReviewResponseDto>> getTreatReviews(@PathVariable String treatId) {
         try {
-            List<Review> reviews = reviewService.findAllReviews();
+            List<Review> reviews = reviewService.findAllTreatReviews(treatId);
             List<ReviewResponseDto> reviewResponseDtos = reviews.stream()
                     .map(this::convertToDto)
                     .collect(Collectors.toList());

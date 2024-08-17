@@ -1,17 +1,17 @@
 package com.yp.puppy.api.dto.response.shop;
 
-import com.yp.puppy.api.entity.shop.Order;
-import com.yp.puppy.api.entity.shop.Bundle;
-import com.yp.puppy.api.entity.shop.Treats;
+import com.yp.puppy.api.entity.shop.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Getter
 @Setter
 @NoArgsConstructor
@@ -24,6 +24,7 @@ public class OrderResponse {
     //private BundleResponse bundle;
     private List<BundleResponse> bundles;  // 리스트로 변경해가지구 순회하믄서 모든 번들을 렌더링 하려고 변경함
     private String deliveryRequest; // 배송 요청 사항 필드 추가
+    private List<Review> reviewList;
 
     // 오다  객체로부터 오더리스폰스 객체를 생성하는 생송자
     public OrderResponse(Order order) {
@@ -38,6 +39,13 @@ public class OrderResponse {
         this.deliveryRequest = order.getDeliveryRequest(); // 여기서 값 설정
     }
 
+    public OrderResponse(Order order, List<Review> reviewList) {
+        this(order);
+        this.bundles = order.getCart().getBundles().stream()
+                .map(bundle -> new BundleResponse(bundle, reviewList))
+                .collect(Collectors.toList());
+    }
+
 
     // 내부 스태틱 클래스 번들리스폰스
     @Getter
@@ -49,6 +57,7 @@ public class OrderResponse {
         private String bundleTitle;
         private Long bundlePrice;
         private String dogName;
+        private String dogId;
         private String subsType;
         private LocalDateTime subscriptionsStartDate;
         private LocalDateTime subscriptionsEndDate;
@@ -61,6 +70,7 @@ public class OrderResponse {
             this.bundleTitle = bundle.getBundleTitle();
             this.bundlePrice = bundle.getBundlePrice();
             this.dogName = bundle.getDogName();
+            this.dogId = bundle.getBundleDogId();
             this.subsType = bundle.getSubsType().name();
             this.subscriptionsStartDate = bundle.getSubscriptionsStartDate();
             this.subscriptionsEndDate = bundle.getSubscriptionsEndDate();
@@ -70,6 +80,19 @@ public class OrderResponse {
                     .collect(Collectors.toList());  // 변환된 TreatResponse 객체들을 리스트로 수집함
         }
 
+        public BundleResponse(Bundle bundle, List<Review> reviewList)
+        {
+            this(bundle);
+
+            List<Review> dogReivewList = reviewList.stream()
+                    .filter(review -> bundle.getBundleDogId().equals(review.getDogId()))
+                    .collect(Collectors.toList());
+
+            this.treats = bundle.getTreats().stream()
+                    .map(treat -> new TreatResponse(treat, dogReivewList))
+                    .collect(Collectors.toList());
+        }
+
         @Getter
         @Setter
         @NoArgsConstructor
@@ -77,10 +100,31 @@ public class OrderResponse {
         public static class TreatResponse {
             private String treatId;
             private String treatTitle;
+            private String treatUrl;
+
+            private String reviewId;
 
             public TreatResponse(Treats treats) {
+                TreatsPic picture = treats.getTreatsPics().get(0);
+                //app 에 cartContent.js 간식 이미지 경로 때문에 리
+                String url = picture.getTreatsPic().replace("/local", "/treats/images");
+
                 this.treatId = treats.getId();
                 this.treatTitle = treats.getTreatsTitle();
+                this.treatUrl = url;
+            }
+
+            public TreatResponse(Treats treats, List<Review> reviewList) {
+                this(treats);
+
+                Review reviewEntity = reviewList.stream()
+                        .filter(review -> treatId.equals(review.getTreats().getId()))
+                        .findFirst().orElse(null);
+
+                if(reviewEntity != null)
+                    this.reviewId = reviewEntity.getId();
+
+                log.debug("reviewId: {}", reviewId);
             }
         }
     }
