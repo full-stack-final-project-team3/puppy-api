@@ -98,8 +98,7 @@ public class Dog {
     @JsonIgnore
     private Room room;
 
-    // Bundle과의 관계
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "bundle_id")
     @Setter
     @JsonIgnore

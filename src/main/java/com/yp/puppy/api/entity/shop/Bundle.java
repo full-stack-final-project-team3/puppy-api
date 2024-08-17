@@ -70,7 +70,7 @@ public class Bundle {
     @JsonIgnore
     private Cart cart;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "subscriptions_id")
     @Setter
     @JsonIgnore
