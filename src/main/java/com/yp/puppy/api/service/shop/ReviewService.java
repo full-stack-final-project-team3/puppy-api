@@ -71,6 +71,8 @@ public class ReviewService {
                     .rate(reviewSaveDto.getRate())
                     .user(user)
                     .treats(treats)
+                    .orderId(reviewSaveDto.getOrderId())
+                    .dogId(reviewSaveDto.getDogId())
                     .createdAt(LocalDateTime.now())
                     .build();
 

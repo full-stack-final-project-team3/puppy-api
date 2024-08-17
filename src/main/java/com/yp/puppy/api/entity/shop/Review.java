@@ -55,4 +55,10 @@ public class Review {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
+
+    @Column(name = "order_id")
+    private String orderId;
+
+    @Column(name = "dog_id")
+    private String dogId;
 }
