@@ -51,7 +51,7 @@ public class OrderService {
                     .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없다"));
 
             // 사용자의 장바구니 가져오기
-            Cart cart = user.getCart();
+            Cart cart = cartRepository.findById(orderDto.getCartId()).orElseThrow();
             if (cart == null) {
                 throw new RuntimeException("해당 유저의 장바구니를 찾을 수 없습니다.");
             } else {
@@ -141,7 +141,6 @@ public class OrderService {
                 .map(OrderResponse::new)
                 .collect(Collectors.toList());
     }
-
 
 
     // 각 번들의 구독 정보 업데이트
