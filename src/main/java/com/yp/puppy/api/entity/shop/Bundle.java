@@ -10,6 +10,7 @@ import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,18 +64,18 @@ public class Bundle {
 
     private SubsType subsType;
 
+    private LocalDateTime subscriptionsStartDate;
+
+    private LocalDateTime subscriptionsEndDate;
+
+    private int subscriptionsCycle = 1;
+
     private BundleStatus bundleStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id")
     @JsonIgnore
     private Cart cart;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "subscriptions_id")
-    @Setter
-    @JsonIgnore
-    private Subscriptions subscriptions;
 
     public enum SubsType {
         ONE, MONTH3, MONTH6
@@ -84,11 +85,4 @@ public class Bundle {
         PENDING, ORDERED, CANCELLED
     }
 
-//    public void setBundleTitle(String bundleTitle) {
-//        this.bundleTitle = "강아지 맞춤 간식 패키지"; // 고정된 값 할당
-//    }
-//
-//    public void setBundlePrice(Long bundlePrice) {
-//        this.bundlePrice = 29900L;
-//    }
 }

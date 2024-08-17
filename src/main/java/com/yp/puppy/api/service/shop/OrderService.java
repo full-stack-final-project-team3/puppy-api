@@ -7,13 +7,11 @@ import com.yp.puppy.api.entity.shop.Cart;
 import com.yp.puppy.api.entity.shop.Cart.CartStatus;
 import com.yp.puppy.api.entity.shop.Order;
 import com.yp.puppy.api.entity.shop.Bundle;
-import com.yp.puppy.api.entity.shop.Subscriptions;
 import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.entity.user.User;
 import com.yp.puppy.api.repository.shop.CartRepository;
 import com.yp.puppy.api.repository.shop.OrderRepository;
 import com.yp.puppy.api.repository.shop.BundleRepository;
-import com.yp.puppy.api.repository.shop.SubscriptionsRepository;
 import com.yp.puppy.api.repository.user.DogRepository;
 import com.yp.puppy.api.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +35,6 @@ public class OrderService {
     private final CartRepository cartRepository;
     private final UserRepository userRepository;
     private final BundleRepository bundleRepository;
-    private final SubscriptionsRepository subscriptionsRepository;
     private final DogRepository dogRepository;
 
     public Order createOrder(OrderDto orderDto) {
@@ -52,6 +49,7 @@ public class OrderService {
 
             // 사용자의 장바구니 가져오기
             Cart cart = cartRepository.findById(orderDto.getCartId()).orElseThrow();
+
             if (cart == null) {
                 throw new RuntimeException("해당 유저의 장바구니를 찾을 수 없습니다.");
             } else {
@@ -72,9 +70,8 @@ public class OrderService {
                     Dog dog = bundle.getDog();
                     dog.setHasSubs(true);
                     bundle.setBundleStatus(BundleStatus.ORDERED);
-                    Subscriptions subs = setSubsDateBundle(bundle);
+                    setSubsDateBundle(bundle);
                     dogRepository.save(dog);
-                    subscriptionsRepository.save(subs);
                     bundleRepository.save(bundle);
                 }
             }
@@ -96,8 +93,6 @@ public class OrderService {
                     .point(orderDto.getPointUsage())
                     .totalPrice(orderDto.getTotalPrice())
                     .build();
-//            log.info("Saving Order: DeliveryRequest = {}, CustomRequest = {}",
-//                    order.getDeliveryRequest(), order.getCustomRequest()); // 저장 직전 데이터 확인
 
             // 주문 저장
             orderRepository.save(order);
@@ -135,6 +130,7 @@ public class OrderService {
     }
 
     public List<OrderResponse> getOrderHistory(String userId) {
+
         return orderRepository.findByUser(userRepository.findById(userId)
                         .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없디.")))
                 .stream()
@@ -142,37 +138,31 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
-
     // 각 번들의 구독 정보 업데이트
-    private Subscriptions setSubsDateBundle(Bundle bundle) {
+    private void setSubsDateBundle(Bundle bundle) {
 
-        Subscriptions subscriptions = new Subscriptions();
+        bundle.setSubscriptionsStartDate(LocalDateTime.now());
 
-        subscriptions.setBundle(bundle);
-
-        subscriptions.setSubscriptionsStartDate(LocalDateTime.now());
+        bundle.setSubscriptionsCycle(1);
 
         if (bundle.getSubsType() == SubsType.ONE) {
 
             LocalDateTime oneMonthLater = LocalDateTime.now().plusMonths(1);
-            subscriptions.setSubscriptionsEndDate(oneMonthLater);
+            bundle.setSubscriptionsEndDate(oneMonthLater);
 
         } else if (bundle.getSubsType() == SubsType.MONTH3) {
 
             LocalDateTime threeMonthLater = LocalDateTime.now().plusMonths(3);
-            subscriptions.setSubscriptionsEndDate(threeMonthLater);
+            bundle.setSubscriptionsEndDate(threeMonthLater);
 
         } else if (bundle.getSubsType() == SubsType.MONTH6) {
 
             LocalDateTime sixMonthLater = LocalDateTime.now().plusMonths(6);
-            subscriptions.setSubscriptionsEndDate(sixMonthLater);
+            bundle.setSubscriptionsEndDate(sixMonthLater);
 
         } else {
             System.out.println("지원하지 않는 구독 유형입니다.");
         }
 
-        bundle.setSubscriptions(subscriptions);
-
-        return subscriptions;
     }
 }
