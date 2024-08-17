@@ -46,8 +46,7 @@ public class OrderService {
         return orderRepository.findAll(); // 모든 번들 가져오기
     }
 
-    // 구독 회차 갱신
-    @Scheduled(fixedRate = 3600000)
+    @Scheduled(fixedRate = 3600000) // 1시간마다 실행
     public void updateAllBundles() {
         List<Order> orders = getAllOrders();
 
@@ -55,27 +54,30 @@ public class OrderService {
             List<Bundle> bundles = order.getCart().getBundles();
 
             for (Bundle bundle : bundles) {
-                LocalDateTime now = LocalDateTime.now();
-                LocalDateTime subscriptionStartDate = bundle.getSubscriptionsStartDate();
-                LocalDateTime subscriptionEndDate = bundle.getSubscriptionsEndDate();
+                // 번들이 ORDERED 상태인지 확인
+                if (bundle.getBundleStatus() == BundleStatus.ORDERED) {
+                    LocalDateTime now = LocalDateTime.now();
+                    LocalDateTime subscriptionStartDate = bundle.getSubscriptionsStartDate();
+                    LocalDateTime subscriptionEndDate = bundle.getSubscriptionsEndDate();
 
-                // 구독 만료일이 지나지 않았는지 확인
-                if (now.isBefore(subscriptionEndDate)) {
-                    if (now.isAfter(subscriptionStartDate.plusMonths(1))) {
-                        // 사이클 증가
-                        bundle.setSubscriptionsCycle(bundle.getSubscriptionsCycle() + 1);
+                    // 구독 만료일이 지나지 않았는지 확인
+                    if (now.isBefore(subscriptionEndDate)) {
+                        if (now.isAfter(subscriptionStartDate.plusMonths(1))) {
+                            // 사이클 증가
+                            bundle.setSubscriptionsCycle(bundle.getSubscriptionsCycle() + 1);
+                        }
+
+                        // 업데이트된 번들 저장
+                        bundleRepository.save(bundle);
+
+                        // 주문도 저장
+                        orderRepository.save(order);
                     }
-
-                    // 업데이트된 번들 저장
-                    bundleRepository.save(bundle);
-
-                    orderRepository.save(order);
                 }
-
             }
         }
-
     }
+
 
     public Order createOrder(OrderDto orderDto) {
         try {
@@ -162,6 +164,23 @@ public class OrderService {
 
         // 주문 상태를 취소로 변경
         order.setOrderStatus(Order.OrderStatus.CANCELLED);
+
+        List<Bundle> bundles = order.getCart().getBundles();
+        for (Bundle bundle : bundles) {
+
+            Dog dog = bundle.getDog();
+            if (dog != null) {
+                dog.setBundle(null);
+                dog.setHasBundle(false);
+                dog.setHasSubs(false);
+                dogRepository.save(dog);
+            }
+
+            bundle.setDog(null);
+            bundle.setBundleStatus(BundleStatus.CANCELLED);
+            bundleRepository.save(bundle);
+
+        }
 
         // 변경된 주문 저장
         orderRepository.save(order);
