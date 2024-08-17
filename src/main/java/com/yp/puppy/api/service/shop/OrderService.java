@@ -16,6 +16,7 @@ import com.yp.puppy.api.repository.user.DogRepository;
 import com.yp.puppy.api.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +37,41 @@ public class OrderService {
     private final UserRepository userRepository;
     private final BundleRepository bundleRepository;
     private final DogRepository dogRepository;
+
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll(); // 모든 번들 가져오기
+    }
+
+    // 구독 회차 갱신
+    @Scheduled(fixedRate = 3600000)
+    public void updateAllBundles() {
+        List<Order> orders = getAllOrders();
+
+        for (Order order : orders) {
+            List<Bundle> bundles = order.getCart().getBundles();
+
+            for (Bundle bundle : bundles) {
+                LocalDateTime now = LocalDateTime.now();
+                LocalDateTime subscriptionStartDate = bundle.getSubscriptionsStartDate();
+                LocalDateTime subscriptionEndDate = bundle.getSubscriptionsEndDate();
+
+                // 구독 만료일이 지나지 않았는지 확인
+                if (now.isBefore(subscriptionEndDate)) {
+                    if (now.isAfter(subscriptionStartDate.plusMonths(1))) {
+                        // 사이클 증가
+                        bundle.setSubscriptionsCycle(bundle.getSubscriptionsCycle() + 1);
+                    }
+                    
+                    // 업데이트된 번들 저장
+                    bundleRepository.save(bundle);
+
+                    orderRepository.save(order);
+                }
+
+            }
+        }
+
+    }
 
     public Order createOrder(OrderDto orderDto) {
         try {
