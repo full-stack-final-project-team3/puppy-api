@@ -180,7 +180,8 @@ public class BoardService {
                         board.getUser().getProfileUrl(),
                         board.getUser().getEmail()
                 ),
-                board.getReplies().size()  // 댓글 수 추가
+                //게시글 댓글 숫자 표시
+                board.getReplies() != null ? board.getReplies().size() : 0  // replyCount 설정
         );
     }
 
