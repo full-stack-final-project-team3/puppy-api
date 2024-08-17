@@ -50,6 +50,9 @@ public class OrderResponse {
         private Long bundlePrice;
         private String dogName;
         private String subsType;
+        private LocalDateTime subscriptionsStartDate;
+        private LocalDateTime subscriptionsEndDate;
+        private int subscriptionsCycle;
         private List<TreatResponse> treats;  // 번들에 포함된 간식 리스트
 
         // Bundle 객체를 기반으로 BundleResponse 객체를 생성하는 생성자
@@ -59,6 +62,9 @@ public class OrderResponse {
             this.bundlePrice = bundle.getBundlePrice();
             this.dogName = bundle.getDogName();
             this.subsType = bundle.getSubsType().name();
+            this.subscriptionsStartDate = bundle.getSubscriptionsStartDate();
+            this.subscriptionsEndDate = bundle.getSubscriptionsEndDate();
+            this.subscriptionsCycle = bundle.getSubscriptionsCycle();
             this.treats = bundle.getTreats().stream()
                     .map(TreatResponse::new)  // 각 트릿 객체를 TreatResponse 로 벼난
                     .collect(Collectors.toList());  // 변환된 TreatResponse 객체들을 리스트로 수집함

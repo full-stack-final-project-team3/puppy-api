@@ -2,19 +2,23 @@ package com.yp.puppy.api.service.shop;
 
 import com.yp.puppy.api.dto.request.shop.BundleCreateDto;
 import com.yp.puppy.api.entity.shop.Bundle;
+import com.yp.puppy.api.entity.shop.Order;
 import com.yp.puppy.api.entity.shop.Treats;
 import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.entity.user.User;
 import com.yp.puppy.api.repository.shop.BundleRepository;
 import com.yp.puppy.api.repository.shop.CartRepository;
+import com.yp.puppy.api.repository.shop.OrderRepository;
 import com.yp.puppy.api.repository.shop.TreatsRepository;
 import com.yp.puppy.api.repository.user.DogRepository;
 import com.yp.puppy.api.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,7 +59,7 @@ public class BundleService {
                 .treats(treatsList)
                 .bundleStatus(Bundle.BundleStatus.PENDING)
                 .build();
-        
+
         log.info("Bundle before saving: {}", newBundle);
 
         // Bundle 저장
@@ -69,8 +73,6 @@ public class BundleService {
         dogRepository.save(dog);
 
     }
-
-
 
     // 제품리스트 가져오기
     private List<Treats> getTreatsList(BundleCreateDto dto) {

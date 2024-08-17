@@ -7,17 +7,16 @@ import com.yp.puppy.api.entity.shop.Cart;
 import com.yp.puppy.api.entity.shop.Cart.CartStatus;
 import com.yp.puppy.api.entity.shop.Order;
 import com.yp.puppy.api.entity.shop.Bundle;
-import com.yp.puppy.api.entity.shop.Subscriptions;
 import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.entity.user.User;
 import com.yp.puppy.api.repository.shop.CartRepository;
 import com.yp.puppy.api.repository.shop.OrderRepository;
 import com.yp.puppy.api.repository.shop.BundleRepository;
-import com.yp.puppy.api.repository.shop.SubscriptionsRepository;
 import com.yp.puppy.api.repository.user.DogRepository;
 import com.yp.puppy.api.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,8 +36,42 @@ public class OrderService {
     private final CartRepository cartRepository;
     private final UserRepository userRepository;
     private final BundleRepository bundleRepository;
-    private final SubscriptionsRepository subscriptionsRepository;
     private final DogRepository dogRepository;
+
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll(); // 모든 번들 가져오기
+    }
+
+    // 구독 회차 갱신
+    @Scheduled(fixedRate = 3600000)
+    public void updateAllBundles() {
+        List<Order> orders = getAllOrders();
+
+        for (Order order : orders) {
+            List<Bundle> bundles = order.getCart().getBundles();
+
+            for (Bundle bundle : bundles) {
+                LocalDateTime now = LocalDateTime.now();
+                LocalDateTime subscriptionStartDate = bundle.getSubscriptionsStartDate();
+                LocalDateTime subscriptionEndDate = bundle.getSubscriptionsEndDate();
+
+                // 구독 만료일이 지나지 않았는지 확인
+                if (now.isBefore(subscriptionEndDate)) {
+                    if (now.isAfter(subscriptionStartDate.plusMonths(1))) {
+                        // 사이클 증가
+                        bundle.setSubscriptionsCycle(bundle.getSubscriptionsCycle() + 1);
+                    }
+                    
+                    // 업데이트된 번들 저장
+                    bundleRepository.save(bundle);
+
+                    orderRepository.save(order);
+                }
+
+            }
+        }
+
+    }
 
     public Order createOrder(OrderDto orderDto) {
         try {
@@ -52,6 +85,7 @@ public class OrderService {
 
             // 사용자의 장바구니 가져오기
             Cart cart = cartRepository.findById(orderDto.getCartId()).orElseThrow();
+
             if (cart == null) {
                 throw new RuntimeException("해당 유저의 장바구니를 찾을 수 없습니다.");
             } else {
@@ -72,9 +106,8 @@ public class OrderService {
                     Dog dog = bundle.getDog();
                     dog.setHasSubs(true);
                     bundle.setBundleStatus(BundleStatus.ORDERED);
-                    Subscriptions subs = setSubsDateBundle(bundle);
+                    setSubsDateBundle(bundle);
                     dogRepository.save(dog);
-                    subscriptionsRepository.save(subs);
                     bundleRepository.save(bundle);
                 }
             }
@@ -96,8 +129,6 @@ public class OrderService {
                     .point(orderDto.getPointUsage())
                     .totalPrice(orderDto.getTotalPrice())
                     .build();
-//            log.info("Saving Order: DeliveryRequest = {}, CustomRequest = {}",
-//                    order.getDeliveryRequest(), order.getCustomRequest()); // 저장 직전 데이터 확인
 
             // 주문 저장
             orderRepository.save(order);
@@ -135,6 +166,7 @@ public class OrderService {
     }
 
     public List<OrderResponse> getOrderHistory(String userId) {
+
         return orderRepository.findByUser(userRepository.findById(userId)
                         .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없디.")))
                 .stream()
@@ -142,37 +174,31 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
-
     // 각 번들의 구독 정보 업데이트
-    private Subscriptions setSubsDateBundle(Bundle bundle) {
+    private void setSubsDateBundle(Bundle bundle) {
 
-        Subscriptions subscriptions = new Subscriptions();
+        bundle.setSubscriptionsStartDate(LocalDateTime.now());
 
-        subscriptions.setBundle(bundle);
-
-        subscriptions.setSubscriptionsStartDate(LocalDateTime.now());
+        bundle.setSubscriptionsCycle(1);
 
         if (bundle.getSubsType() == SubsType.ONE) {
 
             LocalDateTime oneMonthLater = LocalDateTime.now().plusMonths(1);
-            subscriptions.setSubscriptionsEndDate(oneMonthLater);
+            bundle.setSubscriptionsEndDate(oneMonthLater);
 
         } else if (bundle.getSubsType() == SubsType.MONTH3) {
 
             LocalDateTime threeMonthLater = LocalDateTime.now().plusMonths(3);
-            subscriptions.setSubscriptionsEndDate(threeMonthLater);
+            bundle.setSubscriptionsEndDate(threeMonthLater);
 
         } else if (bundle.getSubsType() == SubsType.MONTH6) {
 
             LocalDateTime sixMonthLater = LocalDateTime.now().plusMonths(6);
-            subscriptions.setSubscriptionsEndDate(sixMonthLater);
+            bundle.setSubscriptionsEndDate(sixMonthLater);
 
         } else {
             System.out.println("지원하지 않는 구독 유형입니다.");
         }
 
-        bundle.setSubscriptions(subscriptions);
-
-        return subscriptions;
     }
 }
