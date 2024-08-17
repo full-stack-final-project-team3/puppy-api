@@ -184,18 +184,95 @@ public class BoardService {
     }
 
     public BoardDetailResponseDto convertToBoardDetailResponseDto(Board board) {
-        List<String> imageUrls = new ArrayList<>();
-        if (board.getImages() != null) {
-            imageUrls = board.getImages().stream()
-                    .map(BoardImg::getImgUrl)
-                    .collect(Collectors.toList());
-        }
+        log.info("🌈 게시글 ID {} 변환 중...", board.getId());
+
+        // 게시글 이미지 처리 (연관된 댓글이나 대댓글이 없는 경우에만)
+        List<String> boardImageUrls = board.getImages().stream()
+                .filter(image -> image.getBoardReply() == null && image.getBoardSubReply() == null)
+                .map(BoardImg::getImgUrl)
+                .collect(Collectors.toList());
+        log.info("🌈 게시글 ID {}: 게시글 이미지 리스트: {}", board.getId(), boardImageUrls);
+
+        List<BoardDetailResponseDto.ReplyDTO> replyDTOs = board.getReplies().stream()
+                .map(reply -> {
+                    log.info("🌈 댓글 ID {} 처리 중...", reply.getId());
+
+                    // 댓글 이미지 처리 수정
+                    String replyImageUrl = board.getImages().stream()
+                            .filter(image -> image.getBoardReply() != null
+                                    && image.getBoardReply().getId().equals(reply.getId())
+                                    && image.getBoardSubReply() == null)
+                            .findFirst()
+                            .map(BoardImg::getImgUrl)
+                            .orElse(null);
+
+                    if (replyImageUrl != null) {
+                        log.info("🌈 댓글 ID {}: 댓글 이미지 URL: {}", reply.getId(), replyImageUrl);
+                    } else {
+                        log.info("🌈 댓글 ID {}: 댓글 이미지 없음", reply.getId());
+                    }
+
+                    // 대댓글 처리
+                    List<BoardDetailResponseDto.SubReplyDTO> subReplyDTOs = reply.getSubReplies().stream()
+                            .map(subReply -> {
+                                log.info("🌈 대댓글 ID {} 처리 중...", subReply.getId());
+
+                                // 대댓글 이미지 처리
+                                String subReplyImageUrl = null;
+                                if (subReply.getImage() != null && subReply.getImage().getBoardSubReply() != null) {
+                                    subReplyImageUrl = subReply.getImage().getImgUrl();
+                                    log.info("🌈 대댓글 ID {}: 대댓글 이미지 URL: {}", subReply.getId(), subReplyImageUrl);
+
+                                    // 이미지 필수 조건 확인
+                                    if (subReplyImageUrl != null && subReply.getId() != null && reply.getId() != null) {
+                                        log.info("🌈 대댓글 ID {}: 이미지가 올바르게 설정됨", subReply.getId());
+                                    } else {
+                                        log.error("🌈 대댓글 ID {}: 이미지 설정 오류 - 댓글 ID 또는 게시글 ID와 충돌", subReply.getId());
+                                    }
+                                } else {
+                                    log.info("🌈 대댓글 ID {}: 대댓글 이미지 없음", subReply.getId());
+                                }
+
+                                return new BoardDetailResponseDto.SubReplyDTO(
+                                        subReply.getId(),
+                                        subReply.getSubReplyContent(),
+                                        subReply.getSubReplyCreatedAt(),
+                                        new BoardDetailResponseDto.UserDTO(
+                                                subReply.getUser().getId(),
+                                                subReply.getUser().getNickname(),
+                                                subReply.getUser().getProfileUrl(),
+                                                subReply.getUser().getEmail()
+                                        ),
+                                        subReplyImageUrl  // 대댓글 이미지 URL
+                                );
+                            })
+                            .collect(Collectors.toList());
+
+                    log.info("🌈 댓글 ID {}: {}개의 대댓글 처리 완료", reply.getId(), subReplyDTOs.size());
+
+                    return new BoardDetailResponseDto.ReplyDTO(
+                            reply.getId(),
+                            reply.getReplyContent(),
+                            reply.getReplyCreatedAt(),
+                            new BoardDetailResponseDto.UserDTO(
+                                    reply.getUser().getId(),
+                                    reply.getUser().getNickname(),
+                                    reply.getUser().getProfileUrl(),
+                                    reply.getUser().getEmail()
+                            ),
+                            replyImageUrl,  // 수정된 댓글 이미지 URL
+                            subReplyDTOs
+                    );
+                })
+                .collect(Collectors.toList());
+
+        log.info("🌈 게시글 ID {}: 총 {}개의 댓글 처리 완료", board.getId(), replyDTOs.size());
 
         return new BoardDetailResponseDto(
                 board.getId(),
                 board.getBoardTitle(),
                 board.getBoardContent(),
-                imageUrls,
+                boardImageUrls,  // 게시글 이미지 URL 리스트
                 board.getBoardCreatedAt(),
                 board.getBoardUpdatedAt(),
                 board.getViewCount(),
@@ -206,36 +283,17 @@ public class BoardService {
                         board.getUser().getProfileUrl(),
                         board.getUser().getEmail()
                 ),
-                board.getReplies().stream()
-                        .map(reply -> new BoardDetailResponseDto.ReplyDTO(
-                                reply.getId(),
-                                reply.getReplyContent(),
-                                reply.getReplyCreatedAt(),
-                                new BoardDetailResponseDto.UserDTO(
-                                        reply.getUser().getId(),
-                                        reply.getUser().getNickname(),
-                                        reply.getUser().getProfileUrl(),
-                                        reply.getUser().getEmail()
-                                ),
-                                reply.getImage() != null ? reply.getImage().getImgUrl() : null,
-                                reply.getSubReplies().stream() // 서브 리플 추가 부분
-                                        .<BoardDetailResponseDto.SubReplyDTO>map(subReply -> new BoardDetailResponseDto.SubReplyDTO(
-                                                subReply.getId(),
-                                                subReply.getSubReplyContent(),
-                                                subReply.getSubReplyCreatedAt(),
-                                                new BoardDetailResponseDto.UserDTO(
-                                                        subReply.getUser().getId(),
-                                                        subReply.getUser().getNickname(),
-                                                        subReply.getUser().getProfileUrl(),
-                                                        subReply.getUser().getEmail()
-                                                ),
-                                                subReply.getImage() != null ? subReply.getImage().getImgUrl() : null
-                                        ))
-                                        .collect(Collectors.toList())
-                        ))
-                        .collect(Collectors.toList())
+                replyDTOs
         );
     }
+
+
+
+
+
+
+
+
 
     //조회수
     public BoardDetailResponseDto getBoardDetailWithViewCount(long id, String userId) {

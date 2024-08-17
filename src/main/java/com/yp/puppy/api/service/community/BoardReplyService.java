@@ -6,6 +6,7 @@ import com.yp.puppy.api.entity.community.BoardImg;
 import com.yp.puppy.api.entity.community.BoardReply;
 import com.yp.puppy.api.entity.community.BoardSubReply;
 import com.yp.puppy.api.entity.user.User;
+import com.yp.puppy.api.repository.community.BoardImgRepository;
 import com.yp.puppy.api.repository.community.BoardReplyRepository;
 import com.yp.puppy.api.repository.community.BoardRepository;
 import com.yp.puppy.api.repository.community.BoardSubReplyRepository;
@@ -37,27 +38,25 @@ public class BoardReplyService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
     private final BoardSubReplyRepository boardSubReplyRepository;
+    private final BoardImgRepository boardImgRepository;
 
     @Value("${file.upload-dir}")
     private String uploadDir;
 
+    @Transactional
     public BoardDetailResponseDto.ReplyDTO saveReply(Long boardId, String content, User user, MultipartFile image) {
         try {
-            // Board 엔티티 조회
             Board board = boardRepository.findById(boardId)
                     .orElseThrow(() -> new EntityNotFoundException("Board not found"));
 
-            // User 엔티티 조회
             User foundUser = userRepository.findById(user.getId())
                     .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-            // 이미지 저장
             String imageUrl = null;
             if (image != null && !image.isEmpty()) {
                 imageUrl = saveImage(image);
             }
 
-            // BoardReply 엔티티 생성
             BoardReply reply = BoardReply.builder()
                     .replyContent(content)
                     .board(board)
@@ -67,13 +66,11 @@ public class BoardReplyService {
                     .subReplies(new ArrayList<>())
                     .build();
 
-            // 이미지가 있는 경우 BoardImg 엔티티 생성
             if (imageUrl != null) {
-                BoardImg boardImg = new BoardImg(imageUrl, null, reply, null);
+                BoardImg boardImg = new BoardImg(imageUrl, board, reply, null);
                 reply.setImage(boardImg);
             }
 
-            // 댓글 저장
             BoardReply savedReply = boardReplyRepository.save(reply);
             return convertToReplyDTO(savedReply);
         } catch (Exception e) {
@@ -82,33 +79,32 @@ public class BoardReplyService {
         }
     }
 
+    @Transactional
     public BoardDetailResponseDto.ReplyDTO updateReply(Long replyId, String content, String userId) {
-        log.debug("Updating reply. ReplyId: {}, Content: {}, UserId: {}", replyId, content, userId);
 
+        log.debug("🐶 댓글 수정 요청. 댓글 ID: {}, 내용: {}, 사용자 ID: {}", replyId, content, userId);
+
+        log.debug("🐶 댓글 조회 시작");
+        // 댓글 조회
         BoardReply reply = boardReplyRepository.findById(replyId)
-                .orElseThrow(() -> new EntityNotFoundException("Reply not found"));
+                .orElseThrow(() -> new EntityNotFoundException("🐶 댓글을 찾을 수 없습니다"));
 
-        log.debug("Found reply: {}", reply);
-
-        User replyUser = reply.getUser();
-        log.debug("Reply user: {}", replyUser);
-
-        UUID requestUserUUID = UUID.fromString(userId);
-        log.debug("Request user UUID: {}", requestUserUUID);
-
-        // UUID 비교
-        if (!replyUser.getId().toString().equals(requestUserUUID.toString())) {
-            log.error("Authorization failed. Reply user ID: {}, Request user ID: {}", replyUser.getId(), requestUserUUID);
-            throw new IllegalArgumentException("You are not authorized to update this reply");
+        log.debug("🐶 댓글 쳌: {}",reply);
+        // 권한 검사
+        if (!reply.getUser().getId().toString().equals(userId)) {
+            throw new IllegalArgumentException("🐶 이 댓글을 수정할 권한이 없습니다");
         }
 
-        log.debug("Authorization successful");
-
+        // 댓글 수정
         reply.setReplyContent(content);
         reply.setReplyUpdatedAt(LocalDateTime.now());
+
+        // 댓글 저장
         BoardReply updatedReply = boardReplyRepository.save(reply);
         log.debug("Reply updated: {}", updatedReply);
 
+
+        // DTO 변환
         return convertToReplyDTO(updatedReply);
     }
 
@@ -134,17 +130,51 @@ public class BoardReplyService {
     }
 
     private BoardDetailResponseDto.ReplyDTO convertToReplyDTO(BoardReply reply) {
-        log.debug("Converting reply to DTO: {}", reply);
+        log.debug("🐶 댓글을 DTO로 변환 시작: {}", reply);
+
+        // 댓글의 이미지 URL 설정
+        String replyImageUrl = null;
+        if (reply.getImage() != null) {
+            replyImageUrl = reply.getImage().getImgUrl();
+            log.debug("🐶 댓글 이미지 URL (직접 참조): {}", replyImageUrl);
+        } else {
+            List<BoardImg> replyImages = boardImgRepository.findByBoardReplyId(reply.getId());
+            // 댓글 이미지 URL 설정: board_id가 not null, reply_id가 not null, subreply_id가 null인 경우
+            replyImageUrl = replyImages.stream()
+                    .filter(img -> img.getBoard() != null && img.getBoardReply() != null && img.getBoardSubReply() == null)
+                    .findFirst()
+                    .map(BoardImg::getImgUrl)
+                    .orElse(null);
+            log.debug("🐶 댓글 이미지 URL (Repository 조회): {}", replyImageUrl);
+        }
 
         // 서브 리플들을 DTO로 변환
         List<BoardDetailResponseDto.SubReplyDTO> subReplyDTOs = reply.getSubReplies().stream()
-                .map(subReply -> new BoardDetailResponseDto.SubReplyDTO(
-                        subReply.getId(),
-                        subReply.getSubReplyContent(),
-                        subReply.getSubReplyCreatedAt(),
-                        convertToUserDTO(subReply.getUser()),
-                        subReply.getImage() != null ? subReply.getImage().getImgUrl() : null
-                ))
+                .map(subReply -> {
+                    // 대댓글의 이미지 URL 설정
+                    String subReplyImageUrl = null;
+                    if (subReply.getImage() != null) {
+                        subReplyImageUrl = subReply.getImage().getImgUrl();
+                        log.debug("🐶 대댓글 ID: {}, 대댓글 이미지 URL (직접 참조): {}", subReply.getId(), subReplyImageUrl);
+                    } else {
+                        List<BoardImg> subReplyImages = boardImgRepository.findByBoardSubReplyId(subReply.getId());
+                        // 대댓글에 관련된 이미지 URL 가져오기: board_id, reply_id, subreply_id 모두 not null인 경우
+                        subReplyImageUrl = subReplyImages.stream()
+                                .filter(img -> img.getBoard() != null && img.getBoardReply() != null && img.getBoardSubReply() != null)
+                                .findFirst()
+                                .map(BoardImg::getImgUrl)
+                                .orElse(null);
+                        log.debug("🐶 대댓글 ID: {}, 대댓글 이미지 URL (Repository 조회): {}", subReply.getId(), subReplyImageUrl);
+                    }
+
+                    return new BoardDetailResponseDto.SubReplyDTO(
+                            subReply.getId(),
+                            subReply.getSubReplyContent(),
+                            subReply.getSubReplyCreatedAt(),
+                            convertToUserDTO(subReply.getUser()),
+                            subReplyImageUrl
+                    );
+                })
                 .collect(Collectors.toList());
 
         // ReplyDTO 생성
@@ -153,11 +183,11 @@ public class BoardReplyService {
                 reply.getReplyContent(),
                 reply.getReplyCreatedAt(),
                 convertToUserDTO(reply.getUser()),
-                reply.getImage() != null ? reply.getImage().getImgUrl() : null,
+                replyImageUrl,
                 subReplyDTOs
         );
 
-        log.debug("Converted DTO: {}", dto);
+        log.debug("🐶 변환된 ReplyDTO: {}", dto);
         return dto;
     }
 
@@ -166,11 +196,14 @@ public class BoardReplyService {
         BoardReply reply = boardReplyRepository.findById(replyId)
                 .orElseThrow(() -> new EntityNotFoundException("Reply not found"));
 
+        Board board = reply.getBoard();
+
         BoardSubReply subReply = BoardSubReply.builder()
                 .subReplyContent(content)
                 .boardReply(reply)
                 .user(user)
                 .isClean(1)
+                .subReplyCreatedAt(LocalDateTime.now())
                 .build();
 
         if (image != null && !image.isEmpty()) {
@@ -181,7 +214,7 @@ public class BoardReplyService {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            BoardImg boardImg = new BoardImg(imageUrl, null, null, subReply);
+            BoardImg boardImg = new BoardImg(imageUrl, board, reply, subReply);
             subReply.setImage(boardImg);
         }
 

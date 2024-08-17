@@ -1,5 +1,6 @@
 package com.yp.puppy.api.entity.community;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yp.puppy.api.entity.user.User;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
