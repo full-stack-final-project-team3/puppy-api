@@ -48,8 +48,6 @@ public class HotelRepositoryCustomImpl implements HotelRepositoryCustom {
                 return hotel.name.asc();
             case "description":
                 return hotel.description.asc();
-            case "price":
-                return hotel.price.asc();
             case "location":
                 return hotel.location.asc();
             default:
