@@ -50,4 +50,31 @@ public class AdminService {
         }
         return counts;
     }
+
+    public List<Long> getPointTotalDay(LocalDateTime startDate, LocalDateTime endDate) {
+        List<Long> dailyTotals = new ArrayList<>();
+
+        // 주어진 날짜 범위 동안 각 날짜를 반복
+        for (LocalDateTime date = startDate; date.isBefore(endDate.plusDays(1)); date = date.plusDays(1)) {
+            LocalDateTime dayStart = date.toLocalDate().atStartOfDay();
+            LocalDateTime dayEnd = date.toLocalDate().atTime(23, 59, 59);
+
+            // 해당 날짜의 호텔 예약 총 비용을 가져옴
+            Long hotelExpense = userRepository.sumTotalPriceHotelByDateRange(dayStart, dayEnd);
+            if (hotelExpense == null) {
+                hotelExpense = 0L;
+            }
+
+            // 해당 날짜의 쇼핑몰 주문 총 비용을 가져옴
+            Long shopExpense = userRepository.sumTotalPriceShopByDateRange(dayStart, dayEnd);
+            if (shopExpense == null) {
+                shopExpense = 0L;
+            }
+
+            // 해당 날짜의 총 비용을 리스트에 추가
+            dailyTotals.add(hotelExpense + shopExpense);
+        }
+
+        return dailyTotals;
+    }
 }

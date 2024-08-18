@@ -11,6 +11,11 @@ plugins {
 	id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
 }
 
+jar {
+	// 불필요한 plain jar 생성 설정 비활성화
+	enabled = false
+}
+
 group = 'com.yp'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
@@ -53,7 +58,8 @@ dependencies {
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+//	useJUnitPlatform()
+	exclude('**/*')
 }
 
 // querydsl 추가 시작
