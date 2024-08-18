@@ -31,7 +31,7 @@ public class BoardController {
     @GetMapping
     public ResponseEntity<?> getList(
             @RequestParam(required = false, defaultValue = "boardCreatedAt") String sort,
-            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int limit) {
         List<BoardResponseDto> boards = boardService.getBoardsWithLikeCounts(sort, page, limit);
         return ResponseEntity.ok().body(boards);
