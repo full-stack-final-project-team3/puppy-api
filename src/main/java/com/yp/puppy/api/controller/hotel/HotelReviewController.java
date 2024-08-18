@@ -4,6 +4,7 @@ import com.yp.puppy.api.dto.request.hotel.ReviewSaveDto;
 import com.yp.puppy.api.dto.response.hotel.HotelReviewDetailDto;
 import com.yp.puppy.api.entity.hotel.Review;
 import com.yp.puppy.api.service.hotel.HotelReviewService;
+import com.yp.puppy.api.service.hotel.ReviewSecurityService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 public class HotelReviewController {
 
     private final HotelReviewService hotelReviewService;
+    private final ReviewSecurityService reviewSecurityService;
 
     // 1. 리뷰 작성
     @PostMapping
@@ -38,11 +40,11 @@ public class HotelReviewController {
 
     // 2. 리뷰 삭제
     @DeleteMapping("/{reviewId}")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> deleteReview(@PathVariable String reviewId, @RequestParam String userId) {
+    @PreAuthorize("hasAuthority('ADMIN') or @reviewSecurityService.isOwner(authentication, #reviewId, null)")
+    public ResponseEntity<?> deleteReview(@PathVariable String reviewId) {
         try {
-            hotelReviewService.deleteReview(reviewId, userId);
-            return ResponseEntity.ok().body(Collections.singletonMap("message", "리뷰가 성공적으로 삭제되었습니다"));
+            hotelReviewService.deleteReview(reviewId);
+            return ResponseEntity.ok().body(Collections.singletonMap("message", "Review successfully deleted"));
         } catch (IllegalArgumentException e) {
             log.warn(e.getMessage());
             return ResponseEntity.status(404).body(Collections.singletonMap("error", e.getMessage()));
@@ -72,7 +74,7 @@ public class HotelReviewController {
 
     // 4. 리뷰 수정
     @PatchMapping("/{reviewId}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('ADMIN') or @reviewSecurityService.isOwner(authentication, #reviewId, null)")
     public ResponseEntity<?> updateReview(@PathVariable String reviewId, @RequestBody ReviewSaveDto dto) {
         try {
             Review updatedReview = hotelReviewService.updateReview(reviewId, dto);
