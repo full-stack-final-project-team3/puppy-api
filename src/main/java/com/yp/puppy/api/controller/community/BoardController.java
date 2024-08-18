@@ -29,8 +29,11 @@ public class BoardController {
     private final TokenProvider tokenProvider;
 
     @GetMapping
-    public ResponseEntity<?> getList(@RequestParam(required = false) String sort) {
-        List<BoardResponseDto> boards = boardService.getBoards(sort);
+    public ResponseEntity<?> getList(
+            @RequestParam(required = false, defaultValue = "boardCreatedAt") String sort,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int limit) {
+        List<BoardResponseDto> boards = boardService.getBoardsWithLikeCounts(sort, page, limit);
         return ResponseEntity.ok().body(boards);
     }
 

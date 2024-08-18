@@ -22,7 +22,8 @@ public class BoardResponseDto {
     private int viewCount;
     private int isClean;
     private UserDTO user;
-    private int replyCount; //
+    private int replyCount; //댓글 카운트
+    private long likeCount; //좋아요 카운트
 
     @Getter
     @Setter
