@@ -40,7 +40,7 @@ public class HotelReviewController {
 
     // 2. 리뷰 삭제
     @DeleteMapping("/{reviewId}")
-    @PreAuthorize("hasAuthority('ADMIN') or @reviewSecurityService.isOwner(authentication, #reviewId, null)")
+    @PreAuthorize("hasAuthority('ADMIN') or @reviewSecurityService.isOwner(authentication, #reviewId)")
     public ResponseEntity<?> deleteReview(@PathVariable String reviewId) {
         try {
             hotelReviewService.deleteReview(reviewId);
@@ -74,7 +74,7 @@ public class HotelReviewController {
 
     // 4. 리뷰 수정
     @PatchMapping("/{reviewId}")
-    @PreAuthorize("hasAuthority('ADMIN') or @reviewSecurityService.isOwner(authentication, #reviewId, null)")
+    @PreAuthorize("hasAuthority('ADMIN') or @reviewSecurityService.isOwner(authentication, #reviewId)")
     public ResponseEntity<?> updateReview(@PathVariable String reviewId, @RequestBody ReviewSaveDto dto) {
         try {
             Review updatedReview = hotelReviewService.updateReview(reviewId, dto);
