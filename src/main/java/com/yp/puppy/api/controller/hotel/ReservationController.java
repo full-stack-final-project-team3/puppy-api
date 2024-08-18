@@ -71,7 +71,7 @@ public class ReservationController {
 
     // 예약 취소
     @DeleteMapping("/{reservationId}")
-    @PreAuthorize("hasAuthority('ADMIN') or @reviewSecurityService.isOwner(authentication, #reservationId, null)")
+    @PreAuthorize("hasAuthority('ADMIN') or @reservationSecurityService.isOwner(authentication, #reservationId)")
     public ResponseEntity<?> deleteReservation(@PathVariable String reservationId) {
         try {
             reservationService.deleteReservation(reservationId);
@@ -85,7 +85,7 @@ public class ReservationController {
 
     // 예약 수정
     @PatchMapping("/{reservationId}")
-    @PreAuthorize("hasAuthority('ADMIN') or @reviewSecurityService.isOwner(authentication, #reservationId, null)")
+    @PreAuthorize("hasAuthority('ADMIN') or @reservationSecurityService.isOwner(authentication, #reservationId)")
     public ResponseEntity<?> updateReservation(@PathVariable String reservationId, @RequestBody ReservationSaveDto dto) {
         try {
             reservationService.modify(reservationId, dto);
