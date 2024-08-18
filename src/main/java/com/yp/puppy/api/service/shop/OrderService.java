@@ -63,15 +63,27 @@ public class OrderService {
                     // 구독 만료일이 지나지 않았는지 확인
                     if (now.isBefore(subscriptionEndDate)) {
                         if (now.isAfter(subscriptionStartDate.plusMonths(1))) {
-                            // 사이클 증가
-                            bundle.setSubscriptionsCycle(bundle.getSubscriptionsCycle() + 1);
+                            User user = bundle.getUser();
+
+                            // 포인트가 충분한지 확인
+                            if (user.getPoint() >= bundle.getBundlePrice()) {
+                                // 사이클 증가
+                                bundle.setSubscriptionsCycle(bundle.getSubscriptionsCycle() + 1);
+                                user.setPoint((int) (user.getPoint() - bundle.getBundlePrice()));
+                                userRepository.save(user);
+
+                                // 업데이트된 번들 저장
+                                bundleRepository.save(bundle);
+
+                                // 주문도 저장
+                                orderRepository.save(order);
+                            } else {
+                                // 포인트가 부족할 경우 처리
+                                bundle.setBundleStatus(BundleStatus.CANCELLED);
+                                bundleRepository.save(bundle);
+                                System.out.println("포인트가 부족하여 번들을 업데이트하지 않습니다. 사용자 ID: " + user.getId());
+                            }
                         }
-
-                        // 업데이트된 번들 저장
-                        bundleRepository.save(bundle);
-
-                        // 주문도 저장
-                        orderRepository.save(order);
                     }
                 }
             }
@@ -90,8 +102,8 @@ public class OrderService {
                     .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없다"));
 
             // 사용자의 장바구니 가져오기
-            Cart cart = user.getCart();
-            //Cart cart = cartRepository.findById(orderDto.getCartId()).orElseThrow();
+//            Cart cart = user.getCart();
+            Cart cart = cartRepository.findById(orderDto.getCartId()).orElseThrow();
 
             if (cart == null) {
                 throw new RuntimeException("해당 유저의 장바구니를 찾을 수 없습니다.");
@@ -215,11 +227,11 @@ public class OrderService {
             List<String> dogIdList = new ArrayList<>();
             List<String> treatIdList = new ArrayList<>();
 
-            for(Bundle bundle : bundleList) {
+            for (Bundle bundle : bundleList) {
                 String dogId = bundle.getBundleDogId();
                 List<Treats> treatList = bundle.getTreats();
 
-                for(Treats treat : treatList) {
+                for (Treats treat : treatList) {
                     treatIdList.add(treat.getId());
                 }
 
