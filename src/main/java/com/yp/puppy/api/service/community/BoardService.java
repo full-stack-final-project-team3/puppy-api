@@ -9,10 +9,15 @@ import com.yp.puppy.api.entity.community.BoardView;
 import com.yp.puppy.api.entity.user.User;
 import com.yp.puppy.api.repository.community.BoardRepository;
 import com.yp.puppy.api.repository.community.BoardViewRepository;
+import com.yp.puppy.api.repository.community.LikeRepository;
 import com.yp.puppy.api.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,6 +40,21 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
     private final BoardViewRepository boardViewRepository;
+    private final LikeRepository likeRepository; // 좋아요 레포지토리 추가
+
+    public List<BoardResponseDto> getBoardsWithLikeCounts(String sort, int page, int limit) {
+        PageRequest pageable = PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, sort));
+        Page<Board> boardPage = boardRepository.findAll(pageable);
+
+        return boardPage.getContent().stream()
+                .map(board -> {
+                    BoardResponseDto dto = convertToBoardResponseDto(board);
+                    long likeCount = likeRepository.countByBoardId(board.getId());
+                    dto.setLikeCount((int) likeCount);
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
 
     @Value("${file.upload-dir}")
     private String uploadDir;
@@ -181,9 +201,12 @@ public class BoardService {
                         board.getUser().getEmail()
                 ),
                 //게시글 댓글 숫자 표시
-                board.getReplies() != null ? board.getReplies().size() : 0  // replyCount 설정
+                board.getReplies() != null ? board.getReplies().size() : 0,  // replyCount 설정
+                board.getLikes() != null ? board.getLikes().size() : 0  // 좋아요 수 추가
         );
     }
+
+
 
     public BoardDetailResponseDto convertToBoardDetailResponseDto(Board board) {
         log.info("🌈 게시글 ID {} 변환 중...", board.getId());

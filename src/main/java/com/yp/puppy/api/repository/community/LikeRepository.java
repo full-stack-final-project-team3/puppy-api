@@ -20,5 +20,7 @@ public interface LikeRepository extends JpaRepository<Like, Long> {  // Longìœ¼ë
 
     @Query("SELECT l.typeId, COUNT(l) FROM Like l WHERE l.type = :type AND l.typeId IN :typeIds GROUP BY l.typeId")
     List<Object[]> countLikesByTypeAndTypeIds(@Param("type") String type, @Param("typeIds") List<Long> typeIds);
+
+    long countByBoardId(Long boardId);
 }
 
