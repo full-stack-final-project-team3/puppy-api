@@ -103,6 +103,9 @@ public class OrderService {
                 cart.setUser(null);
                 user.setCart(null);
                 user.setPoint(point);
+
+                user.setExpensedInShop(user.getExpensedInShop() + orderDto.getTotalPrice().intValue()); // 0818 기범 1줄 추가
+
                 cartRepository.save(cart);
                 userRepository.save(user);
             }

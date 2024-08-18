@@ -53,6 +53,8 @@ public class ReservationService {
         foundUser.withdrawalPoints((int) roomPrice);
         log.info("포인트 차감 후: {}", foundUser.getPoint());
 
+        foundUser.setExpensedInHotel(foundUser.getExpensedInHotel() + foundRoom.getPrice());  // 0818 기범 1줄 추가
+
         userRepository.save(foundUser);
         log.info("포인트 저장 후: {}", userRepository.findById(foundUser.getId()).orElseThrow().getPoint());
 
