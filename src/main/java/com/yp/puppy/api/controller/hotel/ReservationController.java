@@ -71,21 +71,21 @@ public class ReservationController {
 
     // 예약 취소
     @DeleteMapping("/{reservationId}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('ADMIN') or @reservationSecurityService.isOwner(authentication, #reservationId)")
     public ResponseEntity<?> deleteReservation(@PathVariable String reservationId) {
         try {
             reservationService.deleteReservation(reservationId);
             return ResponseEntity.ok().body("삭제 성공");
         } catch (Exception e) {
             log.warn("예약 삭제에 실패했습니다.: {}", e.getMessage());
-            return ResponseEntity.status(404).body("예약을 찾지 못햇습니다..");
+            return ResponseEntity.status(404).body("예약을 찾지 못했습니다.");
         }
     }
 
 
     // 예약 수정
     @PatchMapping("/{reservationId}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('ADMIN') or @reservationSecurityService.isOwner(authentication, #reservationId)")
     public ResponseEntity<?> updateReservation(@PathVariable String reservationId, @RequestBody ReservationSaveDto dto) {
         try {
             reservationService.modify(reservationId, dto);
