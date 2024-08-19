@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -361,6 +363,24 @@ public class BoardService {
         }
 
         return convertToBoardDetailResponseDto(board);
+    }
+    //
+    public List<BoardResponseDto> searchBoards(String keyword) {
+        System.out.println("🐶 검색 키워드: " + keyword);
+
+        // 모든 결과를 검색
+        List<Board> searchResults = boardRepository.searchByTitleContaining(keyword);
+
+        System.out.println("검색 결과 수: " + searchResults.size());
+
+        if (!searchResults.isEmpty()) {
+            return searchResults.stream()
+                    .map(this::convertToBoardResponseDto)
+                    .collect(Collectors.toList());
+        } else {
+            // 결과가 없을 때 처리
+            return Collections.emptyList();
+        }
     }
     //
 }
