@@ -1,5 +1,6 @@
 package com.yp.puppy.api.controller.user;
 
+import com.yp.puppy.api.dto.BoardResponseDto;
 import com.yp.puppy.api.dto.request.user.LoginRequestDto;
 import com.yp.puppy.api.dto.request.user.UserInfoModifyDto;
 import com.yp.puppy.api.dto.request.user.UserSaveDto;
@@ -202,7 +203,7 @@ public class UserController {
 
     @GetMapping("/board/like/{userId}")
     public ResponseEntity<?> getMyLikeBoards(@PathVariable String userId) {
-        List<Optional<Board>> myBoardList = userService.getMyLikeBoardList(userId);
+        List<BoardResponseDto> myBoardList = userService.getMyLikeBoardList(userId);
         return ResponseEntity.ok().body(myBoardList);
     }
 

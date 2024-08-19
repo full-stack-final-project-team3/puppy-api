@@ -2,12 +2,14 @@ package com.yp.puppy.api.service.user;
 
 
 import com.yp.puppy.api.auth.TokenProvider;
+import com.yp.puppy.api.dto.BoardResponseDto;
 import com.yp.puppy.api.dto.request.user.LoginRequestDto;
 import com.yp.puppy.api.dto.request.user.UserInfoModifyDto;
 import com.yp.puppy.api.dto.request.user.UserSaveDto;
 import com.yp.puppy.api.dto.response.user.LoginResponseDto;
 import com.yp.puppy.api.dto.response.user.UserResponseDto;
 import com.yp.puppy.api.entity.community.Board;
+import com.yp.puppy.api.entity.community.BoardImg;
 import com.yp.puppy.api.entity.community.Like;
 import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.entity.user.EmailVerification;
@@ -32,6 +34,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -465,14 +468,36 @@ public class UserService {
         userRepository.delete(foundUser);
     }
 
-    public List<Optional<Board>> getMyLikeBoardList(String userId) {
+    public List<BoardResponseDto> getMyLikeBoardList(String userId) {
         User foundUser = userRepository.findById(userId).orElseThrow();
         List<Like> likes = foundUser.getLikes();
+
         log.debug("likes - {}", likes);
-        List<Optional<Board>> boardList = new ArrayList<>();
-        likes.forEach(
-                like -> boardList.add(boardRepository.findById(like.getBoard().getId()))
-        );
+
+        List<BoardResponseDto> boardList = likes.stream()
+                .map(like -> boardRepository.findById(like.getBoard().getId()))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(board -> new BoardResponseDto(
+                        board.getId(),
+                        board.getBoardTitle(),
+                        board.getBoardContent(),
+                        board.getImages().stream().map(BoardImg::getImgUrl).collect(Collectors.toList()), // 이미지 리스트
+                        board.getBoardCreatedAt(),
+                        board.getBoardUpdatedAt(),
+                        board.getViewCount(),
+                        board.getIsClean(),
+                        new BoardResponseDto.UserDTO(
+                                board.getUser().getId(),
+                                board.getUser().getNickname(),
+                                board.getUser().getProfileUrl(),
+                                board.getUser().getEmail()
+                        ),
+                        board.getReplies().size(), // 댓글 수
+                        board.getLikes().size() // 좋아요 수
+                ))
+                .collect(Collectors.toList());
+
         log.debug("addedBoardList - {} ", boardList);
         return boardList;
     }
