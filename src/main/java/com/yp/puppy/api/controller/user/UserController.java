@@ -5,6 +5,7 @@ import com.yp.puppy.api.dto.request.user.UserInfoModifyDto;
 import com.yp.puppy.api.dto.request.user.UserSaveDto;
 import com.yp.puppy.api.dto.response.user.LoginResponseDto;
 import com.yp.puppy.api.dto.response.user.UserResponseDto;
+import com.yp.puppy.api.entity.community.Board;
 import com.yp.puppy.api.exception.LoginFailException;
 import com.yp.puppy.api.service.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 //@RequestMapping("/auth") // 0723 auth 제거
@@ -195,6 +198,12 @@ public class UserController {
 //            log.info("실패");
             return ResponseEntity.badRequest().body("회원가입 실패: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/board/like/{userId}")
+    public ResponseEntity<?> getMyLikeBoards(@PathVariable String userId) {
+        List<Optional<Board>> myBoardList = userService.getMyLikeBoardList(userId);
+        return ResponseEntity.ok().body(myBoardList);
     }
 
 }

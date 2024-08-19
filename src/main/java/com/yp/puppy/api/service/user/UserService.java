@@ -8,10 +8,12 @@ import com.yp.puppy.api.dto.request.user.UserSaveDto;
 import com.yp.puppy.api.dto.response.user.LoginResponseDto;
 import com.yp.puppy.api.dto.response.user.UserResponseDto;
 import com.yp.puppy.api.entity.community.Board;
+import com.yp.puppy.api.entity.community.Like;
 import com.yp.puppy.api.entity.user.Dog;
 import com.yp.puppy.api.entity.user.EmailVerification;
 import com.yp.puppy.api.entity.user.User;
 import com.yp.puppy.api.exception.LoginFailException;
+import com.yp.puppy.api.repository.community.BoardRepository;
 import com.yp.puppy.api.repository.user.DogRepository;
 import com.yp.puppy.api.repository.user.EmailVerificationRepository;
 import com.yp.puppy.api.repository.user.UserRepository;
@@ -27,7 +29,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -46,6 +50,8 @@ public class UserService {
     private final PasswordEncoder encoder;
 
     private final JavaMailSender mailSender;
+
+    private final BoardRepository boardRepository;
 
     private final TokenProvider tokenProvider;
 
@@ -457,5 +463,17 @@ public class UserService {
         User foundUser = userRepository.findById(userId).orElseThrow();
         log.info("delete user info - {}", foundUser);
         userRepository.delete(foundUser);
+    }
+
+    public List<Optional<Board>> getMyLikeBoardList(String userId) {
+        User foundUser = userRepository.findById(userId).orElseThrow();
+        List<Like> likes = foundUser.getLikes();
+        log.debug("likes - {}", likes);
+        List<Optional<Board>> boardList = new ArrayList<>();
+        likes.forEach(
+                like -> boardList.add(boardRepository.findById(like.getBoard().getId()))
+        );
+        log.debug("addedBoardList - {} ", boardList);
+        return boardList;
     }
 }

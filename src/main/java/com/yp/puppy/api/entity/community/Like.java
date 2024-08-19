@@ -29,7 +29,7 @@ public class Like {
     @Column(name = "type_id", nullable = false)  // 추가된 type_id 필드
     private Long typeId;  // 좋아요의 유형 ID
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "board_id")
     private Board board;  // 게시글 번호 FK
 
