@@ -127,4 +127,14 @@ public class BoardController {
         }
     }
     //
+
+    @GetMapping("/search")
+    public ResponseEntity<?> searchBoards(
+            @RequestParam String keyword) {  // page와 limit 매개변수를 제거합니다.
+        log.info("🐶 게시글 검색 요청 - keyword: {}", keyword);
+        List<BoardResponseDto> searchResults = boardService.searchBoards(keyword); // page와 limit 없이 호출
+        log.info("🐶 게시글 검색 결과 - {}건", searchResults.size());
+        return ResponseEntity.ok().body(searchResults);
+    }
+    //
 }
