@@ -102,7 +102,6 @@ public class OrderService {
                     .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없다"));
 
             // 사용자의 장바구니 가져오기
-//            Cart cart = user.getCart();
             Cart cart = cartRepository.findById(orderDto.getCartId()).orElseThrow();
 
             if (cart == null) {
@@ -139,7 +138,6 @@ public class OrderService {
 
             // Order 객체 생성 시 배송 요청 사항 및 기타 요청 사항 추가
             Order order = Order.builder()
-                    .id(null)
                     .orderDateTime(LocalDateTime.now())
                     .postNum(orderDto.getPostNum())
                     .receiverName(orderDto.getReceiverName())

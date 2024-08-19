@@ -51,7 +51,7 @@ public class BundleService {
 
         Bundle newBundle = Bundle.builder()
                 .user(user)
-                .bundlePrice(29900L)
+                .bundlePrice(39900L)
                 .bundleTitle("강아지 맞춤 펫 푸드 패키지")
                 .dog(dog)
                 .dogName(dog.getDogName())
