@@ -513,4 +513,29 @@ public class UserService {
         log.debug("addedBoardList - {} ", boardList);
         return boardList;
     }
+
+    public UserResponseDto findUserById(String userId) {
+        log.debug("findUserById In UserService - {}", userId);
+        User foundUser = userRepository.findById(userId).orElseThrow();
+        UserResponseDto dto = UserResponseDto.builder()
+                .id(foundUser.getId())
+                .email(foundUser.getEmail())
+                .nickname(foundUser.getNickname())
+                .role(foundUser.getRole())
+                .birthday(foundUser.getBirthday())
+                .point(foundUser.getPoint())
+                .phoneNumber(foundUser.getPhoneNumber())
+                .profileUrl(foundUser.getProfileUrl())
+                .password(foundUser.getPassword())
+                .hasDogInfo(foundUser.isHasDogInfo())
+                .noticeCount(foundUser.getNoticeCount())
+                .realName(foundUser.getRealName())
+                .address(foundUser.getAddress())
+                .detailAddress(foundUser.getDetailAddress())
+                .warningCount(foundUser.getWarningCount())
+                .dogList(foundUser.getDogList())
+                .provider(foundUser.getProvider())
+                .build();
+        return dto;
+    }
 }

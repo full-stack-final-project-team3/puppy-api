@@ -1,5 +1,6 @@
 package com.yp.puppy.api.controller.user;
 
+import com.yp.puppy.api.auth.TokenProvider;
 import com.yp.puppy.api.dto.BoardResponseDto;
 import com.yp.puppy.api.dto.request.user.LoginRequestDto;
 import com.yp.puppy.api.dto.request.user.UserInfoModifyDto;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +29,7 @@ import java.util.Optional;
 public class UserController {
 
     private final UserService userService;
+    private final TokenProvider tokenProvider;
 
 
     // 이메일 중복확인
@@ -207,4 +210,51 @@ public class UserController {
         return ResponseEntity.ok().body(myBoardList);
     }
 
+
+    // 자동 로그인 요청 처리
+    @PostMapping("/auto-login")
+    public ResponseEntity<?> autoLogin(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        log.info("오토로그인 token : {}", bearerToken);
+
+        if (bearerToken == null || bearerToken.isEmpty() || !bearerToken.startsWith("Bearer ")) {
+            return ResponseEntity.status(401).body("유효하지 않은 토큰입니다.");
+        }
+
+        // Bearer 부분 제거
+        String token = bearerToken.substring(7);
+        log.info("오토로그인 메서드에서 추출한 token : {}", token);
+
+        try {
+            TokenProvider.TokenUserInfo tokenInfo = tokenProvider.validateAndGetTokenInfo(token);
+            String userId = tokenInfo.getUserId();
+            log.info("오토로그인 안에서의 유저아이디 : {}", userId);
+            UserResponseDto userResponseDto = userService.findUserById(userId);
+
+            if (userResponseDto == null) {
+                return ResponseEntity.status(401).body("유효하지 않은 토큰입니다.");
+            }
+
+            return ResponseEntity.ok().body(userResponseDto);
+
+        } catch (Exception e) {
+            log.error("자동 로그인 처리 중 오류 발생", e);
+            return ResponseEntity.status(401).body("자동 로그인에 실패했습니다.");
+        }
+    }
+
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        // 쿠키 삭제
+        Cookie cookie = new Cookie("authToken", null);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false); // HTTPS에서만 전송되도록 할 경우
+        cookie.setPath("/");
+        cookie.setDomain("localhost");
+        cookie.setMaxAge(0); // 즉시 만료시키기
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok().body("로그아웃되었습니다.");
+    }
 }
