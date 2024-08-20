@@ -243,4 +243,18 @@ public class UserController {
         }
     }
 
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        // 쿠키 삭제
+        Cookie cookie = new Cookie("authToken", null);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false); // HTTPS에서만 전송되도록 할 경우
+        cookie.setPath("/");
+        cookie.setDomain("localhost");
+        cookie.setMaxAge(0); // 즉시 만료시키기
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok().body("로그아웃되었습니다.");
+    }
 }
