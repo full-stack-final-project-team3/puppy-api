@@ -8,7 +8,6 @@ import com.yp.puppy.api.dto.response.user.LoginResponseDto;
 import com.yp.puppy.api.entity.user.User;
 import com.yp.puppy.api.exception.LoginFailException;
 import com.yp.puppy.api.repository.user.UserRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -26,11 +25,15 @@ import java.util.Map;
 @Service
 @Transactional
 @Slf4j
-@RequiredArgsConstructor
 public class SnsLoginService {
 
     private final UserService userService;
     private final UserRepository userRepository;
+
+    public SnsLoginService(UserService userService, UserRepository userRepository) {
+        this.userService = userService;
+        this.userRepository = userRepository;
+    }
 
     // 카카오 로그인 처리 서비스 로직
     public void kakaoLogin(Map<String, Object> requestParams, HttpServletResponse response) {
@@ -72,18 +75,23 @@ public class SnsLoginService {
         try {
             LoginRequestDto loginRequest = LoginRequestDto.builder()
                     .email(email)
-                    .password("abcd1234!") // 패스워드 설정 (카카오 사용자는 패스워드가 필요 없을 수도 있음)
+                    .password("0000") // 패스워드 설정 (카카오 사용자는 패스워드가 필요 없을 수도 있음)
                     .autoLogin(true)
                     .build();
 
             LoginResponseDto loginResponse = userService.authenticate(loginRequest);
 
             // 자동 로그인 쿠키 설정
+//            Cookie cookie = new Cookie("authToken", loginResponse.getToken());
+//            cookie.setHttpOnly(true);
+//            cookie.setPath("/");
+//            cookie.setMaxAge(60 * 60 * 24 * 30); // 쿠키 유효기간 30일
+//            response.addCookie(cookie);
             Cookie cookie = new Cookie("authToken", loginResponse.getToken());
-            cookie.setHttpOnly(true);
             cookie.setPath("/");
             cookie.setMaxAge(60 * 60 * 24 * 30); // 쿠키 유효기간 30일
             response.addCookie(cookie);
+            log.debug("로그인 완료 - {}", loginResponse);
 
         } catch (LoginFailException e) {
             throw new RuntimeException("카카오 로그인 실패", e);
