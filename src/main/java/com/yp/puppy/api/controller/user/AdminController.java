@@ -42,4 +42,20 @@ public class AdminController {
         List<Long> totals = adminService.getPointTotalDay(startDate, endDate);
         return ResponseEntity.ok(totals);
     }
+
+    // 누적 가입자 일 / 주 / 월별 조회 메서드
+    @GetMapping("/users/cumulative/today")
+    public List<Long> getCumulativeUsersCountToday() {
+        return adminService.countCumulativeUsersToday();
+    }
+
+    @GetMapping("/users/cumulative/week")
+    public List<Long> getCumulativeUsersCountThisWeek() {
+        return adminService.countCumulativeUsersThisWeek();
+    }
+
+    @GetMapping("/users/cumulative/month")
+    public List<Long> getCumulativeUsersCountThisMonth() {
+        return adminService.countCumulativeUsersThisMonth();
+    }
 }
