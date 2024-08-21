@@ -54,13 +54,10 @@ public class TreatsController {
     }
 
     // 1. 상품 전체 맞춤 조회
-
     @GetMapping("/list/{dogId}")
     public ResponseEntity<?> getTreatsList(@RequestParam(required = false, defaultValue = "name") String sort,
                                            @PathVariable String dogId,
                                            @RequestParam(defaultValue = "1") int pageNo) {
-
-        // userInfo가 null이면 에러 개가 없다면 그냥 아무거나 / 개 정보 등록
 
         Map<String, Object> treatsList = treatsService.getTreatsList(dogId, pageNo, sort);
         if (treatsList.isEmpty()) {
@@ -71,7 +68,6 @@ public class TreatsController {
     }
 
     // 2. 제품 상세 조회
-
     @GetMapping("/{treatsId}")
     public ResponseEntity<?> getTreats(@PathVariable String treatsId) {
         try {
@@ -107,7 +103,6 @@ public class TreatsController {
     }
 
     // 4. 제품 삭제
-
     @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/{treatsId}")
     public ResponseEntity<?> deleteTreats(@PathVariable String treatsId) {
@@ -121,7 +116,6 @@ public class TreatsController {
     }
 
     // 5. 제품 수정
-
     @PreAuthorize("hasAuthority('ADMIN')")
     @PatchMapping(value = "/{treatsId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> modifyTreats(@ModelAttribute TreatsSaveDto dto,
