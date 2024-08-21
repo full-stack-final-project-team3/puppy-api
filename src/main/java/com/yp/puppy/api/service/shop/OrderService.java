@@ -51,6 +51,11 @@ public class OrderService {
         List<Order> orders = getAllOrders();
 
         for (Order order : orders) {
+
+            if(order.getOrderStatus() == Order.OrderStatus.CANCELLED) {
+                return;
+            }
+
             List<Bundle> bundles = order.getCart().getBundles();
 
             for (Bundle bundle : bundles) {
