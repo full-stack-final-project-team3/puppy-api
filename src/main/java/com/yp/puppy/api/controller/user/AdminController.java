@@ -58,4 +58,66 @@ public class AdminController {
     public List<Long> getCumulativeUsersCountThisMonth() {
         return adminService.countCumulativeUsersThisMonth();
     }
+
+
+    // 일/ 주 /월 별 사용 포인트 조회
+    @GetMapping("/expenses/daily")
+    public List<Long> getDailyExpenses() {
+        return adminService.calculateDailyExpenses();
+    }
+
+    @GetMapping("/expenses/weekly")
+    public List<Long> getWeeklyExpenses() {
+        return adminService.calculateWeeklyExpenses();
+    }
+
+    @GetMapping("/expenses/monthly")
+    public List<Long> getMonthlyExpenses() {
+        return adminService.calculateMonthlyExpenses();
+    }
+
+
+    // 예약의 일별 지출 계산
+    @GetMapping("/expenses/reservations/daily")
+    public ResponseEntity<List<Long>> getDailyReservationExpenses() {
+        List<Long> dailyExpenses = adminService.calculateDailyReservationExpenses();
+        return ResponseEntity.ok(dailyExpenses);
+    }
+
+    // 주문의 일별 지출 계산
+    @GetMapping("/expenses/orders/daily")
+    public ResponseEntity<List<Long>> getDailyOrderExpenses() {
+        List<Long> dailyExpenses = adminService.calculateDailyOrderExpenses();
+        return ResponseEntity.ok(dailyExpenses);
+    }
+
+    // 예약의 주별 지출 계산
+    @GetMapping("/expenses/reservations/weekly")
+    public ResponseEntity<List<Long>> getWeeklyReservationExpenses() {
+        List<Long> weeklyExpenses = adminService.calculateWeeklyReservationExpenses();
+        return ResponseEntity.ok(weeklyExpenses);
+    }
+
+    // 주문의 주별 지출 계산
+    @GetMapping("/expenses/orders/weekly")
+    public ResponseEntity<List<Long>> getWeeklyOrderExpenses() {
+        List<Long> weeklyExpenses = adminService.calculateWeeklyOrderExpenses();
+        return ResponseEntity.ok(weeklyExpenses);
+    }
+
+    // 예약의 월별 지출 계산
+    @GetMapping("/expenses/reservations/monthly")
+    public ResponseEntity<List<Long>> getMonthlyReservationExpenses() {
+        List<Long> monthlyExpenses = adminService.calculateMonthlyReservationExpenses();
+        return ResponseEntity.ok(monthlyExpenses);
+    }
+
+    // 주문의 월별 지출 계산
+    @GetMapping("/expenses/orders/monthly")
+    public ResponseEntity<List<Long>> getMonthlyOrderExpenses() {
+        List<Long> monthlyExpenses = adminService.calculateMonthlyOrderExpenses();
+        return ResponseEntity.ok(monthlyExpenses);
+    }
+
+
 }

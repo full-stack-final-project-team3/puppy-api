@@ -1,5 +1,7 @@
 package com.yp.puppy.api.service.user;
 
+import com.yp.puppy.api.repository.hotel.ReservationRepository;
+import com.yp.puppy.api.repository.shop.OrderRepository;
 import com.yp.puppy.api.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,9 @@ import java.util.List;
 public class AdminService {
 
     private final UserRepository userRepository;
+    private final ReservationRepository reservationRepository;
+    private final OrderRepository orderRepository;
+
 
     public List<Long> countUsersToday() {
         List<Long> counts = new ArrayList<>();
@@ -123,4 +128,134 @@ public class AdminService {
         Collections.reverse(cumulativeCounts); // 배열의 순서를 뒤집음
         return cumulativeCounts;
     }
+
+    public List<Long> calculateDailyExpenses() {
+        List<Long> dailyExpenses = new ArrayList<>();
+        for (int i = 27; i >= 0; i--) {
+            LocalDateTime startOfDay = LocalDate.now().minusDays(i).atStartOfDay();
+            LocalDateTime endOfDay = startOfDay.plusDays(1);
+
+            Long reservationTotal = reservationRepository.sumTotalPriceByPeriod(startOfDay, endOfDay);
+            Long orderTotal = orderRepository.sumTotalPriceByPeriod(startOfDay, endOfDay);
+
+            Long dailyTotal = (reservationTotal != null ? reservationTotal : 0L) +
+                    (orderTotal != null ? orderTotal : 0L);
+
+            dailyExpenses.add(dailyTotal);
+        }
+        return dailyExpenses;
+    }
+
+    public List<Long> calculateWeeklyExpenses() {
+        List<Long> weeklyExpenses = new ArrayList<>();
+        for (int i = 3; i >= 0; i--) {
+            LocalDateTime startOfWeek = LocalDate.now().minusWeeks(i).with(java.time.DayOfWeek.MONDAY).atStartOfDay();
+            LocalDateTime endOfWeek = startOfWeek.plusWeeks(1);
+
+            Long reservationTotal = reservationRepository.sumTotalPriceByPeriod(startOfWeek, endOfWeek);
+            Long orderTotal = orderRepository.sumTotalPriceByPeriod(startOfWeek, endOfWeek);
+
+            Long weeklyTotal = (reservationTotal != null ? reservationTotal : 0L) +
+                    (orderTotal != null ? orderTotal : 0L);
+
+            weeklyExpenses.add(weeklyTotal);
+        }
+        return weeklyExpenses;
+    }
+
+    public List<Long> calculateMonthlyExpenses() {
+        List<Long> monthlyExpenses = new ArrayList<>();
+        for (int i = 11; i >= 0; i--) {
+            LocalDateTime startOfMonth = LocalDate.now().minusMonths(i).withDayOfMonth(1).atStartOfDay();
+            LocalDateTime endOfMonth = startOfMonth.plusMonths(1);
+
+            Long reservationTotal = reservationRepository.sumTotalPriceByPeriod(startOfMonth, endOfMonth);
+            Long orderTotal = orderRepository.sumTotalPriceByPeriod(startOfMonth, endOfMonth);
+
+            Long monthlyTotal = (reservationTotal != null ? reservationTotal : 0L) +
+                    (orderTotal != null ? orderTotal : 0L);
+
+            monthlyExpenses.add(monthlyTotal);
+        }
+        return monthlyExpenses;
+    }
+
+    // 예약의 일별 지출 계산
+    public List<Long> calculateDailyReservationExpenses() {
+        List<Long> dailyExpenses = new ArrayList<>();
+        for (int i = 27; i >= 0; i--) {
+            LocalDateTime startOfDay = LocalDate.now().minusDays(i).atStartOfDay();
+            LocalDateTime endOfDay = startOfDay.plusDays(1);
+
+            Long reservationTotal = reservationRepository.sumTotalPriceByPeriod(startOfDay, endOfDay);
+            dailyExpenses.add(reservationTotal != null ? reservationTotal : 0L);
+        }
+        return dailyExpenses;
+    }
+
+    // 주문의 일별 지출 계산
+    public List<Long> calculateDailyOrderExpenses() {
+        List<Long> dailyExpenses = new ArrayList<>();
+        for (int i = 27; i >= 0; i--) {
+            LocalDateTime startOfDay = LocalDate.now().minusDays(i).atStartOfDay();
+            LocalDateTime endOfDay = startOfDay.plusDays(1);
+
+            Long orderTotal = orderRepository.sumTotalPriceByPeriod(startOfDay, endOfDay);
+            dailyExpenses.add(orderTotal != null ? orderTotal : 0L);
+        }
+        return dailyExpenses;
+    }
+
+    // 예약의 주별 지출 계산
+    public List<Long> calculateWeeklyReservationExpenses() {
+        List<Long> weeklyExpenses = new ArrayList<>();
+        for (int i = 3; i >= 0; i--) {
+            LocalDateTime startOfWeek = LocalDate.now().minusWeeks(i).with(java.time.DayOfWeek.MONDAY).atStartOfDay();
+            LocalDateTime endOfWeek = startOfWeek.plusWeeks(1);
+
+            Long reservationTotal = reservationRepository.sumTotalPriceByPeriod(startOfWeek, endOfWeek);
+            weeklyExpenses.add(reservationTotal != null ? reservationTotal : 0L);
+        }
+        return weeklyExpenses;
+    }
+
+    // 주문의 주별 지출 계산
+    public List<Long> calculateWeeklyOrderExpenses() {
+        List<Long> weeklyExpenses = new ArrayList<>();
+        for (int i = 3; i >= 0; i--) {
+            LocalDateTime startOfWeek = LocalDate.now().minusWeeks(i).with(java.time.DayOfWeek.MONDAY).atStartOfDay();
+            LocalDateTime endOfWeek = startOfWeek.plusWeeks(1);
+
+            Long orderTotal = orderRepository.sumTotalPriceByPeriod(startOfWeek, endOfWeek);
+            weeklyExpenses.add(orderTotal != null ? orderTotal : 0L);
+        }
+        return weeklyExpenses;
+    }
+
+    // 예약의 월별 지출 계산
+    public List<Long> calculateMonthlyReservationExpenses() {
+        List<Long> monthlyExpenses = new ArrayList<>();
+        for (int i = 11; i >= 0; i--) {
+            LocalDateTime startOfMonth = LocalDate.now().minusMonths(i).withDayOfMonth(1).atStartOfDay();
+            LocalDateTime endOfMonth = startOfMonth.plusMonths(1);
+
+            Long reservationTotal = reservationRepository.sumTotalPriceByPeriod(startOfMonth, endOfMonth);
+            monthlyExpenses.add(reservationTotal != null ? reservationTotal : 0L);
+        }
+        return monthlyExpenses;
+    }
+
+    // 주문의 월별 지출 계산
+    public List<Long> calculateMonthlyOrderExpenses() {
+        List<Long> monthlyExpenses = new ArrayList<>();
+        for (int i = 11; i >= 0; i--) {
+            LocalDateTime startOfMonth = LocalDate.now().minusMonths(i).withDayOfMonth(1).atStartOfDay();
+            LocalDateTime endOfMonth = startOfMonth.plusMonths(1);
+
+            Long orderTotal = orderRepository.sumTotalPriceByPeriod(startOfMonth, endOfMonth);
+            monthlyExpenses.add(orderTotal != null ? orderTotal : 0L);
+        }
+        return monthlyExpenses;
+    }
+
 }
