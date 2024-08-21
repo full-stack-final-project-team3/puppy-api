@@ -86,6 +86,13 @@ public class DogService {
         Dog foundDog = dogRepository.findById(dogId).orElseThrow();
         foundDog.setWeight(dto.getWeight());
         foundDog.setDogProfileUrl(dto.getDogProfileUrl());
+       if (dto.getWeight() >= 25) {
+           foundDog.setDogSize(Dog.DogSize.LARGE);
+       } else if (dto.getWeight() >= 10) {
+           foundDog.setDogSize(Dog.DogSize.MEDIUM);
+       } else {
+           foundDog.setDogSize(Dog.DogSize.SMALL);
+       }
         log.info("dto's profile url: {}", dto.getDogProfileUrl());
         dogRepository.save(foundDog);
     }
