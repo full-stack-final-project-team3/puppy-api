@@ -36,6 +36,7 @@ public class TreatsService {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
+    // 0. 관리자 상품 전체 조회 중간처리
     public List<TreatsListDto> getAllTreatsList(String userId) {
 
         User user = userRepository.findById(userId).orElseThrow();
@@ -60,21 +61,20 @@ public class TreatsService {
         Dog.DogSize dogSize = userDogInfo.getDogSize();
         Dog.DogAgeType dogAgeType = userDogInfo.getDogAgeType();
         List<Dog.Allergy> dogInfoAllergies = userDogInfo != null ? userDogInfo.getAllergies() : null;
-        List<Treats.Allergic> allergics = convertDogAllergiesToTreatsAllergies(dogInfoAllergies);
+        List<Treats.Allergic> allergies = convertDogAllergiesToTreatsAllergies(dogInfoAllergies);
 
         List<Treats> treatsList;
         long totalElements;
 
-        // 페이징 여부에 따라 처리
         if (pageNo != null && pageNo > 0) {
             // 페이징 처리
             Pageable pageable = PageRequest.of(pageNo - 1, 3);
-            Page<Treats> treatsPage = treatsRepository.findTreats(allergics, dogSize, dogAgeType, pageable, sort);
+            Page<Treats> treatsPage = treatsRepository.findTreats(allergies, dogSize, dogAgeType, pageable, sort);
             treatsList = treatsPage.getContent();
             totalElements = treatsPage.getTotalElements();
         } else {
             // 전체 리스트 조회
-            treatsList = treatsRepository.findAllTreats(allergics, dogSize, dogAgeType, sort);
+            treatsList = treatsRepository.findAllTreats(allergies, dogSize, dogAgeType, sort);
             totalElements = treatsList.size();
         }
 
@@ -102,13 +102,12 @@ public class TreatsService {
 
     // 3. 상품 생성 중간처리
     public void saveTreats(Treats treats, String userId) {
-        // 회원정보 조회 (관리자냐?)
+
         User admin = userRepository.findById(userId).orElseThrow(() -> new IllegalStateException("사용자를 찾을 수 없습니다."));
 
         // 권한에 따른 글쓰기 제한
         if (admin.getRole() != Role.ADMIN) throw new IllegalStateException("관리자만 등록을 할 수 있습니다.");
 
-        // 데이터베이스에 저장
         Treats savedTreats = treatsRepository.save(treats);
         log.info("treats: {}", savedTreats);
     }
