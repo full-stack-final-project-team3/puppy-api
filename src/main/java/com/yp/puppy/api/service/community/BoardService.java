@@ -7,6 +7,7 @@ import com.yp.puppy.api.entity.community.Board;
 import com.yp.puppy.api.entity.community.BoardImg;
 import com.yp.puppy.api.entity.community.BoardView;
 import com.yp.puppy.api.entity.user.User;
+import com.yp.puppy.api.repository.community.BoardImgRepository;
 import com.yp.puppy.api.repository.community.BoardRepository;
 import com.yp.puppy.api.repository.community.BoardViewRepository;
 import com.yp.puppy.api.repository.community.LikeRepository;
@@ -43,6 +44,7 @@ public class BoardService {
     private final UserRepository userRepository;
     private final BoardViewRepository boardViewRepository;
     private final LikeRepository likeRepository; // 좋아요 레포지토리 추가
+    private final BoardImgRepository boardImgRepository;
 
     public List<BoardResponseDto> getBoardsWithLikeCounts(String sort, int page, int limit) {
         PageRequest pageable = PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, sort));
@@ -317,11 +319,6 @@ public class BoardService {
 
 
 
-
-
-
-
-
     //조회수
     public BoardDetailResponseDto getBoardDetailWithViewCount(Long id, String userId) {
         // ID가 null이거나 0보다 작으면 그냥 조회만 하고 넘어갑니다.
@@ -382,5 +379,43 @@ public class BoardService {
             return Collections.emptyList();
         }
     }
+    //
+    @Transactional
+    public void deleteImage(Long boardId, String imageUrl, String userId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new EntityNotFoundException("Board not found with id: " + boardId));
+
+        // 게시글 작성자 확인
+        if (!board.getUser().getId().equals(userId)) {
+            throw new IllegalStateException("You don't have permission to delete this image");
+        }
+
+        // 이미지 삭제
+        List<BoardImg> images = board.getImages();
+        BoardImg imageToDelete = images.stream()
+                .filter(img -> img.getImgUrl().equals(imageUrl))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("Image not found"));
+
+        // 이미지 파일 시스템에서 삭제
+        try {
+            Path path = Paths.get(uploadDir, imageToDelete.getImgUrl().replace("/uploads/", ""));
+            Files.deleteIfExists(path);
+        } catch (IOException e) {
+            log.error("Error deleting image file: ", e);
+            throw new RuntimeException("Failed to delete image file", e);
+        }
+
+        // 이미지 리스트에서 제거
+        images.remove(imageToDelete);
+        boardRepository.save(board);  // 변경 사항 저장
+
+        // 데이터베이스에서 이미지 경로 삭제
+        boardImgRepository.deleteById(imageToDelete.getId());
+
+    }
+
+
+
     //
 }
