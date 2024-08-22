@@ -137,4 +137,29 @@ public class BoardController {
         return ResponseEntity.ok().body(searchResults);
     }
     //
+
+    @DeleteMapping("/{id}/deleteImage")
+    public ResponseEntity<?> deleteImage(@PathVariable Long id,
+                                         @RequestParam String imageUrl,
+                                         @RequestHeader("Authorization") String token) {
+        try {
+            String userId = tokenProvider.validateAndGetTokenInfo(token.replace("Bearer ", "")).getUserId();
+            log.info("🐶 이미지 삭제 요청 - board id: {}, 요청한 사용자: {}", id, userId);
+
+            // 이미지 삭제 로직 호출
+            boardService.deleteImage(id, imageUrl, userId);
+
+            return ResponseEntity.ok().body(Map.of("message", "이미지가 성공적으로 삭제되었습니다."));
+        } catch (EntityNotFoundException e) {
+            log.error("🐶 이미지를 찾을 수 없습니다 - {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "이미지를 찾을 수 없습니다."));
+        } catch (Exception e) {
+            log.error("🐶 이미지 삭제 중 오류 발생 - {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "이미지 삭제 중 오류가 발생했습니다: " + e.getMessage()));
+        }
+    }
+
+    //
 }
