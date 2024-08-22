@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -57,6 +58,11 @@ public class DogService {
     public List<Dog> findMyPuppies(String userId) {
         User foundUser = userRepository.findById(userId).orElseThrow(NoSuchElementException::new);
         List<Dog> foundList = dogRepository.findByUser(foundUser);
+
+        for (Dog dog : foundList) {
+            dog.updateAgeAndMonth(); // 나이와 개월 수를 동적으로 업데이트
+            dogRepository.save(dog);
+        }
 
         return foundList;
     }
@@ -105,4 +111,7 @@ public class DogService {
         dogRepository.save(foundDog);
         return foundDog;
     }
+
+
+
 }

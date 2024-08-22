@@ -14,6 +14,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -109,12 +110,7 @@ public class Dog {
 
     @Setter
     private boolean hasSubs;
-//    @PrePersist
-//    private void prePersist() {
-//        if (this.age == 0) {
-//            this.age = Math.abs((int) (this.getBirthday().getYear() - 2024));
-//        }
-//    }
+
 
     public enum DogSize {
         SMALL, MEDIUM, LARGE
@@ -136,6 +132,14 @@ public class Dog {
         this.user = user;
         user.addDog(this);
     }
+
+    public void updateAgeAndMonth() {
+        Period period = Period.between(this.birthday, LocalDate.now());
+        this.age = period.getYears();
+        this.month = period.getMonths();
+    }
+
+
 
     public enum Allergy {
         BEEF,
