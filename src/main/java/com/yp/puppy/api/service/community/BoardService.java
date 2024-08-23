@@ -189,18 +189,16 @@ public class BoardService {
 
 
     public BoardResponseDto convertToBoardResponseDto(Board board) {
-        List<String> imageUrls = new ArrayList<>();
-        if (board.getImages() != null) {
-            imageUrls = board.getImages().stream()
-                    .map(BoardImg::getImgUrl)
-                    .collect(Collectors.toList());
-        }
+        List<String> imageUrls = board.getImages().stream()
+                .filter(img -> img.getBoardReply() == null && img.getBoardSubReply() == null)
+                .map(BoardImg::getImgUrl)
+                .collect(Collectors.toList());
 
         return new BoardResponseDto(
                 board.getId(),
                 board.getBoardTitle(),
                 board.getBoardContent(),
-                imageUrls,
+                imageUrls,  // 여기서 필터링된 이미지 URL만 전달
                 board.getBoardCreatedAt(),
                 board.getBoardUpdatedAt(),
                 board.getViewCount(),
@@ -211,9 +209,8 @@ public class BoardService {
                         board.getUser().getProfileUrl(),
                         board.getUser().getEmail()
                 ),
-                //게시글 댓글 숫자 표시
-                board.getReplies() != null ? board.getReplies().size() : 0,  // replyCount 설정
-                board.getLikes() != null ? board.getLikes().size() : 0  // 좋아요 수 추가
+                board.getReplies() != null ? board.getReplies().size() : 0,
+                board.getLikes() != null ? board.getLikes().size() : 0
         );
     }
 
