@@ -109,13 +109,13 @@ public class BoardReplyService {
     }
 
     @Transactional
-    public void deleteReply(Long replyId, String userId) {
+    public void deleteReply(Long replyId, String userId, boolean isAdmin) {
         BoardReply reply = boardReplyRepository.findById(replyId)
                 .orElseThrow(() -> new EntityNotFoundException("Reply not found"));
 
         UUID userUUID = UUID.fromString(userId);
 
-        if (!reply.getUser().getId().toString().equals(userUUID.toString())) {
+        if (!isAdmin && !reply.getUser().getId().toString().equals(userUUID.toString())) {
             throw new IllegalArgumentException("You are not authorized to delete this reply");
         }
 
@@ -237,11 +237,11 @@ public class BoardReplyService {
     }
 
     @Transactional
-    public void deleteSubReply(Long subReplyId, String userId) {
+    public void deleteSubReply(Long subReplyId, String userId, boolean isAdmin) {
         BoardSubReply subReply = boardSubReplyRepository.findById(subReplyId)
                 .orElseThrow(() -> new EntityNotFoundException("SubReply not found"));
 
-        if (!subReply.getUser().getId().toString().equals(userId)) {
+        if (!isAdmin && !subReply.getUser().getId().toString().equals(userId)) {
             throw new IllegalArgumentException("You are not authorized to delete this sub-reply");
         }
 
