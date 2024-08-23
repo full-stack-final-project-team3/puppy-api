@@ -33,7 +33,7 @@ jobs:
       - name: web springboot docker build and push
         run: |
           docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
-          docker build --no-cache -t kimjuseong/backend:latest /root/puppy-application/puppy-api
+          docker build --no-cache -t kimjuseong/backend:latest /home/runner/work/puppy-api/puppy-api 
           docker push kimjuseong/backend:latest
 
       # 도커 허브에서 jar파일 및 pull
