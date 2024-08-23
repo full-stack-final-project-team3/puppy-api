@@ -60,4 +60,15 @@ public class UserNoticeService {
         userRepository.save(foundUser);
         return foundUser;
     }
+
+    public void clickAllUserNotice(String userId) {
+        User foundUser = userRepository.findById(userId).orElseThrow();
+        List<UserNotice> userNotices = foundUser.getUserNotices();
+        for (UserNotice notice : userNotices) {
+            notice.setIsClicked(true);
+            noticeRepository.save(notice);
+        }
+        foundUser.setNoticeCount(0);
+        userRepository.save(foundUser);
+    }
 }
