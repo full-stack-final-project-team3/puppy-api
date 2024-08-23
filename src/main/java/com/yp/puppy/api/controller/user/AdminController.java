@@ -1,5 +1,6 @@
 package com.yp.puppy.api.controller.user;
 
+import com.yp.puppy.api.service.shop.OrderService;
 import com.yp.puppy.api.service.user.AdminService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -20,6 +22,7 @@ import java.util.List;
 public class AdminController {
 
     private final AdminService adminService;
+    private final OrderService orderService;
 
     @GetMapping("/users/count/today")
     public List<Long> getUsersCountToday() {
@@ -35,6 +38,7 @@ public class AdminController {
     public List<Long> getUsersCountThisMonth() {
         return adminService.countUsersThisMonth();
     }
+
     @GetMapping("/point/total/day")
     public ResponseEntity<?> getPointTotalDay(
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDate,
@@ -119,5 +123,12 @@ public class AdminController {
         return ResponseEntity.ok(monthlyExpenses);
     }
 
+    // 가장 많이 주문한 상품 계산
+    @GetMapping("/shop/best")
+    public ResponseEntity<?> getMostSalesTreats() {
+        HashMap<String, Integer> checkMostSalesTreats = adminService.mostSale();
+
+        return ResponseEntity.ok(checkMostSalesTreats);
+    }
 
 }

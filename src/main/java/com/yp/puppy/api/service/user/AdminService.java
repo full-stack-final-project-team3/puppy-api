@@ -1,6 +1,10 @@
 package com.yp.puppy.api.service.user;
 
+import com.yp.puppy.api.entity.shop.Bundle;
+import com.yp.puppy.api.entity.shop.Order;
+import com.yp.puppy.api.entity.shop.Treats;
 import com.yp.puppy.api.repository.hotel.ReservationRepository;
+import com.yp.puppy.api.repository.shop.BundleRepository;
 import com.yp.puppy.api.repository.shop.OrderRepository;
 import com.yp.puppy.api.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,9 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Transactional
@@ -22,6 +24,7 @@ public class AdminService {
     private final UserRepository userRepository;
     private final ReservationRepository reservationRepository;
     private final OrderRepository orderRepository;
+    private final BundleRepository bundleRepository;
 
 
     public List<Long> countUsersToday() {
@@ -257,5 +260,23 @@ public class AdminService {
         }
         return monthlyExpenses;
     }
+
+    public HashMap<String, Integer> mostSale() {
+        List<Bundle> all = bundleRepository.findAll();
+        HashMap<String, Integer> treatSales = new HashMap<>();
+
+        for (Bundle bundle : all) {
+            if(bundle.getBundleStatus() == Bundle.BundleStatus.ORDERED) {
+                List<Treats> treats = bundle.getTreats();
+                for (Treats treat : treats) {
+                    String treatName = treat.getTreatsTitle();
+                    treatSales.put(treatName, treatSales.getOrDefault(treatName, 0) + 1);
+                }
+            }
+        }
+
+        return treatSales;
+    }
+
 
 }
