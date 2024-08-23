@@ -30,9 +30,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,7 +48,10 @@ public class BoardService {
         PageRequest pageable = PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, sort));
         Page<Board> boardPage = boardRepository.findAll(pageable);
 
+        Set<Long> processedIds = new HashSet<>(); // 이미 처리된 ID를 추적하기 위한 Set
+
         return boardPage.getContent().stream()
+                .filter(board -> processedIds.add(board.getId())) // 중복된 ID 걸러내기
                 .map(board -> {
                     BoardResponseDto dto = convertToBoardResponseDto(board);
                     long likeCount = likeRepository.countByBoardId(board.getId());
