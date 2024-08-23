@@ -62,3 +62,4 @@ jobs:
             echo "Starting new container…"
             
             docker-compose up -d 
+            docker ps
