@@ -6,6 +6,7 @@ import com.yp.puppy.api.entity.shop.Treats;
 import com.yp.puppy.api.repository.hotel.ReservationRepository;
 import com.yp.puppy.api.repository.shop.BundleRepository;
 import com.yp.puppy.api.repository.shop.OrderRepository;
+import com.yp.puppy.api.repository.shop.TreatsRepository;
 import com.yp.puppy.api.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -25,6 +27,7 @@ public class AdminService {
     private final ReservationRepository reservationRepository;
     private final OrderRepository orderRepository;
     private final BundleRepository bundleRepository;
+    private final TreatsRepository treatsRepository;
 
 
     public List<Long> countUsersToday() {
@@ -262,11 +265,13 @@ public class AdminService {
     }
 
     public HashMap<String, Integer> mostSale() {
+
         List<Bundle> all = bundleRepository.findAll();
+
         HashMap<String, Integer> treatSales = new HashMap<>();
 
         for (Bundle bundle : all) {
-            if(bundle.getBundleStatus() == Bundle.BundleStatus.ORDERED) {
+            if (bundle.getBundleStatus() == Bundle.BundleStatus.ORDERED) {
                 List<Treats> treats = bundle.getTreats();
                 for (Treats treat : treats) {
                     String treatName = treat.getTreatsTitle();
@@ -274,8 +279,19 @@ public class AdminService {
                 }
             }
         }
+        
+        // 정렬된 상위 10개 항목만 추출
+        LinkedHashMap<String, Integer> sortedTop10TreatSales = treatSales.entrySet().stream()
+                .sorted(Map.Entry.<String, Integer>comparingByValue(Comparator.reverseOrder()))
+                .limit(10)
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
 
-        return treatSales;
+        return sortedTop10TreatSales;
     }
 
 
