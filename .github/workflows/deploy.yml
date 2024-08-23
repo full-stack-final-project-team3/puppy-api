@@ -10,6 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check current directory and list files
+        run: |
+          pwd
+          ls -la
+
       - name: Checkout
         uses: actions/checkout@v4
 
