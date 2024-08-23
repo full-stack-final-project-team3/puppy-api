@@ -60,4 +60,6 @@ jobs:
             docker pull kimjuseong/backend:latest
             
             echo "Starting new container..."
+          
             docker-compose up -d 
+            docker ps
