@@ -42,4 +42,13 @@ public class UserNoticeController {
         User foundUser = noticeService.clickHandler(noticeId, userId);
         return ResponseEntity.ok().body(foundUser);
     }
+
+
+    @PostMapping("/click/all/{userId}")
+    public ResponseEntity<?> clickAllUserNotice(@PathVariable String userId) {
+        log.info("userId: {}", userId);
+        noticeService.clickAllUserNotice(userId);
+        log.info("완료!!");
+        return ResponseEntity.ok().body("모두읽기 완료.");
+    }
 }
