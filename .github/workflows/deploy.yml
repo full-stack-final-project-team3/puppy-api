@@ -59,7 +59,7 @@ jobs:
             echo "Pulling Docker image..."
             docker pull kimjuseong/backend:latest
             
-            echo "Starting new container..."
-          
+            echo "Starting new container…"
+            
             docker-compose up -d 
             docker ps
