@@ -22,7 +22,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Make directory for deliver
-        run: mkdir deploy
+        run: mkdir -p deploy
 
       - name: Write the application.yml
         run: |
@@ -30,10 +30,10 @@ jobs:
           echo "${{ secrets.APPLICATION_YML }}" > ./src/main/resources/application.yml
 
       ## springboot 도커 이미지 빌드 후 도커허브에 push하기
-      - name: web springboot docker build and push
+      - name: Build and push Docker image
         run: |
           docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
-          docker build --no-cache -t kimjuseong/backend:latest .
+          docker build --file ./Dockerfile --no-cache -t kimjuseong/backend:latest .
           docker push kimjuseong/backend:latest
 
       # 도커 허브에서 jar파일 및 pull
@@ -47,17 +47,17 @@ jobs:
             echo "Docker login..."
             docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
             
-            echo "Write the docker-compose.yml"
+            echo "Writing the docker-compose.yml"
             echo "${{ secrets.DOCKER_COMPOSE_YML }}" > ./docker-compose.yml
             
             echo "Stopping existing container..."
             docker-compose down || true
             
-            echo "Remove Existing Docker image..."
+            echo "Removing existing Docker image..."
             docker rmi kimjuseong/backend:latest || true
             
             echo "Pulling Docker image..."
             docker pull kimjuseong/backend:latest
             
             echo "Starting new container..."
-            docker-compose up -d 
+            docker-compose up -d
