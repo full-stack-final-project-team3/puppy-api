@@ -140,13 +140,19 @@ public class BoardService {
 
     public void deleteBoard(Long boardId, String userId) {
         log.info("Attempting to delete board with id: {} by user: {}", boardId, userId);
+
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new EntityNotFoundException("Board not found with id: " + boardId));
 
+        // 사용자 권한 체크
         if (!board.getUser().getId().equals(userId)) {
             throw new IllegalStateException("You don't have permission to delete this board");
         }
 
+        // 연관된 BoardView 엔티티들을 먼저 삭제
+        boardViewRepository.deleteByBoard(board);
+
+        // 조회수와 상관없이 게시글 삭제
         boardRepository.delete(board);
         log.info("Board with id: {} deleted successfully", boardId);
     }
