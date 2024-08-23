@@ -49,10 +49,10 @@ jobs:
             docker-compose down || true
             
             echo "Remove Existing Docker image..."
-            docker rmi soongu/event-api:latest || true
+            docker rmi kimjuseong/backend:latest || true
             
             echo "Pulling Docker image..."
-            docker pull soongu/event-api:latest
+            docker pull kimjuseong/backend:latest
             
             echo "Starting new container..."
             docker-compose up -d 
