@@ -21,6 +21,7 @@ jobs:
 
       - name: Write the application.yml
         run: |
+          mkdir -p ./src/main/resources
           echo "${{ secrets.APPLICATION_YML }}" > ./src/main/resources/application.yml
 
       ## springboot 도커 이미지 빌드 후 도커허브에 push하기
