@@ -59,7 +59,10 @@ jobs:
             echo "Pulling Docker image..."
             docker pull kimjuseong/backend:latest
 
-            echo "docker-compose ==== '
+            echo "docker-compose ===="
+            pwd
+            ls
+            
             docker-compose -v
             echo "Starting new container..."
             docker-compose up
