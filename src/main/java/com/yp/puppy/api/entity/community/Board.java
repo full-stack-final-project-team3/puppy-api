@@ -36,7 +36,8 @@ public class Board {
 
         @Column(name = "board_title")
     private String boardTitle;  // 게시판 제목
-        @Column(name = "board_content")
+
+        @Column(name = "board_content", length=5000)
     private String boardContent;  // 게시판 내용
 
     @Column(name = "board_created_at")
