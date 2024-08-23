@@ -53,9 +53,12 @@ jobs:
             
             echo "Pulling Docker image..."
             docker pull kimjuseong/backend:latest
-            
+
+            echo "=====docker ps====="
+            docker ps
+
             echo "Starting new container..."
-            docker-compose up -d 
+            docker-compose up
 
 
 #            echo "Stopping existing container..."
