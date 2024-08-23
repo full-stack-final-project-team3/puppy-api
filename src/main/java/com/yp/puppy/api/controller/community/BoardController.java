@@ -5,6 +5,8 @@ import com.yp.puppy.api.dto.BoardResponseDto;
 import com.yp.puppy.api.dto.request.community.BoardSaveDto;
 import com.yp.puppy.api.dto.response.community.BoardDetailResponseDto;
 import com.yp.puppy.api.entity.community.Board;
+import com.yp.puppy.api.entity.user.User;
+import com.yp.puppy.api.repository.user.UserRepository;
 import com.yp.puppy.api.service.community.BoardService;
 import com.yp.puppy.api.service.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ public class BoardController {
     private final BoardService boardService;
     private final UserService userService;
     private final TokenProvider tokenProvider;
+    private final UserRepository userRepository;
 
     @GetMapping
     public ResponseEntity<?> getList(
@@ -81,7 +84,11 @@ public class BoardController {
             String userId = tokenProvider.validateAndGetTokenInfo(token.replace("Bearer ", "")).getUserId();
             log.info("Authenticated user id: {}", userId);
 
-            boardService.deleteBoard(id, userId);
+            // 사용자 정보 조회
+            User foundUser = userRepository.findById(userId).orElseThrow();
+            boolean isAdmin = "ADMIN".equals(foundUser.getRole().toString());
+
+            boardService.deleteBoard(id, userId, isAdmin);
             log.info("Board deleted successfully");
             return ResponseEntity.ok().body(Map.of("message", "게시글이 성공적으로 삭제되었습니다."));
         } catch (EntityNotFoundException e) {

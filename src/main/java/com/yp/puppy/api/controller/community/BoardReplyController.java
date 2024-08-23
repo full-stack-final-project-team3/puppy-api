@@ -3,6 +3,7 @@
     import com.fasterxml.jackson.databind.ObjectMapper;
     import com.yp.puppy.api.dto.response.community.BoardDetailResponseDto;
     import com.yp.puppy.api.entity.user.User;
+    import com.yp.puppy.api.repository.user.UserRepository;
     import com.yp.puppy.api.service.community.BoardReplyService;
     import com.yp.puppy.api.service.community.BoardService;
     import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@
         private final BoardReplyService boardReplyService;
         private final BoardService boardService;
         private final ObjectMapper objectMapper;
+        private final UserRepository userRepository;
 
         @PostMapping("/{boardId}/comments")
         public ResponseEntity<?> createReply(
@@ -76,7 +78,11 @@
             try {
                 log.info("Deleting reply. Board ID: {}, Reply ID: {}, User ID: {}", boardId, replyId, userId);
 
-                boardReplyService.deleteReply(replyId, userId);
+                // 사용자 정보 조회
+                User foundUser = userRepository.findById(userId).orElseThrow();
+                boolean isAdmin = "ADMIN".equals(foundUser.getRole().toString());
+
+                boardReplyService.deleteReply(replyId, userId, isAdmin);
                 BoardDetailResponseDto updatedBoard = boardService.getBoardDetailById(boardId);
 
                 log.info("Reply deleted successfully. Reply ID: {}", replyId);
@@ -139,7 +145,13 @@
                 @PathVariable Long subReplyId,
                 @RequestParam("userId") String userId) {
             try {
-                boardReplyService.deleteSubReply(subReplyId, userId);
+
+                // 사용자 정보 조회
+                User foundUser = userRepository.findById(userId).orElseThrow();
+                boolean isAdmin = "ADMIN".equals(foundUser.getRole().toString());
+
+                //삭제
+                boardReplyService.deleteSubReply(subReplyId, userId,isAdmin);
                 return ResponseEntity.ok().body("Sub-reply deleted successfully");
             } catch (Exception e) {
                 return ResponseEntity.status(500).body("Failed to delete sub-reply");

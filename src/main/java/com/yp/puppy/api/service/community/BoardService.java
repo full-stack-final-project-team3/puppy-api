@@ -138,14 +138,14 @@ public class BoardService {
         return convertToBoardDetailResponseDto(board);
     }
 
-    public void deleteBoard(Long boardId, String userId) {
+    public void deleteBoard(Long boardId, String userId, boolean isAdmin) {
         log.info("Attempting to delete board with id: {} by user: {}", boardId, userId);
 
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new EntityNotFoundException("Board not found with id: " + boardId));
 
         // 사용자 권한 체크
-        if (!board.getUser().getId().equals(userId)) {
+        if (!isAdmin && !board.getUser().getId().equals(userId)) {
             throw new IllegalStateException("You don't have permission to delete this board");
         }
 
