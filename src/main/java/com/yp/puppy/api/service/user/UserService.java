@@ -546,4 +546,10 @@ public class UserService {
                 .build();
         return dto;
     }
+
+    public void changeAutoLogin(String userId) {
+        User foundUser = userRepository.findById(userId).orElseThrow();
+        foundUser.setAutoLogin(false);
+        userRepository.save(foundUser);
+    }
 }

@@ -72,12 +72,21 @@ public class UserController {
             if (dto.isAutoLogin()) {
                 log.info("dto's auto login - {}", dto.isAutoLogin());
                 // 자동로그인 요청이면 토큰을 쿠키에 저장
+                // 쿠키 생성
                 Cookie cookie = new Cookie("authToken", loginResponse.getToken());
-//                cookie.setHttpOnly(true);
+                cookie.setHttpOnly(true);
                 cookie.setPath("/");
-                cookie.setMaxAge(60 * 60 * 24 * 30); // 쿠키 유효기간 30일
-                response.addCookie(cookie);
-                log.info("cookie is {}", cookie);
+                cookie.setMaxAge(60 * 60 * 24 * 30); // 30일
+                cookie.setSecure(false); // HTTPS가 아닌 경우 false로 설정
+
+// 쿠키를 직접 헤더에 추가 (SameSite 속성 포함)
+                response.addHeader("Set-Cookie", String.format("%s=%s; Max-Age=%d; Path=%s; HttpOnly; Secure=%s; SameSite=None",
+                        cookie.getName(), cookie.getValue(), cookie.getMaxAge(), cookie.getPath(), cookie.getSecure()));
+
+                log.info("Adding cookie: {}={}; Max-Age={}; Path={}; HttpOnly={}; Secure={}",
+                        cookie.getName(), cookie.getValue(), cookie.getMaxAge(), cookie.getPath(), cookie.isHttpOnly(), cookie.getSecure());
+
+
             }
 
             return ResponseEntity.ok().body(loginResponse);
@@ -246,14 +255,16 @@ public class UserController {
     }
 
 
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletResponse response) {
+    @PostMapping("/logout/{userId}")
+    public ResponseEntity<?> logout(HttpServletResponse response, @PathVariable String userId) {
         // 쿠키 삭제
+        log.info("userId in logout: {}", userId);
+        userService.changeAutoLogin(userId);
         Cookie cookie = new Cookie("authToken", null);
         cookie.setHttpOnly(true);
         cookie.setSecure(false); // HTTPS에서만 전송되도록 할 경우
         cookie.setPath("/");
-        cookie.setDomain("localhost");
+//        cookie.setDomain("localhost");
         cookie.setMaxAge(0); // 즉시 만료시키기
         response.addCookie(cookie);
 
