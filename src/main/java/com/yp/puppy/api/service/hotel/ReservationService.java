@@ -71,8 +71,9 @@ public class ReservationService {
 
     // 중복날자 체크 메서드
     private boolean isReservationDateOverlap(String roomId, LocalDateTime reservationAt, LocalDateTime reservationEndAt) {
+        // 기존 예약의 종료 시간과 새로운 예약의 시작 시간 사이에 겹침이 없는지 확인
         List<Reservation> existingReservations = reservationRepository.findByRoom_RoomIdAndReservationEndAtAfterAndReservationAtBefore(
-                roomId, reservationAt, reservationEndAt);
+                roomId, reservationAt.minusSeconds(1), reservationEndAt.plusSeconds(1));
 
         return !existingReservations.isEmpty();
     }
