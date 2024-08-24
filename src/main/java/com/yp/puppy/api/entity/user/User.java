@@ -76,6 +76,7 @@ public class User {
     @Setter
     private String detailAddress;
 
+    @Setter
     private boolean autoLogin;
 
     @Column(length = 50)
