@@ -258,6 +258,9 @@ public class UserService {
             user.setAutoLogin(true);
             userRepository.save(user);
             log.info("foundUser's autoLogin - {}", dto.isAutoLogin());
+        } else {
+            user.setAutoLogin(false);
+            userRepository.save(user);
         }
 //        log.debug("users nickname : {}, ", user.getNickname());
         return LoginResponseDto.builder()
@@ -551,5 +554,6 @@ public class UserService {
         User foundUser = userRepository.findById(userId).orElseThrow();
         foundUser.setAutoLogin(false);
         userRepository.save(foundUser);
+        log.info("change auto login - {}", foundUser.isAutoLogin());
     }
 }
