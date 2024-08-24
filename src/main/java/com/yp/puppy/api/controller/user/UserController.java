@@ -19,6 +19,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,19 +63,30 @@ public class UserController {
 
     // 로그인 로직
     @PostMapping("/sign-in")
-    public ResponseEntity<?> signIn(@RequestBody LoginRequestDto dto, HttpServletResponse response) {
+    public ResponseEntity<?> signIn(@RequestBody LoginRequestDto dto, HttpServletResponse response, HttpSession session) {
         log.info("login request - {}", dto);
 
         try {
             LoginResponseDto loginResponse = userService.authenticate(dto);
 
             if (dto.isAutoLogin()) {
+                log.info("dto's auto login - {}", dto.isAutoLogin());
                 // 자동로그인 요청이면 토큰을 쿠키에 저장
+                // 쿠키 생성
                 Cookie cookie = new Cookie("authToken", loginResponse.getToken());
                 cookie.setHttpOnly(true);
                 cookie.setPath("/");
-                cookie.setMaxAge(60 * 60 * 24 * 30); // 쿠키 유효기간 30일
-                response.addCookie(cookie);
+                cookie.setMaxAge(60 * 60 * 24 * 30); // 30일
+                cookie.setSecure(false); // HTTPS가 아닌 경우 false로 설정
+
+// 쿠키를 직접 헤더에 추가 (SameSite 속성 포함)
+                response.addHeader("Set-Cookie", String.format("%s=%s; Max-Age=%d; Path=%s; HttpOnly; Secure=%s; SameSite=None",
+                        cookie.getName(), cookie.getValue(), cookie.getMaxAge(), cookie.getPath(), cookie.getSecure()));
+
+                log.info("Adding cookie: {}={}; Max-Age={}; Path={}; HttpOnly={}; Secure={}",
+                        cookie.getName(), cookie.getValue(), cookie.getMaxAge(), cookie.getPath(), cookie.isHttpOnly(), cookie.getSecure());
+
+
             }
 
             return ResponseEntity.ok().body(loginResponse);
@@ -91,7 +103,6 @@ public class UserController {
     @GetMapping("/{email}")
     public ResponseEntity<?> findUser(@PathVariable String email) {
         if (!email.contains("@")) return ResponseEntity.badRequest().body("카카오 로그인 시도");
-        log.info("find user by email : {}", email);
         UserResponseDto foundUser = userService.findUserByEmail(email);
         log.info("found user by email : {}", foundUser);
         return ResponseEntity.ok().body(foundUser);
@@ -244,14 +255,16 @@ public class UserController {
     }
 
 
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletResponse response) {
+    @PostMapping("/logout/{userId}")
+    public ResponseEntity<?> logout(HttpServletResponse response, @PathVariable String userId) {
         // 쿠키 삭제
+        log.info("userId in logout: {}", userId);
+        userService.changeAutoLogin(userId);
         Cookie cookie = new Cookie("authToken", null);
         cookie.setHttpOnly(true);
         cookie.setSecure(false); // HTTPS에서만 전송되도록 할 경우
         cookie.setPath("/");
-        cookie.setDomain("localhost");
+//        cookie.setDomain("localhost");
         cookie.setMaxAge(0); // 즉시 만료시키기
         response.addCookie(cookie);
 
