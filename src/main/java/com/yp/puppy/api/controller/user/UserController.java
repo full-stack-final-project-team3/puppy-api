@@ -258,7 +258,6 @@ public class UserController {
     @PostMapping("/logout/{userId}")
     public ResponseEntity<?> logout(HttpServletResponse response, @PathVariable String userId) {
         // 쿠키 삭제
-        log.info("userId in logout: {}", userId);
         userService.changeAutoLogin(userId);
         Cookie cookie = new Cookie("authToken", null);
         cookie.setHttpOnly(true);
