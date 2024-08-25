@@ -39,7 +39,7 @@ public class TreatsRepositoryCustomImpl implements TreatsRepositoryCustom {
 
         // 강아지 크기 조건 추가
         if (dogSize != null) {
-            builder.and(treats.dogSize.eq(dogSize)); // 강아지 크기가 동일한 간식 필터링
+            builder.and(treats.dogSize.eq(dogSize).or(treats.dogSize.eq(Dog.DogSize.ALL)));
         }
 
         // 타입 조건 추가
@@ -99,7 +99,7 @@ public class TreatsRepositoryCustomImpl implements TreatsRepositoryCustom {
 
         // 강아지 크기 조건 추가
         if (dogSize != null) {
-            builder.and(treats.dogSize.eq(dogSize));
+            builder.and(treats.dogSize.eq(dogSize).or(treats.dogSize.eq(Dog.DogSize.ALL)));
         }
 
         // 타입 조건 추가
