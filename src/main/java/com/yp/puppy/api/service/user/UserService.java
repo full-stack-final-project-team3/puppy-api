@@ -554,6 +554,5 @@ public class UserService {
         User foundUser = userRepository.findById(userId).orElseThrow();
         foundUser.setAutoLogin(false);
         userRepository.save(foundUser);
-        log.info("change auto login - {}", foundUser.isAutoLogin());
     }
 }
