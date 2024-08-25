@@ -254,12 +254,21 @@ public class UserService {
         // 로그인 성공, 토큰 생성 섹션.
         // 인증정보(이메일, 닉네임, 프사, 토큰정보)를 클라이언트(프론트)에게 전송
         String token = tokenProvider.createToken(user);
+        if (dto.isAutoLogin()) {
+            user.setAutoLogin(true);
+            userRepository.save(user);
+            log.info("foundUser's autoLogin - {}", dto.isAutoLogin());
+        } else {
+            user.setAutoLogin(false);
+            userRepository.save(user);
+        }
 //        log.debug("users nickname : {}, ", user.getNickname());
         return LoginResponseDto.builder()
                 .email(dto.getEmail())
                 .role(user.getRole().toString())
                 .token(token)
                 .userId(user.getId())
+                .autoLogin(user.isAutoLogin())
 //                .nickname(user.getNickname())
                 .build();
     }
@@ -325,6 +334,7 @@ public class UserService {
                 .password(foundUser.getPassword())
                 .hasDogInfo(foundUser.isHasDogInfo())
                 .noticeCount(foundUser.getNoticeCount())
+                .autoLogin(foundUser.isAutoLogin())
                 .realName(foundUser.getRealName())
                 .address(foundUser.getAddress())
                 .detailAddress(foundUser.getDetailAddress())
@@ -525,6 +535,7 @@ public class UserService {
                 .birthday(foundUser.getBirthday())
                 .point(foundUser.getPoint())
                 .phoneNumber(foundUser.getPhoneNumber())
+                .autoLogin(foundUser.isAutoLogin())
                 .profileUrl(foundUser.getProfileUrl())
                 .password(foundUser.getPassword())
                 .hasDogInfo(foundUser.isHasDogInfo())
@@ -537,5 +548,11 @@ public class UserService {
                 .provider(foundUser.getProvider())
                 .build();
         return dto;
+    }
+
+    public void changeAutoLogin(String userId) {
+        User foundUser = userRepository.findById(userId).orElseThrow();
+        foundUser.setAutoLogin(false);
+        userRepository.save(foundUser);
     }
 }

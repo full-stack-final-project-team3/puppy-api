@@ -30,6 +30,7 @@ public class UserResponseDto {
     private String detailAddress;
     private String realName;
     private String profileUrl;
+    private boolean autoLogin;
     private boolean hasDogInfo;
     private int warningCount;
     private List<Dog> dogList;
