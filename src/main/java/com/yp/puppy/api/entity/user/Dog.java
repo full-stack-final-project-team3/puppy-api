@@ -113,7 +113,7 @@ public class Dog {
 
 
     public enum DogSize {
-        SMALL, MEDIUM, LARGE
+        SMALL, MEDIUM, LARGE, ALL
     }
 
     public enum DogAgeType {
