@@ -1,6 +1,7 @@
 package com.yp.puppy.api.entity.hotel;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yp.puppy.api.dto.request.hotel.ReviewSaveDto;
 import com.yp.puppy.api.entity.user.User;
 import lombok.*;
@@ -37,6 +38,7 @@ public class Review {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reservation_id", nullable = false)
+    @JsonIgnore
     private Reservation reservation; // 예약 정보
 
     @ManyToOne(fetch = FetchType.LAZY)
