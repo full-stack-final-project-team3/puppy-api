@@ -16,7 +16,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@ToString(exclude = { "replies", "user", "likes"})
+@ToString(exclude = { "replies", "user", "likes","keywords"})
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -67,4 +67,9 @@ public class Board {
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<BoardImg> images = new ArrayList<>();  // 여러 장의 이미지
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "keyword_id", nullable = true)  // 키워드가 없어도 허용
+    @JsonIgnore
+    private Keyword keyword;  // 게시글과 키워드의 다대일 관계
 }

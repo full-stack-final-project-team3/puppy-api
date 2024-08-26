@@ -15,4 +15,6 @@ public interface BoardRepository extends JpaRepository<Board,Long>,BoardReposito
     @Query("SELECT b FROM Board b WHERE upper(b.boardTitle) LIKE upper(concat('%', ?1, '%'))")
     List<Board> searchByTitleContaining(String keyword);
 
+    Page<Board> findByKeywordId(Long keywordId, Pageable pageable);
+    List<Board> findAllByKeywordId(Long keywordId);
 }
