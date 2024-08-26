@@ -36,6 +36,7 @@ jobs:
           docker build --file ./Dockerfile --no-cache -t kimjuseong/backend:latest .
           docker push kimjuseong/backend:latest
 
+
       # 도커 허브에서 jar파일 및 pull
       - name: Deploy to Dev
         uses: appleboy/ssh-action@master
