@@ -77,15 +77,11 @@ public class UserController {
                 cookie.setHttpOnly(true);
                 cookie.setPath("/");
                 cookie.setMaxAge(60 * 60 * 24 * 30); // 30일
-                cookie.setSecure(false); // HTTPS가 아닌 경우 false로 설정
+                cookie.setSecure(false); // 로컬 개발 환경에서는 false, 배포 환경에서는 true로 설정
+                cookie.setComment("Authentication Token"); // 선택 사항, 쿠키 목적 설명
 
-// 쿠키를 직접 헤더에 추가 (SameSite 속성 포함)
-                response.addHeader("Set-Cookie", String.format("%s=%s; Max-Age=%d; Path=%s; HttpOnly; Secure=%s; SameSite=None",
-                        cookie.getName(), cookie.getValue(), cookie.getMaxAge(), cookie.getPath(), cookie.getSecure()));
-
-                log.info("Adding cookie: {}={}; Max-Age={}; Path={}; HttpOnly={}; Secure={}",
-                        cookie.getName(), cookie.getValue(), cookie.getMaxAge(), cookie.getPath(), cookie.isHttpOnly(), cookie.getSecure());
-
+                // 쿠키를 응답에 추가
+                response.addCookie(cookie);
 
             }
 
