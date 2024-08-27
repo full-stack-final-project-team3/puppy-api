@@ -26,6 +26,7 @@ public class Keyword {
     @Column(name = "keyword_name", nullable = false, unique = true)
     private String name;
 
+
     @OneToMany(mappedBy = "keyword", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Board> boards = new ArrayList<>();

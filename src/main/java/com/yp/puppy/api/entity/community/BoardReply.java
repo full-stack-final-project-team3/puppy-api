@@ -34,10 +34,12 @@ public class BoardReply {
     private LocalDateTime replyUpdatedAt;
     private int isClean;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
     private Board board;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
@@ -45,6 +47,7 @@ public class BoardReply {
     @OneToOne(mappedBy = "boardReply", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private BoardImg image;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "boardReply", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<BoardSubReply> subReplies = new ArrayList<>();
 

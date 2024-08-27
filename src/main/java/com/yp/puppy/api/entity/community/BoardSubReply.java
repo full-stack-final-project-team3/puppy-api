@@ -34,10 +34,12 @@ public class BoardSubReply {
     private LocalDateTime subReplyUpdatedAt;
     private int isClean;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reply_id")
     private BoardReply boardReply;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;

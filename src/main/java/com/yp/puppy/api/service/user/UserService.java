@@ -33,6 +33,7 @@ import javax.mail.internet.MimeMessage;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -492,44 +493,56 @@ public class UserService {
     }
 
     public List<BoardResponseDto> getMyLikeBoardList(String userId) {
-        User foundUser = userRepository.findById(userId).orElseThrow();
+        User foundUser = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         List<Like> likes = foundUser.getLikes();
 
-        log.debug("likes - {}", likes);
+        log.debug("User {} has {} likes", userId, likes.size());
 
+        return likes.stream()
+                .filter(like -> like != null && like.getBoard() != null)
+                .map(like -> {
+                    Board board = like.getBoard();
+                    log.debug("Processing board: {}", board.getId());
 
-        List<BoardResponseDto> boardList = likes.stream()
-                .map(like -> boardRepository.findById(like.getBoard().getId()))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .map(board -> new BoardResponseDto(
-                        board.getId(),
-                        board.getBoardTitle(),
-                        board.getBoardContent(),
-                        board.getImages().stream().map(BoardImg::getImgUrl).collect(Collectors.toList()), // 이미지 리스트
-                        board.getBoardCreatedAt(),
-                        board.getBoardUpdatedAt(),
-                        board.getViewCount(),
-                        board.getIsClean(),
-                        new BoardResponseDto.UserDTO(
-                                board.getUser().getId(),
-                                board.getUser().getNickname(),
-                                board.getUser().getProfileUrl(),
-                                board.getUser().getEmail()
-                        ),
-                        board.getReplies().size(), // 댓글 수
-                        board.getLikes().size(), // 좋아요 수
-                        board.getKeyword() != null ?
-                                new BoardResponseDto.KeywordDTO(
-                                        board.getKeyword().getId(),
-                                        board.getKeyword().getName()
-                                ) : null
-                ))
+                    BoardResponseDto.KeywordDTO keywordDTO = null;
+                    if (board.getKeyword() != null) {
+                        keywordDTO = new BoardResponseDto.KeywordDTO(
+                                board.getKeyword().getId(),
+                                board.getKeyword().getName()
+                        );
+                    }
+
+                    List<String> imageUrls = board.getImages() != null
+                            ? board.getImages().stream()
+                            .filter(Objects::nonNull)
+                            .map(BoardImg::getImgUrl)
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.toList())
+                            : new ArrayList<>();
+
+                    return new BoardResponseDto(
+                            board.getId(),
+                            board.getBoardTitle(),
+                            board.getBoardContent(),
+                            imageUrls,
+                            board.getBoardCreatedAt(),
+                            board.getBoardUpdatedAt(),
+                            board.getViewCount(),
+                            board.getIsClean(),
+                            board.getUser() != null ? new BoardResponseDto.UserDTO(
+                                    board.getUser().getId(),
+                                    board.getUser().getNickname(),
+                                    board.getUser().getProfileUrl(),
+                                    board.getUser().getEmail()
+                            ) : null,
+                            board.getReplies() != null ? board.getReplies().size() : 0,
+                            board.getLikes() != null ? board.getLikes().size() : 0,
+                            keywordDTO
+                    );
+                })
                 .collect(Collectors.toList());
-
-        log.debug("addedBoardList - {} ", boardList);
-        return boardList;
     }
+
 
     public UserResponseDto findUserById(String userId) {
         log.debug("findUserById In UserService - {}", userId);
