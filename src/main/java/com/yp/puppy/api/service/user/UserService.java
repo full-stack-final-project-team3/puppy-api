@@ -470,10 +470,6 @@ public class UserService {
         return exists;
     }
 
-    public List<Board> getMyBoardList(String userId) {
-        User foundUser = userRepository.findById(userId).orElseThrow();
-        return foundUser.getBoard();
-    }
 
     public boolean isDuplicatePassword(String password, String email) {
         User foundUser = userRepository.findByEmail(email).orElseThrow();
