@@ -254,6 +254,7 @@ public class UserService {
         // 로그인 성공, 토큰 생성 섹션.
         // 인증정보(이메일, 닉네임, 프사, 토큰정보)를 클라이언트(프론트)에게 전송
         String token = tokenProvider.createToken(user);
+        log.info("created Token: {}", token);
         if (dto.isAutoLogin()) {
             user.setAutoLogin(true);
             userRepository.save(user);
