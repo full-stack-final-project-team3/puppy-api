@@ -17,4 +17,6 @@ public interface BoardRepository extends JpaRepository<Board,Long>,BoardReposito
 
     Page<Board> findByKeywordId(Long keywordId, Pageable pageable);
     List<Board> findAllByKeywordId(Long keywordId);
+
+    List<Board> findByUserId(String userId);
 }
