@@ -51,9 +51,9 @@ public class SnsLoginController {
 
         try {
             snsLoginService.kakaoLogin(requestParams, response);
-            response.sendRedirect("http://localhost:3000"); // 리액트 앱으로 리디렉트
+            response.sendRedirect("http://doggle.kr"); // 리액트 앱으로 리디렉트
         } catch (Exception e) {
-            response.sendRedirect("http://localhost:3000/login/failure"); // 에러 발생 시 리디렉트
+            response.sendRedirect("http://doggle/login/failure"); // 에러 발생 시 리디렉트
         }
     }
 }
