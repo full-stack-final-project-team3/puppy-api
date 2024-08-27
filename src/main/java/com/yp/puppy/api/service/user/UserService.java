@@ -254,6 +254,7 @@ public class UserService {
         // 로그인 성공, 토큰 생성 섹션.
         // 인증정보(이메일, 닉네임, 프사, 토큰정보)를 클라이언트(프론트)에게 전송
         String token = tokenProvider.createToken(user);
+        log.info("created Token: {}", token);
         if (dto.isAutoLogin()) {
             user.setAutoLogin(true);
             userRepository.save(user);
@@ -496,6 +497,7 @@ public class UserService {
 
         log.debug("likes - {}", likes);
 
+
         List<BoardResponseDto> boardList = likes.stream()
                 .map(like -> boardRepository.findById(like.getBoard().getId()))
                 .filter(Optional::isPresent)
@@ -516,7 +518,12 @@ public class UserService {
                                 board.getUser().getEmail()
                         ),
                         board.getReplies().size(), // 댓글 수
-                        board.getLikes().size() // 좋아요 수
+                        board.getLikes().size(), // 좋아요 수
+                        board.getKeyword() != null ?
+                                new BoardResponseDto.KeywordDTO(
+                                        board.getKeyword().getId(),
+                                        board.getKeyword().getName()
+                                ) : null
                 ))
                 .collect(Collectors.toList());
 

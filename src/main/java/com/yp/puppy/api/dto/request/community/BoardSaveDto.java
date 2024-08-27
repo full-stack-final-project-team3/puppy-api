@@ -3,6 +3,7 @@ package com.yp.puppy.api.dto.request.community;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.yp.puppy.api.entity.community.Board;
 import com.yp.puppy.api.entity.community.BoardImg;
+import com.yp.puppy.api.entity.community.Keyword;
 import com.yp.puppy.api.entity.user.User;
 import lombok.*;
 
@@ -21,6 +22,7 @@ public class BoardSaveDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime boardCreatedAt;
     private User user;
+    private Keyword keyword;  // 단일 키워드로 변경
 
     //엔터티로 변경하는 유틸 메서드
     public Board toEntity(){
@@ -29,6 +31,7 @@ public class BoardSaveDto {
                 .boardContent(boardContent)
                 .images(image)
                 .user(new User())
+                .keyword(keyword)
                 .boardCreatedAt( LocalDateTime.now())
                 .build();
     }

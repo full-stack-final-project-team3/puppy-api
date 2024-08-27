@@ -124,7 +124,7 @@ public class BoardController {
             return ResponseEntity.ok().body(updatedBoard);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", "게시글을 찾을 수 없습니다."));
+                    .body(Map.of("error", "게시글 또는 키워드를 찾을 수 없습니다."));
         } catch (IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(Map.of("error", e.getMessage()));
@@ -169,4 +169,14 @@ public class BoardController {
     }
 
     //
+    @GetMapping("/keyword/{keywordId}")
+    public ResponseEntity<?> getBoardsByKeyword(
+            @PathVariable Long keywordId,
+            @RequestParam(required = false, defaultValue = "boardCreatedAt") String sort,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int limit) {
+        List<BoardResponseDto> boards = boardService.getBoardsByKeyword(keywordId, sort, page, limit);
+        return ResponseEntity.ok().body(boards);
+    }
+
 }

@@ -6,11 +6,9 @@ import com.yp.puppy.api.dto.response.community.BoardDetailResponseDto;
 import com.yp.puppy.api.entity.community.Board;
 import com.yp.puppy.api.entity.community.BoardImg;
 import com.yp.puppy.api.entity.community.BoardView;
+import com.yp.puppy.api.entity.community.Keyword;
 import com.yp.puppy.api.entity.user.User;
-import com.yp.puppy.api.repository.community.BoardImgRepository;
-import com.yp.puppy.api.repository.community.BoardRepository;
-import com.yp.puppy.api.repository.community.BoardViewRepository;
-import com.yp.puppy.api.repository.community.LikeRepository;
+import com.yp.puppy.api.repository.community.*;
 import com.yp.puppy.api.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +41,7 @@ public class BoardService {
     private final BoardViewRepository boardViewRepository;
     private final LikeRepository likeRepository; // 좋아요 레포지토리 추가
     private final BoardImgRepository boardImgRepository;
+    private final KeywordRepository keywordRepository;
 
     public List<BoardResponseDto> getBoardsWithLikeCounts(String sort, int page, int limit) {
         PageRequest pageable = PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, sort));
@@ -77,10 +76,17 @@ public class BoardService {
             User user = userRepository.findById(dto.getUser().getId())
                     .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
+            Keyword keyword = null;
+            if (dto.getKeyword() != null && dto.getKeyword().getId() != 0) {
+                keyword = keywordRepository.findById(dto.getKeyword().getId())
+                        .orElseThrow(() -> new EntityNotFoundException("Keyword not found"));
+            }
+
             Board board = Board.builder()
                     .boardTitle(dto.getBoardTitle())
                     .boardContent(dto.getBoardContent())
                     .user(user)
+                    .keyword(keyword)
                     .boardCreatedAt(LocalDateTime.now())
                     .images(new ArrayList<>())
                     .build();
@@ -149,7 +155,6 @@ public class BoardService {
             throw new IllegalStateException("You don't have permission to delete this board");
         }
 
-        // 연관된 BoardView 엔티티들을 먼저 삭제
         boardViewRepository.deleteByBoard(board);
 
         // 조회수와 상관없이 게시글 삭제
@@ -170,13 +175,22 @@ public class BoardService {
         board.setBoardContent(dto.getBoardContent());
         board.setBoardUpdatedAt(LocalDateTime.now());
 
-        // 이미지 삭제 로직 추가
+        // 키워드 수정
+        if (dto.getKeyword() != null) {
+            Keyword keyword = keywordRepository.findById(dto.getKeyword().getId())
+                    .orElseThrow(() -> new EntityNotFoundException("Keyword not found"));
+            board.setKeyword(keyword);
+        } else {
+            board.setKeyword(null);
+        }
+
+        // 이미지 삭제 로직
         if (imagesToDelete != null && !imagesToDelete.isEmpty()) {
             board.getImages().removeIf(img -> imagesToDelete.contains(img.getImgUrl()));
         }
 
+        // 새 이미지 추가
         if (files != null && !files.isEmpty()) {
-            // 새 이미지 추가
             for (MultipartFile file : files) {
                 BoardImg image = saveImage(file, board);
                 board.getImages().add(image);
@@ -194,11 +208,19 @@ public class BoardService {
                 .map(BoardImg::getImgUrl)
                 .collect(Collectors.toList());
 
+        BoardResponseDto.KeywordDTO keywordDTO = null;
+        if (board.getKeyword() != null) {
+            keywordDTO = new BoardResponseDto.KeywordDTO(
+                    board.getKeyword().getId(),
+                    board.getKeyword().getName()
+            );
+        }
+
         return new BoardResponseDto(
                 board.getId(),
                 board.getBoardTitle(),
                 board.getBoardContent(),
-                imageUrls,  // 여기서 필터링된 이미지 URL만 전달
+                imageUrls,
                 board.getBoardCreatedAt(),
                 board.getBoardUpdatedAt(),
                 board.getViewCount(),
@@ -210,10 +232,10 @@ public class BoardService {
                         board.getUser().getEmail()
                 ),
                 board.getReplies() != null ? board.getReplies().size() : 0,
-                board.getLikes() != null ? board.getLikes().size() : 0
+                board.getLikes() != null ? board.getLikes().size() : 0,
+                keywordDTO
         );
     }
-
 
 
     public BoardDetailResponseDto convertToBoardDetailResponseDto(Board board) {
@@ -320,9 +342,6 @@ public class BoardService {
         );
     }
 
-
-
-
     //조회수
     public BoardDetailResponseDto getBoardDetailWithViewCount(Long id, String userId) {
         // ID가 null이거나 0보다 작으면 그냥 조회만 하고 넘어갑니다.
@@ -419,7 +438,14 @@ public class BoardService {
 
     }
 
+    public List<BoardResponseDto> getBoardsByKeyword(Long keywordId, String sort, int page, int limit) {
+        PageRequest pageable = PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, sort));
+        Page<Board> boardPage = boardRepository.findByKeywordId(keywordId, pageable);
+
+        return boardPage.getContent().stream()
+                .map(this::convertToBoardResponseDto)
+                .collect(Collectors.toList());
+    }
 
 
-    //
-}
+}// 끝

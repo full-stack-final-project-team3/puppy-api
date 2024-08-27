@@ -24,6 +24,7 @@ public class BoardResponseDto {
     private UserDTO user;
     private int replyCount; //댓글 카운트
     private long likeCount; //좋아요 카운트
+    private KeywordDTO keyword;
 
     @Getter
     @Setter
@@ -35,4 +36,14 @@ public class BoardResponseDto {
         private String profileUrl;
         private String email;
     }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class KeywordDTO {
+        private Long id;
+        private String name;
+    }
+
 }
