@@ -42,9 +42,7 @@ public class HotelReviewService {
         newReview.setReservation(reservation);
         newReview.setReviewDate(LocalDateTime.now());
 
-        Review savedReview = hotelReviewRepository.save(newReview);
-        log.info("Review saved: {}", savedReview);
-        return savedReview;
+        return hotelReviewRepository.save(newReview);
     }
 
     public List<Review> getAllReviews() {
