@@ -140,4 +140,13 @@ public class ReservationService {
         userRepository.save(user);
 //        log.info("수정된 예약 저장 후 포인트: {}", userRepository.findById(user.getId()).orElseThrow().getPoint());
     }
+
+    // 전체 예약조회 가져오기
+    public List<ReservationOneDto> getAllReservations() {
+        List<Reservation> reservations = reservationRepository.findAll();
+
+        return reservations.stream()
+                .map(ReservationOneDto::new)
+                .collect(Collectors.toList());
+    }
 }
