@@ -476,8 +476,11 @@ public class UserService {
 
     public void deleteUser(String userId) {
         User foundUser = userRepository.findById(userId).orElseThrow();
-
+        log.info("before foundUser - {} ", foundUser);
         userRepository.delete(foundUser);
+        User afterUser = userRepository.findById(userId).orElseThrow();
+        log.info("after foundUser - {} ", afterUser);
+
     }
 
     public List<BoardResponseDto> getMyLikeBoardList(String userId) {
