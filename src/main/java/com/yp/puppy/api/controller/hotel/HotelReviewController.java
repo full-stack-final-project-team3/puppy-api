@@ -28,7 +28,6 @@ public class HotelReviewController {
     @PostMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> createReview(@RequestBody ReviewSaveDto dto) {
-        log.info("리뷰 작성 중: {}", dto);
         try {
             Review addReview = hotelReviewService.createReview(dto);
             return ResponseEntity.ok().body(addReview);
