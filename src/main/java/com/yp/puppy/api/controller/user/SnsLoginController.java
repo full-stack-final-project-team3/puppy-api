@@ -40,7 +40,7 @@ public class SnsLoginController {
     // 인가코드를 받는 요청 메서드
     @GetMapping("/oauth/kakao")
     public void kakaoCode(@RequestParam("code") String code, HttpServletResponse response) throws IOException {
-        log.info("카카오 인가코드 발급 - {}", code);
+
 
         HashMap<String, Object> requestParams = new HashMap<>();
         requestParams.put("appKey", appKey);

@@ -26,7 +26,7 @@ public class UserNoticeService {
 
 
     public UserNotice addNotice(NoticeRequestDto dto) {
-        log.info("addNotice {}", dto);
+
         User foundUser = userRepository.findById(dto.getUserId()).orElseThrow();
         UserNotice notice = UserNotice.builder()
                 .message(dto.getMessage())

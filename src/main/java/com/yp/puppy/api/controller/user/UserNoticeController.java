@@ -38,7 +38,7 @@ public class UserNoticeController {
     // 유저가 메시지를 클릭했을때 읽음처리.
     @PostMapping("/click/{noticeId}/{userId}")
     public ResponseEntity<?> clickUserNotice(@PathVariable String noticeId, @PathVariable String userId) {
-        log.info("noticeId: {}", noticeId);
+
         User foundUser = noticeService.clickHandler(noticeId, userId);
         return ResponseEntity.ok().body(foundUser);
     }

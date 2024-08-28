@@ -33,7 +33,6 @@ public class DogController {
     @PostMapping("/register/{email}")
     public ResponseEntity<?> registerDog(@RequestBody DogSaveDto dogSaveDto,
                                          @PathVariable String email) {
-        log.info("request dog : {}", dogSaveDto);
         try {
             Dog savedDog = dogService.saveDog(dogSaveDto, email);
             return ResponseEntity.ok(savedDog);
@@ -49,7 +48,7 @@ public class DogController {
      */
     @GetMapping("/{dogId}")
     public ResponseEntity<?> getDog(@PathVariable String dogId) {
-        log.info("request dog : {}", dogId);
+
         try {
             Dog dog = dogService.findDog(dogId);
             return ResponseEntity.ok(dog);
@@ -94,9 +93,9 @@ public class DogController {
      */
     @GetMapping("/user/{userId}")
     public ResponseEntity<?> findMyDogs(@PathVariable String userId) {
-            log.info("유저 아이디: {}", userId);
+
             List<Dog> myPuppies = dogService.findMyPuppies(userId);
-            log.info("강아지 정보: {}", myPuppies);
+
             return ResponseEntity.ok(myPuppies);
     }
 
@@ -109,7 +108,7 @@ public class DogController {
 
     @PatchMapping("/allergy")
     public ResponseEntity<?> postAllergy(@RequestBody AllergyRequestDto dto) {
-        log.info("allergy dto : {}", dto.toString());
+
         Dog dog = dogService.postAllergy(dto.getDogId(), dto.getAllergies());
         return ResponseEntity.ok().body(dog);
     }
