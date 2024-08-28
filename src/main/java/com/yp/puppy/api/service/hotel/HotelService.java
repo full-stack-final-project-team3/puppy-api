@@ -73,9 +73,7 @@ public class HotelService {
         Hotel newHotel = dto.toEntity();
         newHotel.setHotelUser(hotelUser);
 
-        Hotel savedHotel = hotelRepository.save(newHotel);
-        log.info("hotel: {}", savedHotel);
-        return savedHotel; // 반환값 변경
+        return hotelRepository.save(newHotel); // 반환값 변경
     }
 
 

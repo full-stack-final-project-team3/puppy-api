@@ -49,12 +49,12 @@ public class ReservationService {
 
         long roomPrice = foundRoom.getPrice();
 
-        log.info("초기 포인트: {}", foundUser.getPoint());
+//        log.info("초기 포인트: {}", foundUser.getPoint());
         foundUser.withdrawalPoints((int) roomPrice);
-        log.info("포인트 차감 후: {}", foundUser.getPoint());
+//        log.info("포인트 차감 후: {}", foundUser.getPoint());
 
         userRepository.save(foundUser);
-        log.info("포인트 저장 후: {}", userRepository.findById(foundUser.getId()).orElseThrow().getPoint());
+//        log.info("포인트 저장 후: {}", userRepository.findById(foundUser.getId()).orElseThrow().getPoint());
 
         Reservation reservation = Reservation.builder()
                 .reservationAt(startLocalDateTime)
@@ -86,9 +86,7 @@ public class ReservationService {
 
     // 내가 예약한 객실 전체조회 - 취소되지 않은 예약만 조회
     public List<ReservationOneDto> getReservationsByUserId(String userId) {
-        log.info("Fetching reservations for userId: {}", userId);
         List<Reservation> reservations = reservationRepository.findByUserId(userId);
-        log.info("Fetched reservations: {}", reservations);
 
         return reservations.stream()
                 .filter(reservation -> reservation.getCancelled() != CancellationStatus.CANCELLED)
@@ -104,7 +102,7 @@ public class ReservationService {
         user.addPoints((int) reservation.getPrice());
         userRepository.save(user);
 
-        log.info("예약 취소 후 포인트 반환: {}", user.getPoint());
+//        log.info("예약 취소 후 포인트 반환: {}", user.getPoint());
 
         reservation.setCancelled(CancellationStatus.CANCELLED);
         reservationRepository.save(reservation);
@@ -117,7 +115,7 @@ public class ReservationService {
         // 기존 포인트 반환
         User user = reservation.getUser();
         user.addPoints((int) reservation.getPrice());
-        log.info("기존 예약 취소 후 포인트 반환: {}", user.getPoint());
+//        log.info("기존 예약 취소 후 포인트 반환: {}", user.getPoint());
 
         // 날짜 중복 체크
         LocalDateTime startLocalDateTime = dto.getReservationAt().atZoneSameInstant(ZoneId.of("Asia/Seoul")).toLocalDateTime();
@@ -131,7 +129,7 @@ public class ReservationService {
         Room foundRoom = roomRepository.findById(dto.getRoomId()).orElseThrow();
         long newRoomPrice = foundRoom.getPrice();
         user.withdrawalPoints((int) newRoomPrice);
-        log.info("새 예약으로 포인트 차감 후: {}", user.getPoint());
+//        log.info("새 예약으로 포인트 차감 후: {}", user.getPoint());
 
         // 예약 수정
         reservation.changeReservation(dto);
@@ -140,6 +138,15 @@ public class ReservationService {
 
         // 사용자 정보 저장
         userRepository.save(user);
-        log.info("수정된 예약 저장 후 포인트: {}", userRepository.findById(user.getId()).orElseThrow().getPoint());
+//        log.info("수정된 예약 저장 후 포인트: {}", userRepository.findById(user.getId()).orElseThrow().getPoint());
+    }
+
+    // 전체 예약조회 가져오기
+    public List<ReservationOneDto> getAllReservations() {
+        List<Reservation> reservations = reservationRepository.findAll();
+
+        return reservations.stream()
+                .map(ReservationOneDto::new)
+                .collect(Collectors.toList());
     }
 }

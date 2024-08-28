@@ -96,6 +96,21 @@ public class ReservationController {
         }
     }
 
+    // 전체 예약 가져오기
+    @GetMapping("/all")
+    @PreAuthorize("hasAuthority('ADMIN')") // 관리자 권한을 필요로 함
+    public ResponseEntity<?> getAllReservations() {
+        try {
+            log.info("API 호출: 전체 예약 조회");
+            List<ReservationOneDto> reservations = reservationService.getAllReservations();
+            log.info("API 응답: {}", reservations);
+            return ResponseEntity.ok().body(reservations);
+        } catch (Exception e) {
+            log.warn("전체 예약 조회 중 오류 발생");
+            return ResponseEntity.badRequest().body("예약 조회에 실패했습니다.");
+        }
+    }
+
 
 
 }
