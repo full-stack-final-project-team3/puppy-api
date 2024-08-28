@@ -69,7 +69,7 @@ public class BoardController {
 
     @GetMapping("/boardList/{userId}")
     public ResponseEntity<?> getBoardByUserId(@PathVariable String userId) {
-        List<Board> foundList = userService.getMyBoardList(userId);
+        List<BoardResponseDto> foundList = boardService.getBoardsByUserId(userId);
         if (foundList.isEmpty()) {
             return ResponseEntity.badRequest().body("작성하신 글이 없습니다.");
         }

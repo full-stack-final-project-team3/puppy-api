@@ -448,4 +448,10 @@ public class BoardService {
     }
 
 
+    public List<BoardResponseDto> getBoardsByUserId(String userId) {
+        List<Board> boards = boardRepository.findByUserId(userId);
+        return boards.stream()
+                .map(this::convertToBoardResponseDto)
+                .collect(Collectors.toList());
+    }
 }// 끝

@@ -73,7 +73,7 @@ public class UserService {
         }
 
         boolean exists = userRepository.existsByEmail(email);
-        log.info("Checking email {} is duplicated : {}", email, exists);
+
 
         // 중복인데 회원가입이 마무리되지 않은 회원은 중복이 아니라고 판단
         if (exists && notFinish(email)) {
@@ -255,11 +255,11 @@ public class UserService {
         // 로그인 성공, 토큰 생성 섹션.
         // 인증정보(이메일, 닉네임, 프사, 토큰정보)를 클라이언트(프론트)에게 전송
         String token = tokenProvider.createToken(user);
-        log.info("created Token: {}", token);
+
         if (dto.isAutoLogin()) {
             user.setAutoLogin(true);
             userRepository.save(user);
-            log.info("foundUser's autoLogin - {}", dto.isAutoLogin());
+
         } else {
             user.setAutoLogin(false);
             userRepository.save(user);
@@ -398,7 +398,6 @@ public class UserService {
         }
 
         boolean exists = userRepository.existsByNickname(nickname);
-        log.info("Checking nickname {} is duplicated : {}", nickname, exists);
 
         return exists;
     }
@@ -414,7 +413,7 @@ public class UserService {
             User foundUser = userRepository.findByEmail(email).orElseThrow();
 
             generateAndSendCode(email, foundUser);
-            log.info("foundUser: {}", foundUser);
+
             return true;
         } else {
             return false;
@@ -435,7 +434,6 @@ public class UserService {
                 return true;
             } else if (ev != null) { // 인증코드 틀렸거나, 만료된 경우
                 emailVerificationRepository.delete(ev); // 기존 코드 삭제
-                log.debug("인증코드 삭제! - {}", ev);
                 generateAndSendCode(email, user); // 재발송 & db저장
             }
         }
@@ -446,14 +444,9 @@ public class UserService {
 
         User foundUser = userRepository.findByEmail(email).orElseThrow();
 
-//        // 기존 비밀번호와 동일한지 검증
-//        if (encoder.matches(password, foundUser.getPassword())) {
-//            return false;
-//        }
 
         // 패스워드 인코딩
         String encodedPassword = encoder.encode(password);
-        log.info("인코딩된 패스워드! - {}", encodedPassword);
         foundUser.setPassword(encodedPassword);
 
         userRepository.save(foundUser);
@@ -466,15 +459,10 @@ public class UserService {
         }
 
         boolean exists = userRepository.existsByPhoneNumber(phoneNumber);
-        log.info("Checking phoneNumber {} is duplicated : {}", phoneNumber, exists);
 
         return exists;
     }
 
-    public List<Board> getMyBoardList(String userId) {
-        User foundUser = userRepository.findById(userId).orElseThrow();
-        return foundUser.getBoard();
-    }
 
     public boolean isDuplicatePassword(String password, String email) {
         User foundUser = userRepository.findByEmail(email).orElseThrow();
@@ -488,7 +476,7 @@ public class UserService {
 
     public void deleteUser(String userId) {
         User foundUser = userRepository.findById(userId).orElseThrow();
-        log.info("delete user info - {}", foundUser);
+
         userRepository.delete(foundUser);
     }
 
@@ -496,7 +484,6 @@ public class UserService {
         User foundUser = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         List<Like> likes = foundUser.getLikes();
 
-        log.debug("User {} has {} likes", userId, likes.size());
 
         return likes.stream()
                 .filter(like -> like != null && like.getBoard() != null)

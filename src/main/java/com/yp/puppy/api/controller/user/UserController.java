@@ -51,7 +51,7 @@ public class UserController {
     // 회원가입 마무리 단계
     @PostMapping("/join")
     public ResponseEntity<?> join(@RequestBody UserSaveDto dto) {
-        log.info("save User Info - {}", dto);
+
         try {
             // DB 저장 단계
             userService.confirmSignUp(dto);
@@ -100,7 +100,7 @@ public class UserController {
     public ResponseEntity<?> findUser(@PathVariable String email) {
         if (!email.contains("@")) return ResponseEntity.badRequest().body("카카오 로그인 시도");
         UserResponseDto foundUser = userService.findUserByEmail(email);
-        log.info("found user by email : {}", foundUser);
+
         return ResponseEntity.ok().body(foundUser);
     }
 
@@ -108,7 +108,7 @@ public class UserController {
     @PatchMapping("/{email}")
     public ResponseEntity<?> modify(@RequestBody UserInfoModifyDto dto,
                                     @PathVariable String email) {
-        log.info("modify user info - {}", dto);
+
         try {
             userService.modifyUserInfo(dto, email);
             return ResponseEntity.ok().body("success");
@@ -167,17 +167,15 @@ public class UserController {
         log.info("파라미터로 받은 패스워드!! - {}", password);
         boolean flag = userService.isDuplicatePassword(password, email);
         if (flag) { // 일치하면
-            log.info("true flag : {}", flag);
+
             return ResponseEntity.ok().body(true);
         } else {
-            log.info("false flag : {}", flag);
             return ResponseEntity.badRequest().body(false);
         }
     }
 
     @DeleteMapping("/{userId}")
     public ResponseEntity<?> deleteUser(@PathVariable String userId) {
-        log.info("delete user : {}", userId);
         userService.deleteUser(userId);
         return ResponseEntity.ok().body("delete success");
     }
@@ -185,7 +183,6 @@ public class UserController {
     // 회원가입 완료 후 자동로그인
     @PostMapping("/register-and-login")
     public ResponseEntity<?> registerAndLogin(@RequestBody LoginRequestDto dto) {
-        log.info("Register and    login request - {}", dto);
 
         try {
             // 회원가입 처리
@@ -222,7 +219,6 @@ public class UserController {
     @PostMapping("/auto-login")
     public ResponseEntity<?> autoLogin(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
-        log.info("오토로그인 token : {}", bearerToken);
 
         if (bearerToken == null || bearerToken.isEmpty() || !bearerToken.startsWith("Bearer ")) {
             return ResponseEntity.status(401).body("유효하지 않은 토큰입니다.");
@@ -230,12 +226,11 @@ public class UserController {
 
         // Bearer 부분 제거
         String token = bearerToken.substring(7);
-        log.info("오토로그인 메서드에서 추출한 token : {}", token);
 
         try {
             TokenProvider.TokenUserInfo tokenInfo = tokenProvider.validateAndGetTokenInfo(token);
             String userId = tokenInfo.getUserId();
-            log.info("오토로그인 안에서의 유저아이디 : {}", userId);
+
             UserResponseDto userResponseDto = userService.findUserById(userId);
 
             if (userResponseDto == null) {
@@ -245,7 +240,7 @@ public class UserController {
             return ResponseEntity.ok().body(userResponseDto);
 
         } catch (Exception e) {
-            log.error("자동 로그인 처리 중 오류 발생", e);
+
             return ResponseEntity.status(401).body("자동 로그인에 실패했습니다.");
         }
     }

@@ -27,7 +27,6 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
         http
                 .cors()
                 .and()
@@ -35,16 +34,65 @@ public class SecurityConfig {
                 .httpBasic().disable()
                 .formLogin().disable()
                 .authorizeRequests()
-                .antMatchers("/mypage").authenticated() // /mypage 경로에 대한 인증 필요
-                // 리뷰 및 예약 생성, 수정, 삭제는 인증된 사용자만
-                .antMatchers(HttpMethod.POST, "/api/reviews/**", "/api/reservation/**").authenticated()
-                .antMatchers(HttpMethod.PATCH, "/api/reviews/**", "/api/reservation/**").authenticated()
-                .antMatchers(HttpMethod.DELETE, "/api/reviews/**", "/api/reservation/**").authenticated()
-                .antMatchers("/**").permitAll() // 나머지 경로에 대한 접근 허용
+                // 인증된 사용자만 접근 가능
+                .antMatchers(HttpMethod.POST,
+                        "/api/reviews/**",
+                        "/api/reservation/**",
+                        "/board/**",
+                        "/board/{boardId}/comments/**",
+                        "/likes/**",
+                        "/dog/register/**",
+                        "/dog/allergy",
+                        "/bundle/**",
+                        "/cart/**",
+                        "/shop/orders/**",
+                        "/shop/orders/cancel/{orderId}",
+                        "/notice/add/**",
+                        "/notice/click/{noticeId}/{userId}",
+                        "/notice/click/all/{userId}",
+                        "/auto-login",
+                        "/hotel/favorite",
+                        "/hotel/upload").hasAnyAuthority("USER", "ADMIN")
+                .antMatchers(HttpMethod.PATCH,
+                        "/api/reviews/**",
+                        "/api/reservation/**",
+                        "/dog/{dogId}",
+                        "/dog/allergy",
+                        "/treats/{treatsId}",
+                        "/{email}",
+                        "/password").hasAnyAuthority("USER", "ADMIN")
+                .antMatchers(HttpMethod.PUT,
+                        "/cart", "/board").hasAnyAuthority("USER", "ADMIN")
+                .antMatchers(HttpMethod.DELETE,
+                        "/api/reviews/**",
+                        "/api/reservation/**",
+                        "/board/{id}",
+                        "/board/{boardId}/comments/{replyId}",
+                        "/board/{boardId}/comments/{replyId}/subReplies/{subReplyId}",
+                        "/dog/{dogId}",
+                        "/dog/allergy/**",
+                        "/cart/{cartId}",
+                        "/cart/bundle/{bundleId}",
+                        "/board/{id}/deleteImage",
+                        "/{userId}").hasAnyAuthority("USER", "ADMIN")
+                // 관리자만 접근 가능한 경로
+
+                .antMatchers(HttpMethod.POST,
+                        "/hotel", "/treats", "/room").hasAuthority("ADMIN")  // 객실 생성도 관리자만 접근
+                .antMatchers(HttpMethod.DELETE,
+                        "/hotel/{hotelId}", "/treats/{treatsId}", "/room/{roomId}").hasAuthority("ADMIN")  // 객실 삭제도 관리자만 접근
+                .antMatchers(HttpMethod.PATCH,
+                        "/hotel/{hotelId}", "/treats/{treatsId}", "/room/{roomId}").hasAuthority("ADMIN")  // 객실 수정도 관리자만 접근
+                // 리뷰 관련 보안 설정
+                .antMatchers(HttpMethod.DELETE,
+                        "/api/reviews/{reviewId}").access("hasAuthority('ADMIN') or @reviewSecurityService.isOwner(authentication, #reviewId)")
+                .antMatchers(HttpMethod.PATCH,
+                        "/api/reviews/{reviewId}").access("hasAuthority('ADMIN') or @reviewSecurityService.isOwner(authentication, #reviewId)")
                 .and()
                 .exceptionHandling()
                 .authenticationEntryPoint(new Http403ForbiddenEntryPoint()); // 미인증 사용자가 접근할 경우 403 응답
 
+        // JWT 필터를 CORS 필터 후에 추가
         http.addFilterAfter(jwtAuthFilter, CorsFilter.class);
 
         return http.build();
