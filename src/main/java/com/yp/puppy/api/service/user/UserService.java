@@ -16,6 +16,7 @@ import com.yp.puppy.api.entity.user.EmailVerification;
 import com.yp.puppy.api.entity.user.User;
 import com.yp.puppy.api.exception.LoginFailException;
 import com.yp.puppy.api.repository.community.BoardRepository;
+import com.yp.puppy.api.repository.community.BoardViewRepository;
 import com.yp.puppy.api.repository.user.DogRepository;
 import com.yp.puppy.api.repository.user.EmailVerificationRepository;
 import com.yp.puppy.api.repository.user.UserRepository;
@@ -45,6 +46,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final DogRepository dogRepository;
+    private final BoardViewRepository boardViewRepository;
 
     @Value("${yp.mail.host}")
     private String mailHost;
@@ -477,9 +479,8 @@ public class UserService {
     public void deleteUser(String userId) {
         User foundUser = userRepository.findById(userId).orElseThrow();
         log.info("before foundUser - {} ", foundUser);
+        boardViewRepository.deleteAllByUserId(userId);
         userRepository.delete(foundUser);
-        User afterUser = userRepository.findById(userId).orElseThrow();
-        log.info("after foundUser - {} ", afterUser);
 
     }
 
