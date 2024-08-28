@@ -180,11 +180,9 @@ public class HotelController {
     public ResponseEntity<Resource> getImage(@PathVariable String year, @PathVariable String month, @PathVariable String day, @PathVariable String filename) {
         try {
             Path file = Paths.get(uploadDir, year, month, day).resolve(filename);
-            logger.info("Fetching image from path: " + file.toString());
             Resource resource = new UrlResource(file.toUri());
 
             if (resource.exists() || resource.isReadable()) {
-                logger.info("Successfully found the file: " + file.toString());
                 return ResponseEntity.ok()
                         .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
                         .body(resource);

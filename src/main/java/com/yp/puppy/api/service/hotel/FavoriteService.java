@@ -51,7 +51,6 @@ public class FavoriteService {
 
     public List<Favorite> getFavoritesByUser(String userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자 ID입니다."));
-        log.info("user: {}", user);
         return favoriteRepository.findByUser(user);
     }
 
