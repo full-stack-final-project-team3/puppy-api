@@ -51,6 +51,7 @@ public class AdminController {
     @GetMapping("/users/cumulative/today")
     public List<Long> getCumulativeUsersCountToday() {
         return adminService.countCumulativeUsersToday();
+
     }
 
     @GetMapping("/users/cumulative/week")
@@ -61,6 +62,7 @@ public class AdminController {
     @GetMapping("/users/cumulative/month")
     public List<Long> getCumulativeUsersCountThisMonth() {
         return adminService.countCumulativeUsersThisMonth();
+
     }
 
 

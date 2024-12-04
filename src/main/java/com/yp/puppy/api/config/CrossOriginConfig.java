@@ -16,7 +16,9 @@ public class CrossOriginConfig implements WebMvcConfigurer {
             "http://localhost:3000",
             "http://localhost:3001",
             "http://localhost:3002",
-            "http://doggle.kr:3000"
+            "http://doggle.kr:3000",
+            "http://doggle.kr",
+
     };
 
     @Override
